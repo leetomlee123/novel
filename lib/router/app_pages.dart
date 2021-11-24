@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import 'package:novel/pages/Index/Index_view.dart';
+import 'package:novel/pages/book_detail/book_detail_binding.dart';
+import 'package:novel/pages/book_detail/book_detail_view.dart';
 import 'package:novel/pages/book_search/book_search_binding.dart';
 import 'package:novel/pages/book_search/book_search_view.dart';
 import 'package:novel/pages/find_password/find_password_binding.dart';
@@ -61,6 +63,11 @@ class AppPages {
       name: AppRoutes.SearchBook,
       page: () => BookSearchPage(),
       binding: BookSearchBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.BookDetail,
+      page: () => BookDetailPage(),
+      binding: BookDetailBinding(),
     ),
   ];
 

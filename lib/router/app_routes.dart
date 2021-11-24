@@ -11,6 +11,7 @@ abstract class AppRoutes {
   static const Shelf = '/shelf';
   static const ReadBook = '/readBook';
   static const SearchBook = '/searchBook';
+  static const BookDetail = '/bookDetail';
 
 
   //moive

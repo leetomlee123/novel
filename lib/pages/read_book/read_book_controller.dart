@@ -4,11 +4,13 @@ import 'package:novel/pages/home/home_controller.dart';
 import 'package:novel/pages/home/home_model.dart';
 
 class ReadBookController extends GetxController {
-  final Book book = Get.find<HomeController>().getBookById(Get.arguments['id']);
+   Book book = Book().obs();
 
   @override
   Future<void> onInit() async {
     super.onInit();
+    book=Get.find<HomeController>().getBookById(Get.arguments['id']);
+    print(book.id);
 
     FlutterStatusbarManager.setFullscreen(true);
   }

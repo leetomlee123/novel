@@ -6,6 +6,7 @@ import 'package:novel/pages/app_menu/app_menu_view.dart';
 import 'package:novel/pages/book_search/searchBarDelegate.dart';
 import 'package:novel/pages/home/home_controller.dart';
 import 'package:novel/pages/home/home_model.dart';
+import 'package:novel/router/app_pages.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
 class HomePage extends GetView<HomeController> {
@@ -49,8 +50,11 @@ class HomePage extends GetView<HomeController> {
                   actions: [
                     IconButton(
                       icon: Icon(Icons.search),
-                      onPressed: () => showSearch(
-                          context: context, delegate: SearchBarDelegate()),
+                      onPressed: (){
+                        Get.toNamed(AppRoutes.SearchBook);
+                      },
+                      // onPressed: () => showSearch(
+                      //     context: context, delegate: SearchBarDelegate()),
                     ),
                     _popupMenuButton(context)
                   ],
