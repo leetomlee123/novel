@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:novel/global.dart';
 import 'package:novel/pages/login/login_model.dart';
 import 'package:novel/router/app_pages.dart';
+import 'package:novel/utils/database_provider.dart';
 
 class IndexController extends GetxController {
   // 是否展示欢迎页
@@ -19,6 +20,7 @@ class IndexController extends GetxController {
   dropAccountOut() {
     Global.profile = UserProfileModel(token: "");
     userProfileModel.value = Global.profile;
+    DataBaseProvider.dbProvider.clearBooks();
     Global.saveProfile(Global.profile!);
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:novel/pages/register/register_model.dart';
+import 'package:novel/router/app_pages.dart';
 import 'package:novel/services/user.dart';
 
 class RegisterController extends GetxController {
@@ -28,7 +29,7 @@ class RegisterController extends GetxController {
         Get.snackbar("消息", res['msg'], snackPosition: SnackPosition.BOTTOM);
       } else {
         await Future.delayed(Duration(seconds: 1));
-        Get.back();
+        Get.offNamed(AppRoutes.Login);
       }
     }
   }

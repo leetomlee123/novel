@@ -58,7 +58,7 @@ class Request {
       // 错误交互处理
       switch (eInfo.code) {
         case 401: // 没有权限 重新登录
-          deleteTokenAndReLogin();
+          // deleteTokenAndReLogin();
           break;
         default:
       }

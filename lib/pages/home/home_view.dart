@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:novel/components/common_img.dart';
 import 'package:novel/pages/app_menu/app_menu_view.dart';
+import 'package:novel/pages/book_search/searchBarDelegate.dart';
 import 'package:novel/pages/home/home_controller.dart';
 import 'package:novel/pages/home/home_model.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
@@ -13,79 +14,153 @@ class HomePage extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        key: scaffoldKey,
-        appBar: AppBar(
-          actions: [
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: Icon(Icons.more_vert_sharp),
-              onPressed: () {},
-            )
-          ],
-          centerTitle: true,
-          title: Text("书架"),
-          leading: IconButton(
-              icon: Icon(Icons.person),
-              onPressed: () => scaffoldKey.currentState!.openDrawer()),
-        ),
-        drawer: Drawer(
-          child: AppMenuPage(),
-        ),
-        body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
-            child: Obx(() => controller.shelf.isNotEmpty
-                ? controller.cover.value
-                    ? _buildCoverModel()
-                    : _buildListModel()
-                : Container())));
+    return Obx(() => Scaffold(
+          key: scaffoldKey,
+          appBar: controller.manageShelf.value
+              ? AppBar(
+                  leadingWidth: 70,
+                  leading: TextButton(
+                    onPressed: () => controller.pickAction(),
+                    child: Text(
+                      controller.pickAll.value ? "全不选" : "全选",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  centerTitle: true,
+                  title: Column(
+                    children: [
+                      Text("书架整理"),
+                      Text(
+                        "已选择${controller.pickList.length}本",
+                        style: TextStyle(fontSize: 11),
+                      )
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () => controller.manage(),
+                        child: Text(
+                          "完成",
+                          style: TextStyle(color: Colors.white),
+                        ))
+                  ],
+                )
+              : AppBar(
+                  actions: [
+                    IconButton(
+                      icon: Icon(Icons.search),
+                      onPressed: () => showSearch(
+                          context: context, delegate: SearchBarDelegate()),
+                    ),
+                    _popupMenuButton(context)
+                  ],
+                  centerTitle: true,
+                  title: Text("书架"),
+                  leading: IconButton(
+                      icon: Icon(Icons.person),
+                      onPressed: () => scaffoldKey.currentState!.openDrawer()),
+                ),
+          drawer: Drawer(
+            child: AppMenuPage(),
+          ),
+          body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: controller.shelf.isNotEmpty
+                  ? controller.coverLayout.value
+                      ? _buildCoverModel()
+                      : _buildListModel()
+                  : Container()),
+          bottomNavigationBar:
+              controller.manageShelf.value ? _buildManageAction() : null,
+        ));
+  }
+
+  Widget _buildManageAction() {
+    return ButtonBar(
+      alignment: MainAxisAlignment.spaceAround,
+      children: [
+        TextButton(
+            onPressed: () => controller.deleteBooks(),
+            child: Text(
+              "删除",
+              style: TextStyle(
+                  color: controller.pickList.isNotEmpty
+                      ? Colors.redAccent
+                      : Colors.grey),
+            ))
+      ],
+    );
+  }
+
+  PopupMenuButton _popupMenuButton(BuildContext context) {
+    return PopupMenuButton(
+      icon: Icon(Icons.more_vert_sharp),
+      itemBuilder: (BuildContext context) {
+        return [
+          PopupMenuItem(
+              value: "1",
+              child: Obx(
+                () => Text(controller.coverLayout.value ? "列表模式" : "封面模式"),
+              )),
+          PopupMenuItem(
+            child: Text("书架整理"),
+            value: "书架整理",
+          ),
+        ];
+      },
+      onSelected: (var value) => controller.menuAction(value),
+    );
   }
 
   Widget _buildCoverModel() {
     return WaterfallFlow.builder(
         itemCount: controller.shelf.length,
         gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
+          crossAxisCount: 3,
           crossAxisSpacing: 10.0,
           mainAxisSpacing: 30.0,
         ),
         itemBuilder: (itemBuilder, i) {
           var data = controller.shelf[i];
-          return Column(
-            children: [
-              Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusDirectional.circular(3)),
-                clipBehavior: Clip.antiAlias,
-                child: _buildBookCover(data, i),
+          return tapAction(
+              Column(
+                children: [
+                  // Card(
+                  //   // shape: RoundedRectangleBorder(
+                  //   //     borderRadius: BorderRadiusDirectional.circular(3)),
+                  //   // clipBehavior: Clip.antiAlias,
+                  //   child: _buildBookCover(data, i),
+                  // ),
+                  _buildBookCover(data, i),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Center(
+                    child: Text(
+                      data.name ?? "",
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  )
+                ],
               ),
-              SizedBox(
-                height: 5,
-              ),
-              Center(
-                child: Text(
-                  data.name ?? "",
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              )
-            ],
-          );
+              i);
         });
   }
 
-  Widget _buildBookCover(ShelfModel shelfModel, int i) {
+  Widget _buildBookCover(Book book, int i) {
     return Stack(
+      alignment: AlignmentDirectional.bottomEnd,
       children: <Widget>[
-        CommonImg(shelfModel.img ?? "",aspect: .85,),
+        CommonImg(
+          book.img ?? "",
+          aspect: .73,
+          fit: BoxFit.fitWidth,
+        ),
         Offstage(
-          offstage: shelfModel.update != 1,
+          offstage: book.newChapter == 0,
           child: Container(
-            // color: Colors.red,
             child: Align(
               alignment: Alignment.topRight,
               child: Image.asset(
@@ -96,30 +171,80 @@ class HomePage extends GetView<HomeController> {
             ),
           ),
         ),
-        // Visibility(
-        //   visible: this.type == "sort",
-        //   child: Container(
-        //     height: this.height,
-        //     width: this.width,
-        //     child: Align(
-        //         alignment: Alignment.bottomRight,
-        //         child: Image.asset(
-        //           'images/pick.png',
-        //           width: 30,
-        //           height: 30,
-        //           color: !shelf.picks(this.idx)
-        //               ? Colors.white
-        //               : Theme.of(context).primaryColor,
-        //         )),
-        //   ),
-        // ),
+        Visibility(
+          visible: controller.manageShelf.value,
+          child: Image.asset(
+            'images/pick.png',
+            width: 30,
+            height: 30,
+            color: !controller.pickList.contains(i)
+                ? Colors.white
+                : Get.theme.primaryColor,
+          ),
+        ),
       ],
     );
   }
 
   Widget _buildListModel() {
-    return Container();
+    return ListView.builder(
+      itemBuilder: (c, i) {
+        Book book = controller.shelf[i];
+        return tapAction(
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Row(
+                children: [
+                  _buildBookCover(book, i),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(
+                        book.name ?? "",
+                        style: TextStyle(
+                            fontSize: 18.0, fontWeight: FontWeight.bold),
+                        maxLines: 1,
+                      ),
+                      Text(
+                        book.author ?? "",
+                        style: TextStyle(
+                          fontSize: 12.0,
+                        ),
+                        maxLines: 1,
+                      ),
+                      Text(
+                        book.lastChapter ?? "",
+                        style: TextStyle(fontSize: 12),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                      Text(
+                        book.uTime ?? "",
+                        style: TextStyle(color: Colors.grey, fontSize: 11),
+                        maxLines: 1,
+                      ),
+                    ],
+                  ))
+                ],
+              ),
+            ),
+            i);
+      },
+      itemCount: controller.shelf.length,
+      itemExtent: 130,
+    );
   }
 
-  void tapAction() {}
+  Widget tapAction(Widget child, int i) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      child: child,
+      onTap: () => controller.tapAction(i),
+    );
+  }
 }

@@ -4,7 +4,9 @@ import 'package:novel/global.dart';
 import 'package:novel/pages/Index/Index_controller.dart';
 import 'package:novel/pages/home/home_controller.dart';
 import 'package:novel/pages/login/login_model.dart';
+import 'package:novel/router/app_pages.dart';
 import 'package:novel/services/services.dart';
+import 'package:novel/utils/database_provider.dart';
 
 class LoginController extends GetxController {
   UserProfileModel? userProfileModel = UserProfileModel();
@@ -32,9 +34,9 @@ class LoginController extends GetxController {
       Global.saveProfile(userProfileModel!);
       Get.find<IndexController>().userProfileModel.value = userProfileModel;
       var data = await BookApi().shelf();
+      DataBaseProvider.dbProvider.addBooks(data);
       Get.find<HomeController>().shelf.value = data;
-      Get.back();
-      Get.back();
+      Get.offNamed(AppRoutes.Index);
     }
   }
 

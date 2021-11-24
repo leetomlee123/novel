@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-class MovieSearchController extends GetxController {
+class BookChaptersController extends GetxController {
     final count = 0.obs;
 
     @override

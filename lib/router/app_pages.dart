@@ -1,20 +1,21 @@
+import 'package:get/get.dart';
 import 'package:novel/pages/Index/Index_view.dart';
+import 'package:novel/pages/book_search/book_search_binding.dart';
+import 'package:novel/pages/book_search/book_search_view.dart';
 import 'package:novel/pages/find_password/find_password_binding.dart';
 import 'package:novel/pages/find_password/find_password_view.dart';
 import 'package:novel/pages/home/home.binding.dart';
 import 'package:novel/pages/home/home_view.dart';
 import 'package:novel/pages/login/login_binding.dart';
 import 'package:novel/pages/login/login_view.dart';
-import 'package:novel/pages/movie/movie_binding.dart';
-import 'package:novel/pages/movie/movie_view.dart';
 import 'package:novel/pages/notfound/notfound_view.dart';
 import 'package:novel/pages/proxy/proxy_view.dart';
+import 'package:novel/pages/read_book/read_book_binding.dart';
+import 'package:novel/pages/read_book/read_book_view.dart';
 import 'package:novel/pages/register/register_binding.dart';
-import 'package:novel/pages/register/register_controller.dart';
 import 'package:novel/pages/register/register_view.dart';
 import 'package:novel/pages/shelf/shelf_binding.dart';
 import 'package:novel/pages/shelf/shelf_view.dart';
-import 'package:get/get.dart';
 
 part 'app_routes.dart';
 
@@ -51,14 +52,16 @@ class AppPages {
       page: () => ShelfPage(),
       binding: ShelfBinding(),
     ),
-    
     GetPage(
-        name: AppRoutes.Movie,
-        page: () => MoviePage(),
-        binding: MovieBinding(),
-        children: [
-  
-        ]),
+      name: AppRoutes.ReadBook,
+      page: () => ReadBookPage(),
+      binding: ReadBookBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.SearchBook,
+      page: () => BookSearchPage(),
+      binding: BookSearchBinding(),
+    ),
   ];
 
   static final unknownRoute = GetPage(

@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 class CommonImg extends StatelessWidget {
   String url;
   double width;
-  double aspect;
+  double? aspect;
   BoxFit fit;
   bool roll;
 
@@ -28,7 +28,7 @@ class CommonImg extends StatelessWidget {
             return ExtendedRawImage(
               image: state.extendedImageInfo?.image,
               width: this.width,
-              height: this.width / this.aspect,
+              height: this.width / this.aspect!,
               fit: BoxFit.cover,
             );
             break;
