@@ -2,11 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:novel/components/loading.dart';
+import 'package:novel/pages/book_menu/book_menu_view.dart';
 
 import 'read_book_controller.dart';
 
 class ReadBookPage extends GetView<ReadBookController> {
-  const ReadBookPage({Key? key}) : super(key: key);
+  ReadBookPage({Key? key}) : super(key: key);
+
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +21,16 @@ class ReadBookPage extends GetView<ReadBookController> {
   }
 
   _buildContent() {
+    return Scaffold(
+      drawer: Drawer(
+        child: BookMenuPage(),
+      ),
+      body: _buildPage(),
+      key: _scaffoldKey,
+    );
+  }
 
+  _buildPage(){
+    return Container(child: Text("ssss"),);
   }
 }

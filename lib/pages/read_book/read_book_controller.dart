@@ -5,7 +5,7 @@ import 'package:novel/pages/home/home_model.dart';
 
 enum LOAD_STATUS { LOADING, FAILED, FINISH }
 
-class ReadBookController extends GetxController {
+class ReadBookController extends FullLifeCycleController with FullLifeCycle {
   Book? book;
   Rx<LOAD_STATUS> loadStatus = LOAD_STATUS.LOADING.obs;
 
@@ -14,7 +14,7 @@ class ReadBookController extends GetxController {
     super.onInit();
     book = Get.find<HomeController>().getBookById(Get.arguments['id']);
     Future.delayed(
-        Duration(seconds: 3), () => loadStatus.value = LOAD_STATUS.FAILED);
+        Duration(seconds: 3), () => loadStatus.value = LOAD_STATUS.FINISH);
     FlutterStatusbarManager.setFullscreen(true);
   }
 
@@ -22,7 +22,29 @@ class ReadBookController extends GetxController {
   void onReady() {}
 
   @override
-  Future<void> onClose() async {
+  void onClose() async {
     FlutterStatusbarManager.setFullscreen(false);
+  }
+
+  saveState() {}
+
+  @override
+  void onDetached() {
+    // TODO: implement onDetached
+  }
+
+  @override
+  void onInactive() {
+    // TODO: implement onInactive
+  }
+
+  @override
+  void onPaused() {
+    print("挂起");
+  }
+
+  @override
+  void onResumed() {
+    print("恢复");
   }
 }

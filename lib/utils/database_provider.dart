@@ -9,14 +9,22 @@ class DataBaseProvider {
   DataBaseProvider._();
 
   static final String _dbShelf = "shelf1";
+  static final String _dbChapters = "chapter";
 
   static final DataBaseProvider dbProvider = DataBaseProvider._();
   Database? _databaseShelf;
+  Database? _databaseChapter;
+
+  Future<Database?> get databaseChapter async {
+    if (_databaseChapter != null) return _databaseChapter;
+    _databaseChapter = await getDatabaseInstanceShelf();
+    return _databaseChapter;
+  }
 
   Future<Database?> get databaseShelf async {
-    if (_databaseShelf != null) return _databaseShelf;
-    _databaseShelf = await getDatabaseInstanceShelf();
-    return _databaseShelf;
+    if (_databaseChapter != null) return _databaseChapter;
+    _databaseChapter = await getDatabaseInstanceShelf();
+    return _databaseChapter;
   }
 
   Future<Database> getDatabaseInstanceShelf() async {
@@ -42,9 +50,23 @@ class DataBaseProvider {
     });
   }
 
+  Future<Database> getDatabaseInstanceChapter() async {
+    Directory directory = await getApplicationDocumentsDirectory();
+    String path = directory.path + "$_dbShelf.db";
+    return await openDatabase(path, version: 2,
+        onCreate: (Database db, int version) async {
+      await db.execute("CREATE TABLE IF NOT EXISTS $_dbChapters("
+          "id TEXT PRIMARY KEY ,"
+          "name TEXT,"
+          "content TEXT,"
+          "book_id TEXT,"
+          "hasContent INTEGER");
+    });
+  }
+
 //添加书籍到书架
   Future<Null> addBooks(List<Book> bks) async {
-    var dbClient = await databaseShelf;
+    var dbClient = await databaseChapter;
     var batch = dbClient!.batch();
 
     for (Book book in bks) {
