@@ -1,5 +1,6 @@
 import 'package:common_utils/common_utils.dart';
 import 'package:get/get.dart';
+import 'package:novel/global.dart';
 import 'package:novel/pages/home/home_model.dart';
 import 'package:novel/router/app_pages.dart';
 import 'package:novel/services/book.dart';
@@ -25,9 +26,7 @@ class HomeController extends GetxController {
   }
 
   @override
-  void onReady() {
-    print("ready");
-  }
+  void onReady() {}
 
   @override
   void onClose() {}
@@ -90,7 +89,10 @@ class HomeController extends GetxController {
   }
 
   deleteBooks() {
-    if (pickList.isNotEmpty) {}
+    for (var value in pickList) {
+      modifyShelf(shelf[value]);
+    }
+    pickList.clear();
   }
 
   tapAction(int i) {
@@ -109,6 +111,39 @@ class HomeController extends GetxController {
       DataBaseProvider.dbProvider.updBook(elementAt);
       Get.toNamed(AppRoutes.ReadBook, arguments: {"id": elementAt.id});
       shelf.sort((o1, o2) => o2.sortTime.compareTo(o1.sortTime));
+    }
+  }
+
+  modifyShelf(Book book) async {
+    var action =
+        shelf.map((f) => f.id).toList().contains(book.id ?? "") ? 'del' : 'add';
+    if (action == "add") {
+      shelf.insert(0, book);
+      await DataBaseProvider.dbProvider.addBooks([book]);
+    } else if (action == "del") {
+      for (var i = 0; i < shelf.length; i++) {
+        if (shelf[i].id == book.id) {
+          DataBaseProvider.dbProvider.clearBooksById(book.id ?? "");
+          shelf.removeAt(i);
+        }
+      }
+      // delLocalCache([book.Id]);
+      // SpUtil.remove(book.Id);
+      // SpUtil.getKeys().forEach((element) {
+      //   if (element.startsWith(book.Id + "pages")) {
+      //     SpUtil.remove(element);
+      //   }
+      // });
+    }
+    if (Global.isOfflineLogin) {
+      BookApi().modifyShelf(book.id ?? "", action);
+    }
+  }
+
+  syncBooks2Cloud() async {
+    for (var value in shelf) {
+      var id = value.id;
+      await BookApi().modifyShelf(id, 'add');
     }
   }
 }

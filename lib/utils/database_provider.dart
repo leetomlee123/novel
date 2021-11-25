@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:common_utils/common_utils.dart';
-import 'package:flutter/material.dart';
 import 'package:novel/pages/home/home_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -46,7 +45,6 @@ class DataBaseProvider {
 //添加书籍到书架
   Future<Null> addBooks(List<Book> bks) async {
     var dbClient = await databaseShelf;
-    // await dbClient!.rawDelete("delete from $_dbShelf where 1==1");
     var batch = dbClient!.batch();
 
     for (Book book in bks) {
@@ -94,5 +92,10 @@ class DataBaseProvider {
   Future<void> clearBooks() async {
     var dbClient = await getDatabaseInstanceShelf();
     await dbClient.rawDelete("delete from $_dbShelf");
+  }
+
+  Future<void> clearBooksById(String bookId) async {
+    var dbClient = await getDatabaseInstanceShelf();
+    await dbClient.delete(_dbShelf, where: "id=?", whereArgs: [bookId]);
   }
 }

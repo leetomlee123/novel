@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
+import 'package:novel/common/screen.dart';
 import 'package:novel/components/common_img.dart';
 import 'package:novel/pages/app_menu/app_menu_view.dart';
-import 'package:novel/pages/book_search/searchBarDelegate.dart';
 import 'package:novel/pages/home/home_controller.dart';
 import 'package:novel/pages/home/home_model.dart';
 import 'package:novel/router/app_pages.dart';
@@ -50,7 +50,7 @@ class HomePage extends GetView<HomeController> {
                   actions: [
                     IconButton(
                       icon: Icon(Icons.search),
-                      onPressed: (){
+                      onPressed: () {
                         Get.toNamed(AppRoutes.SearchBook);
                       },
                       // onPressed: () => showSearch(
@@ -80,19 +80,22 @@ class HomePage extends GetView<HomeController> {
   }
 
   Widget _buildManageAction() {
-    return ButtonBar(
-      alignment: MainAxisAlignment.spaceAround,
-      children: [
-        TextButton(
-            onPressed: () => controller.deleteBooks(),
-            child: Text(
-              "删除",
-              style: TextStyle(
-                  color: controller.pickList.isNotEmpty
-                      ? Colors.redAccent
-                      : Colors.grey),
-            ))
-      ],
+    return Padding(
+      padding: EdgeInsets.only(bottom: Screen.bottomSafeHeight),
+      child: ButtonBar(
+        alignment: MainAxisAlignment.spaceAround,
+        children: [
+          TextButton(
+              onPressed: () => controller.deleteBooks(),
+              child: Text(
+                "删除",
+                style: TextStyle(
+                    color: controller.pickList.isNotEmpty
+                        ? Colors.redAccent
+                        : Colors.grey),
+              ))
+        ],
+      ),
     );
   }
 
@@ -247,6 +250,9 @@ class HomePage extends GetView<HomeController> {
   Widget tapAction(Widget child, int i) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
+      onLongPress: () {
+        controller.manageShelf.value = true;
+      },
       child: child,
       onTap: () => controller.tapAction(i),
     );

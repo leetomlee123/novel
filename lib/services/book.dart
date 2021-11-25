@@ -22,4 +22,8 @@ class BookApi {
     var data = res['data'] ?? {};
     return BookDetailModel.fromJson(data);
   }
+
+  Future<void> modifyShelf(String bookId, String action) async {
+    await Request().get("/book/action/$bookId/$action");
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:novel/global.dart';
+import 'package:novel/pages/home/home_controller.dart';
 import 'package:novel/pages/login/login_model.dart';
 import 'package:novel/router/app_pages.dart';
 import 'package:novel/utils/database_provider.dart';
@@ -21,6 +22,7 @@ class IndexController extends GetxController {
     Global.profile = UserProfileModel(token: "");
     userProfileModel.value = Global.profile;
     DataBaseProvider.dbProvider.clearBooks();
+    Get.find<HomeController>().shelf.clear();
     Global.saveProfile(Global.profile!);
   }
 

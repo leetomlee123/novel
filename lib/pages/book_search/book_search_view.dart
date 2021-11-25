@@ -87,7 +87,7 @@ class BookSearchPage extends GetView<BookSearchController> {
             CommonImg(
               book.img ?? "",
               aspect: .8,
-              width: 90,
+              width: 85,
               fit: BoxFit.fitWidth,
             ),
             SizedBox(
