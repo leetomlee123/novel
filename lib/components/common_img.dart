@@ -22,7 +22,10 @@ class CommonImg extends StatelessWidget {
           loadStateChanged: (ExtendedImageState state) {
         switch (state.extendedImageLoadState) {
           case LoadState.loading:
-            return null;
+            return Image.asset(
+              "images/nocover.jpg",
+              fit: BoxFit.fill,
+            );
             break;
           case LoadState.completed:
             return ExtendedRawImage(
