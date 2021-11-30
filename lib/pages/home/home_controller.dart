@@ -1,15 +1,34 @@
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:common_utils/common_utils.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:novel/common/screen.dart';
+import 'package:novel/common/values/setting.dart';
 import 'package:novel/global.dart';
 import 'package:novel/pages/home/home_model.dart';
 import 'package:novel/router/app_pages.dart';
 import 'package:novel/services/book.dart';
 import 'package:novel/utils/database_provider.dart';
+import 'package:novel/utils/local_storage.dart';
 
 class HomeController extends GetxController {
+  List<String> bgImgs = [
+    "QR_bg_1.jpg",
+    "QR_bg_2.jpg",
+    "QR_bg_3.jpg",
+    "QR_bg_5.jpg",
+    "QR_bg_7.png",
+    "QR_bg_8.png",
+    "QR_bg_4.jpg",
+  ];
+  //阅读页背景图片
+  Map<int, ui.Image>? bgImages;
+
   RxList shelf = List<Book>.empty().obs;
   RxList pickList = List<int>.empty().obs;
-
+  ReadSetting? setting;
   //书架显示风格
   RxBool coverLayout = false.obs;
 
@@ -21,6 +40,8 @@ class HomeController extends GetxController {
 
   @override
   void onInit() {
+    setting = LoacalStorage().getJSON(ReadSetting.settingKey);
+    coverLayout.value = setting!.isListCover ?? false;
     initShelf();
     super.onInit();
   }
@@ -30,6 +51,14 @@ class HomeController extends GetxController {
 
   @override
   void onClose() {}
+  initReadPageImages() async {
+    ByteData data =
+        await rootBundle.load("images/${bgImgs[setting!.bgIndex ?? 0]}");
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: Screen.width.ceil(), targetHeight: Screen.height.ceil());
+    ui.FrameInfo fi = await codec.getNextFrame();
+    bgImages!.putIfAbsent(setting!.bgIndex ?? 0, () => fi.image);
+  }
 
   initShelf() async {
     shelf.value = await DataBaseProvider.dbProvider.getBooks();
@@ -67,18 +96,19 @@ class HomeController extends GetxController {
       manage();
     } else {
       coverLayout.value = !coverLayout.value;
+      setting!.isListCover = coverLayout.value;
+      LoacalStorage().setJSON(ReadSetting.settingKey, setting!.toJson());
     }
   }
 
   pickAction() {
     pickAll.value = !pickAll.value;
+    pickList.clear();
 
     if (pickAll.value) {
       for (int i = 0; i < shelf.length; i++) {
         pickList.add(i);
       }
-    } else {
-      pickList.clear();
     }
   }
 

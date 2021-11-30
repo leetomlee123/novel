@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:novel/config.dart';
 import 'package:novel/global.dart';
-import 'package:novel/utils/authentication.dart';
 
 /*
   * http 操作类
@@ -68,7 +67,7 @@ class Request {
 
   /// 读取token
   Map<String, dynamic> getAuthorizationHeader() {
-    var headers={"":""};
+    var headers = {"": ""};
     String? token = Global.profile?.token;
     if (token != null) {
       headers = {
@@ -128,6 +127,22 @@ class Request {
 
     var response = await dio.patch(path,
         data: params, options: requestOptions, cancelToken: cancelToken);
+
+    return response.data;
+  }
+
+  Future patchForm(String path, {dynamic params, Options? options}) async {
+    Options requestOptions = options ?? Options();
+
+    Map<String, dynamic> _authorization = getAuthorizationHeader();
+    if (_authorization.isNotEmpty) {
+      requestOptions = requestOptions.copyWith(headers: _authorization);
+    }
+
+    var response = await dio.patch(path,
+        data: FormData.fromMap(params),
+        options: requestOptions,
+        cancelToken: cancelToken);
 
     return response.data;
   }

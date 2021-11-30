@@ -4,6 +4,7 @@ class HomeModel {}
 
 class Book {
   String? id;
+  String? cacheChapterContent;
   String? name;
   String? cName;
   int? rate;
@@ -21,6 +22,7 @@ class Book {
   Book(
       {this.id,
       this.name,
+      this.cacheChapterContent,
       this.cName,
       this.rate,
       this.author,
@@ -49,6 +51,7 @@ class Book {
     newChapter = json['new_chapter'] ?? 0;
     chapterIdx = json['chapter_idx'] ?? 0;
     pageIdx = json['page_idx'] ?? 0;
+    cacheChapterContent = json['cacheChapterContent'] ?? "n";
   }
 
   Book.fromSql(Map<String, dynamic> json) {
@@ -59,6 +62,7 @@ class Book {
     author = json['author'];
     uTime = json['u_time'];
     desc = json['book_desc'];
+    cacheChapterContent = json['cache_chapter_content'] ?? "n";
     bookStatus = json['book_status'];
     img = json['img'];
     sortTime = json['sort_time'] ?? DateUtil.getNowDateMs();
@@ -99,6 +103,7 @@ class Book {
     json['new_chapter'] = newChapter ?? 0;
     json['chapter_idx'] = chapterIdx ?? 0;
     json['page_idx'] = pageIdx ?? 0;
+    json['cache_chapter_content'] = cacheChapterContent ?? "n";
     json['last_chapter'] = lastChapter;
     return json;
   }
