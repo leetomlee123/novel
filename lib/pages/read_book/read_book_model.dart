@@ -1,4 +1,5 @@
 class ReadPage {
+  int get pageOffsets => pages?.length ?? 1;
   List<TextPage>? pages;
   String? chapterContent;
   double? height;

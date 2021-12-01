@@ -1,8 +1,10 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:novel/common/values/values.dart';
 import 'package:novel/pages/login/login_model.dart';
+import 'package:novel/services/system.dart';
 import 'package:novel/utils/local_storage.dart';
 import 'package:novel/utils/utils.dart';
 
@@ -29,6 +31,9 @@ class Global {
     Request();
     // 本地存储初始化
     await LoacalStorage.init();
+
+    //配置文件
+    SystemApi().getConfigs();
 
     // 极光推送初始化
     // await PushManager.setup();

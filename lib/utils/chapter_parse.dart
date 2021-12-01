@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
-import 'package:novel/services/system.dart';
+import 'package:novel/utils/local_storage.dart';
 import 'package:novel/utils/request.dart';
 
 _parseAndDecode(String response) {
@@ -23,7 +23,11 @@ class ChapterParseUtil {
   List<ParseContentConfig>? _configs;
   Future<List<ParseContentConfig>?> get configs async {
     if (_configs == null) {
-      _configs = await SystemApi().getParseContentConfigs();
+      List rules = LoacalStorage().getJSON("rules");
+      _configs = rules
+          .map((e) => ParseContentConfig.fromJson(e))
+          .toList()
+          .cast<ParseContentConfig>();
     }
     return _configs;
   }
@@ -36,7 +40,7 @@ class ChapterParseUtil {
     List<ParseContentConfig>? cfs = await configs;
     cfs!.forEach((element) {
       if (url.contains(element.domain ?? "")) {
-        content = parse(res['data'], encoding: element.encode ?? "")
+        content = parse(res, encoding: element.encode ?? "")
             .getElementById(element.documentId ?? "");
       }
     });

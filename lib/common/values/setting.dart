@@ -26,6 +26,8 @@ class ReadSetting {
   double? latterSpace;
   double? paragraphHeight;
   bool? isListCover;
+  bool? leftClickNext;
+
   double? pageSpace;
   String? fontName;
   int? bgIndex;
@@ -38,12 +40,14 @@ class ReadSetting {
       this.paragraphHeight = .8,
       this.pageSpace = 20,
       this.fontName,
+      this.leftClickNext = false,
       this.isListCover = true});
 
   ReadSetting.fromJson(Map<String, dynamic> json) {
     fontSize = json['fontSize'];
     latterHeight = json['latterHeight'];
     latterSpace = json['latterSpace'];
+    leftClickNext = json['leftClickNext'];
     paragraphHeight = json['paragraphHeight'];
     pageSpace = json['pageSpace'];
     fontName = json['fontName'];
@@ -53,6 +57,7 @@ class ReadSetting {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['fontSize'] = this.fontSize;
+    data['leftClickNext'] = this.leftClickNext;
     data['latterHeight'] = this.latterHeight;
     data['latterSpace'] = this.latterSpace;
     data['paragraphHeight'] = this.paragraphHeight;

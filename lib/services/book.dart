@@ -59,4 +59,9 @@ class BookApi {
     await Request().patchForm("/book/chapter/content",
         params: {"id": chapterId, "content": content});
   }
+
+  Future<void> uploadReadRecord(
+      String? userName, String? bookId, String? chapterIdx) async {
+    await Request().patch("/book/process/$userName/$bookId/$chapterIdx");
+  }
 }

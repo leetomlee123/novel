@@ -1,8 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:novel/common/screen.dart';
 import 'package:novel/components/loading.dart';
 import 'package:novel/pages/book_menu/book_menu_view.dart';
+import 'package:novel/pages/read_book/PageContentRender.dart';
+import 'package:novel/pages/read_book/ReaderPageManager.dart';
 
 import 'read_book_controller.dart';
 
@@ -41,7 +44,7 @@ class ReadBookPage extends GetView<ReadBookController> {
         if (!popWithMenuAndChapterView2) {
           return false;
         }
-        if (controller.inShelf.value) {
+        if (!controller.inShelf.value) {
           await confirmAddToShelf();
         }
         return true;
@@ -57,8 +60,97 @@ class ReadBookPage extends GetView<ReadBookController> {
   }
 
   _buildPage() {
-    return Container(
-      child: Text("ssss"),
+    return Stack(
+      children: [
+        GestureDetector(
+          child: RepaintBoundary(
+              child: CustomPaint(
+            key: controller.canvasKey,
+            isComplex: true,
+            size: Size(Screen.width, Screen.height),
+            painter: controller.mPainter,
+          )),
+          onTapUp: (e) => controller.tapPage(e),
+          onPanDown: (e) => controller.panDown(e),
+          onPanUpdate: (e) => controller.panUpdate(e),
+          onPanEnd: (e) => controller.panEnd(e),
+        ),
+        Offstage(
+          child: BookMenuPage(),
+          offstage: !controller.showMenu.value,
+        ),
+      ],
+    );
+  }
+
+  _buildPageReader() {
+    return RawGestureDetector(
+      gestures: <Type, GestureRecognizerFactory>{
+        NovelPagePanGestureRecognizer:
+            GestureRecognizerFactoryWithHandlers<NovelPagePanGestureRecognizer>(
+          () => NovelPagePanGestureRecognizer(false),
+          (NovelPagePanGestureRecognizer instance) {
+            instance.setMenuOpen(false);
+
+            instance
+              ..onDown = (detail) {
+                if (controller.currentTouchEvent.action !=
+                        TouchEvent.ACTION_DOWN ||
+                    controller.currentTouchEvent.touchPos !=
+                        detail.localPosition) {
+                  controller.currentTouchEvent =
+                      TouchEvent(TouchEvent.ACTION_DOWN, detail.localPosition);
+                  controller.mPainter!
+                      .setCurrentTouchEvent(controller.currentTouchEvent);
+                  controller.canvasKey.currentContext!
+                      .findRenderObject()!
+                      .markNeedsPaint();
+                }
+              };
+            instance
+              ..onUpdate = (detail) {
+                if (!controller.showMenu.value) {
+                  if (controller.currentTouchEvent.action !=
+                          TouchEvent.ACTION_MOVE ||
+                      controller.currentTouchEvent.touchPos !=
+                          detail.localPosition) {
+                    controller.currentTouchEvent = TouchEvent(
+                        TouchEvent.ACTION_MOVE, detail.localPosition);
+                    controller.mPainter!
+                        .setCurrentTouchEvent(controller.currentTouchEvent);
+                    controller.canvasKey.currentContext!
+                        .findRenderObject()!
+                        .markNeedsPaint();
+                  }
+                }
+              };
+            instance
+              ..onEnd = (detail) {
+                if (!controller.showMenu.value) {
+                  if (controller.currentTouchEvent.action !=
+                          TouchEvent.ACTION_UP ||
+                      controller.currentTouchEvent.touchPos != Offset(0, 0)) {
+                    controller.currentTouchEvent = TouchEvent<DragEndDetails>(
+                        TouchEvent.ACTION_UP, Offset(0, 0));
+                    controller.currentTouchEvent.touchDetail = detail;
+
+                    controller.mPainter!
+                        .setCurrentTouchEvent(controller.currentTouchEvent);
+                    controller.canvasKey.currentContext!
+                        .findRenderObject()!
+                        .markNeedsPaint();
+                  }
+                }
+              };
+          },
+        ),
+      },
+      child: CustomPaint(
+        key: controller.canvasKey,
+        isComplex: true,
+        size: Size(Screen.width, Screen.height),
+        painter: controller.mPainter,
+      ),
     );
   }
 
@@ -70,7 +162,7 @@ class ReadBookPage extends GetView<ReadBookController> {
         TextButton(
             onPressed: () {
               Get.back();
-              
+
               // Store.value<ShelfModel>(context)
               //     .modifyShelf(this.widget.book);
             },

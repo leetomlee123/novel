@@ -68,11 +68,11 @@ class HomePage extends GetView<HomeController> {
             child: AppMenuPage(),
           ),
           body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
               child: controller.shelf.isNotEmpty
                   ? controller.coverLayout.value
-                      ? _buildCoverModel()
-                      : _buildListModel()
+                      ? _buildListModel()
+                      : _buildCoverModel()
                   : Container()),
           bottomNavigationBar:
               controller.manageShelf.value ? _buildManageAction() : null,
@@ -107,7 +107,7 @@ class HomePage extends GetView<HomeController> {
           PopupMenuItem(
               value: "1",
               child: Obx(
-                () => Text(controller.coverLayout.value ? "列表模式" : "封面模式"),
+                () => Text(controller.coverLayout.value ? "封面模式" : "列表模式"),
               )),
           PopupMenuItem(
             child: Text("书架整理"),
@@ -124,7 +124,7 @@ class HomePage extends GetView<HomeController> {
         itemCount: controller.shelf.length,
         gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
-          crossAxisSpacing: 10.0,
+          crossAxisSpacing: 20.0,
           mainAxisSpacing: 30.0,
         ),
         itemBuilder: (itemBuilder, i) {

@@ -24,8 +24,8 @@ class HomeController extends GetxController {
     "QR_bg_4.jpg",
   ];
   //阅读页背景图片
-  Map<int, ui.Image>? bgImages;
-
+  Map<int, ui.Image>? bgImages = Map();
+  Map<String, ui.Picture> widgets = Map();
   RxList shelf = List<Book>.empty().obs;
   RxList pickList = List<int>.empty().obs;
   ReadSetting? setting;
@@ -40,9 +40,13 @@ class HomeController extends GetxController {
 
   @override
   void onInit() {
-    setting = LoacalStorage().getJSON(ReadSetting.settingKey);
+    var settingValue = LoacalStorage().getJSON(ReadSetting.settingKey);
+    setting = settingValue == null
+        ? ReadSetting()
+        : ReadSetting.fromJson(settingValue);
     coverLayout.value = setting!.isListCover ?? false;
     initShelf();
+    initReadPageImages();
     super.onInit();
   }
 
@@ -52,12 +56,13 @@ class HomeController extends GetxController {
   @override
   void onClose() {}
   initReadPageImages() async {
-    ByteData data =
-        await rootBundle.load("images/${bgImgs[setting!.bgIndex ?? 0]}");
-    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
-        targetWidth: Screen.width.ceil(), targetHeight: Screen.height.ceil());
-    ui.FrameInfo fi = await codec.getNextFrame();
-    bgImages!.putIfAbsent(setting!.bgIndex ?? 0, () => fi.image);
+    for (int i = 0; i < 7; i++) {
+      ByteData data = await rootBundle.load("images/${bgImgs[i]}");
+      ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+          targetWidth: Screen.width.ceil(), targetHeight: Screen.height.ceil());
+      ui.FrameInfo fi = await codec.getNextFrame();
+      bgImages!.putIfAbsent(i, () => fi.image);
+    }
   }
 
   initShelf() async {
