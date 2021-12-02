@@ -12,7 +12,7 @@ abstract class AppRoutes {
   static const ReadBook = '/readBook';
   static const SearchBook = '/searchBook';
   static const BookDetail = '/bookDetail';
-
+  static const BookMenu = '/bookMenu';
 
   //moive
   static const Movie = '/movie';

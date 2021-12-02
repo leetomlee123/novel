@@ -1,7 +1,10 @@
+import 'dart:ui' as ui;
+
 import 'package:battery_plus/battery_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbar_manager/flutter_statusbar_manager.dart';
 import 'package:get/get.dart';
+import 'package:indexed_list_view/indexed_list_view.dart';
 import 'package:novel/common/animation/AnimationControllerWithListenerNumber.dart';
 import 'package:novel/common/screen.dart';
 import 'package:novel/common/values/setting.dart';
@@ -19,6 +22,7 @@ import 'package:novel/utils/local_storage.dart';
 import 'package:novel/utils/text_composition.dart';
 
 enum LOAD_STATUS { LOADING, FAILED, FINISH }
+enum OperateType { SLIDE, MORE_SETTING, DOWNLOAD }
 
 class ReadBookController extends FullLifeCycleController
     with FullLifeCycle, SingleGetTickerProviderMixin {
@@ -26,10 +30,10 @@ class ReadBookController extends FullLifeCycleController
   Rx<LOAD_STATUS> loadStatus = LOAD_STATUS.LOADING.obs;
   RxBool saveReadState = true.obs;
   RxBool inShelf = false.obs;
-  RxList chapters = List.empty().obs;
+  RxList<ChapterProto> chapters = List<ChapterProto>.empty(growable: true).obs;
   RxBool showMenu = false.obs;
   double? electricQuantity = 1.0;
-  ReadSetting? setting;
+  ui.Image? bgImage;
   Paint bgPaint = Paint();
   NovelPagePainter? mPainter;
   TouchEvent currentTouchEvent = TouchEvent(TouchEvent.ACTION_UP, Offset.zero);
@@ -38,15 +42,32 @@ class ReadBookController extends FullLifeCycleController
 
   /// 翻页动画类型
   int currentAnimationMode = ReaderPageManager.TYPE_ANIMATION_COVER_TURN;
+
   //
   ReadPage? prePage;
   ReadPage? curPage;
   ReadPage? nextPage;
+
   //
   HomeController? homeController;
+  //menu
+  double? settingH = 340;
+  ReadSetting? setting;
+  Rx<OperateType> type = OperateType.SLIDE.obs;
+
+  RxBool darkModel = Get.isDarkMode.obs;
+
+  //chapter
+  IndexedScrollController indexController = IndexedScrollController();
+
+  var itemExtent = 50.0;
+
   @override
   void onInit() {
     super.onInit();
+    // ever(showMenu, (callback) {
+    //   if (!showMenu.value) Get.toNamed(AppRoutes.BookMenu);
+    // });
     homeController = Get.find<HomeController>();
     String bookId = Get.arguments['id'].toString();
     if (bookId.isEmpty) {
@@ -55,7 +76,12 @@ class ReadBookController extends FullLifeCycleController
       book = homeController!.getBookById(bookId);
       inShelf.value = true;
     }
-    setting = Get.find<HomeController>().setting;
+    setting = Global.setting;
+    if (darkModel.value) {
+      bgImage = homeController!.bgImages![ReadSetting.bgImgs.length - 1];
+    } else {
+      bgImage = homeController!.bgImages![setting!.bgIndex ?? 0];
+    }
     initReadConfig();
     initData();
 
@@ -89,22 +115,25 @@ class ReadBookController extends FullLifeCycleController
   }
 
   initData() async {
-    // try {
-    chapters.value = await DataBaseProvider.dbProvider.getChapters(book!.id);
-    if (chapters.isEmpty) {
-      //初次打开
-      await getReadRecord();
-      await getChapter();
-    } else {
-      getChapter();
+    try {
+      chapters.value = await DataBaseProvider.dbProvider.getChapters(book!.id);
+      if (chapters.isEmpty) {
+        //初次打开
+        await getReadRecord();
+        await getChapter();
+      } else {
+        getChapter();
+      }
+      await initContent(book!.chapterIdx!, false);
+      await cur();
+      indexController = IndexedScrollController(
+          initialIndex: book!.chapterIdx ?? 0,
+          initialScrollOffset: (book!.chapterIdx ?? 0) == 0 ? 0 : -200);
+      loadStatus.value = LOAD_STATUS.FINISH;
+    } catch (e) {
+      loadStatus.value = LOAD_STATUS.FAILED;
+      print(e);
     }
-    await initContent(book!.chapterIdx!, false);
-    await cur();
-    loadStatus.value = LOAD_STATUS.FINISH;
-    // } catch (e) {
-    //   loadStatus.value = LOAD_STATUS.FAILED;
-    //   print(e);
-    // }
   }
 
   initContent(int idx, bool jump) async {
@@ -144,31 +173,32 @@ class ReadBookController extends FullLifeCycleController
     //获取分页数据
     //本地是否有分页的缓存
     var key = '${book!.id}pages${readPage.chapterName}';
-    var pageData = LoacalStorage().getJSON(key);
+    var pageData = LocalStorage().getJSON(key);
 
-    // if (pageData != null) {
-    //   readPage.pages =
-    //       pageData.map((e) => TextPage.fromJson(e)).toList().cast<TextPage>();
-    //   LoacalStorage().remove(key);
-    // } else {
-    readPage.pages = TextComposition.parseContent(readPage, setting!);
-    // }
+    if (pageData != null) {
+      readPage.pages =
+          pageData.map((e) => TextPage.fromJson(e)).toList().cast<TextPage>();
+      LocalStorage().remove(key);
+    } else {
+      readPage.pages = TextComposition.parseContent(readPage, setting!);
+    }
     return readPage;
   }
 
   saveState() {
     if (saveReadState.value) {
-      LoacalStorage()
+      LocalStorage()
           .setJSON('${book!.id}pages${prePage?.chapterName}', prePage?.pages);
-      LoacalStorage()
+      LocalStorage()
           .setJSON('${book!.id}pages${curPage?.chapterName}', curPage?.pages);
-      LoacalStorage()
+      LocalStorage()
           .setJSON('${book!.id}pages${nextPage?.chapterName}', nextPage?.pages);
       if (Global.profile!.token!.isNotEmpty) {
         BookApi().uploadReadRecord(
             Global.profile!.username, book!.id, book!.chapterIdx.toString());
       }
     }
+    setting!.persistence();
   }
 
   getChapterContent(int idx) async {
@@ -231,6 +261,7 @@ class ReadBookController extends FullLifeCycleController
     mPainter!.setCurrentTouchEvent(currentTouchEvent);
     canvasKey.currentContext!.findRenderObject()!.markNeedsPaint();
   }
+
   //章节切换
   // chapter
 
@@ -257,6 +288,7 @@ class ReadBookController extends FullLifeCycleController
   void onClose() {
     saveState();
     super.onClose();
+    indexController.dispose();
     animationController?.dispose();
     FlutterStatusbarManager.setFullscreen(false);
   }
@@ -292,14 +324,22 @@ class ReadBookController extends FullLifeCycleController
         return false;
       }
     }
-    return next() != null;
+    if (book!.pageIdx! < (curPage!.pageOffsets - 1)) {
+      return true;
+    } else {
+      return next() != null;
+    }
   }
 
   bool isCanGoPre() {
     if (book!.chapterIdx! <= 0 && book!.pageIdx! <= 0) {
       return false;
     }
-    return pre() != null;
+    if (book!.pageIdx! > 0) {
+      return pre() != null;
+    } else {
+      return true;
+    }
   }
 
   getPageCacheKey(int? chapterIdx, int? pageIndex) {
@@ -317,9 +357,9 @@ class ReadBookController extends FullLifeCycleController
           () => TextComposition.drawContent(
                 curPage,
                 book!.pageIdx,
-                Get.isDarkMode,
+                darkModel.value,
                 setting,
-                homeController!.bgImages![setting!.bgIndex ?? 0],
+                bgImage,
                 electricQuantity,
               ));
     }
@@ -342,17 +382,17 @@ class ReadBookController extends FullLifeCycleController
               ? TextComposition.drawContent(
                   nextPage,
                   0,
-                  Get.isDarkMode,
+                  darkModel.value,
                   setting,
-                  homeController!.bgImages![setting!.bgIndex ?? 0],
+                  bgImage,
                   electricQuantity,
                 )
               : TextComposition.drawContent(
                   curPage,
                   i,
-                  Get.isDarkMode,
+                  darkModel.value,
                   setting,
-                  homeController!.bgImages![setting!.bgIndex ?? 0],
+                  bgImage,
                   electricQuantity,
                 ));
     }
@@ -375,17 +415,17 @@ class ReadBookController extends FullLifeCycleController
               ? TextComposition.drawContent(
                   prePage,
                   prePage!.pageOffsets - 1,
-                  Get.isDarkMode,
+                  darkModel.value,
                   setting,
-                  homeController!.bgImages![setting!.bgIndex ?? 0],
+                  bgImage,
                   electricQuantity,
                 )
               : TextComposition.drawContent(
                   curPage,
                   i,
-                  Get.isDarkMode,
+                  darkModel.value,
                   setting,
-                  homeController!.bgImages![setting!.bgIndex ?? 0],
+                  bgImage,
                   electricQuantity,
                 ));
     }
@@ -518,4 +558,40 @@ class ReadBookController extends FullLifeCycleController
       homeController!.widgets.putIfAbsent(preKey, () => next());
     }
   }
+
+  void reloadCurrentPage() {}
+
+  Future<void> updPage() async {
+    homeController!.widgets.clear();
+
+    var keys = LocalStorage().getKeys();
+    for (var key in keys) {
+      if (key.contains("pages")) {
+        LocalStorage().remove(key);
+      }
+    }
+    await initContent(book!.chapterIdx ?? 0, true);
+    canvasKey.currentContext?.findRenderObject()?.markNeedsPaint();
+  }
+
+  colorModelSwitch() {
+    setting!.isDark = darkModel.value;
+
+    if (darkModel.value) {
+      bgImage = homeController!.bgImages![ReadSetting.bgImgs.length - 1];
+    } else {
+      bgImage = homeController!.bgImages![setting!.bgIndex ?? 0];
+    }
+    homeController!.widgets.clear();
+
+    canvasKey.currentContext?.findRenderObject()?.markNeedsPaint();
+  }
+
+  void switchBgColor(int i) {
+    setting!.bgIndex = i;
+    setting!.persistence();
+    colorModelSwitch();
+  }
+
+  reloadCurChapterWidget() {}
 }

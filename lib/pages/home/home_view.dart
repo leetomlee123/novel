@@ -48,6 +48,7 @@ class HomePage extends GetView<HomeController> {
                 )
               : AppBar(
                   actions: [
+            
                     IconButton(
                       icon: Icon(Icons.search),
                       onPressed: () {

@@ -23,7 +23,7 @@ class ChapterParseUtil {
   List<ParseContentConfig>? _configs;
   Future<List<ParseContentConfig>?> get configs async {
     if (_configs == null) {
-      List rules = LoacalStorage().getJSON("rules");
+      List rules = LocalStorage().getJSON("rules");
       _configs = rules
           .map((e) => ParseContentConfig.fromJson(e))
           .toList()

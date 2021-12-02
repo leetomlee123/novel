@@ -1,4 +1,15 @@
+import 'package:novel/utils/local_storage.dart';
+
 class ReadSetting {
+  static List<String> bgImgs = [
+    "QR_bg_1.jpg",
+    "QR_bg_2.jpg",
+    "QR_bg_3.jpg",
+    "QR_bg_5.jpg",
+    "QR_bg_7.png",
+    "QR_bg_8.png",
+    "QR_bg_4.jpg",
+  ];
   static String poet = '世人为荣利缠缚，动曰尘世苦海，不知云白山青，川行石立，花迎鸟笑，谷答樵讴，世亦不尘、海亦不苦、彼自尘苦其心尔';
   static String lawWarn =
       '''鉴于本服务以非人工检索方式提供无线搜索、根据您输入的关键字自动生成到第三方网页的链接，本服务会提供与其他任何互联网网站或资源的链接。由于清阅小说无法控制这些网站或资源的内容，您了解并同意：无论此类网站或资源是否可供利用，清阅小说不予负责；清阅小说亦对存在或源于此类网站或资源之任何内容、广告、产品或其他资料不予保证或负责。因您使用或依赖任何此类网站或资源发布的或经由此类网站或资源获得的任何内容、商品或服务所产生的任何损害或损失，清阅小说不负任何直接或间接责任。
@@ -27,6 +38,8 @@ class ReadSetting {
   double? paragraphHeight;
   bool? isListCover;
   bool? leftClickNext;
+  double? topSafeHeight;
+  bool? isDark;
 
   double? pageSpace;
   String? fontName;
@@ -35,8 +48,10 @@ class ReadSetting {
   ReadSetting(
       {this.fontSize = 24,
       this.bgIndex = 0,
+      this.topSafeHeight,
       this.latterHeight = 1.8,
       this.latterSpace = .2,
+      this.isDark=false,
       this.paragraphHeight = .8,
       this.pageSpace = 20,
       this.fontName,
@@ -65,5 +80,9 @@ class ReadSetting {
     data['fontName'] = this.fontName;
     data['shelfCover'] = this.isListCover;
     return data;
+  }
+
+  persistence() {
+    LocalStorage().setJSON(ReadSetting.settingKey, this);
   }
 }

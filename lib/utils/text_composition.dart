@@ -103,11 +103,10 @@ class TextComposition {
     final offset = Offset(columnWidth!, 1);
     final size = style!.fontSize ?? 14;
     final _dx = padding?.left ?? 0;
-    final _dy = (padding?.top ?? 0) + Screen.topSafeHeight + 30;
+    final _dy = (padding?.top ?? 0);
     final _width = columnWidth;
     final _width2 = _width! - size;
     final _height = this.boxSize!.height - (padding?.vertical ?? 0);
-    // final _height2 = _height;
     final _height2 = _height - size * (style!.height ?? 1.0);
 
     List<Lines> lines = List<Lines>.empty(growable: true);
@@ -159,7 +158,6 @@ class TextComposition {
           tp.layout();
           spacing = (_width - tp.width) / (textCount + 1);
         }
-
         lines.add(Lines(text: text, dx: dx, dy: dy, spacing: spacing));
         dy += tp.height;
         if (p.length == textCount) {
@@ -179,10 +177,10 @@ class TextComposition {
     if (this.pages!.length == 0) {
       this.pages!.add(TextPage(lines: [], height: 0));
     }
-    print("_height $_height _height2 $_height2");
-    this.pages!.forEach((element) {
-      print(element.height);
-    });
+    // print("_height $_height _height2 $_height2");
+    // this.pages!.forEach((element) {
+    //   print(element.height);
+    // });
   }
 
   static List<TextPage> parseContent(ReadPage readPage, ReadSetting setting,
@@ -201,20 +199,23 @@ class TextComposition {
       paragraph:
           setting.paragraphHeight! * setting.fontSize! * setting.latterHeight!,
       justRender: justRender,
-      boxSize: Size(Screen.width, Screen.height-45),
-      padding: EdgeInsets.symmetric(
-          horizontal: setting.pageSpace ?? .0, vertical: 20),
+      boxSize: Size(
+          Screen.width,
+          Screen.height -
+              (30 + setting.topSafeHeight!.toDouble()) * 2 -
+              Screen.bottomSafeHeight),
+      padding: EdgeInsets.symmetric(horizontal: setting.pageSpace ?? .0),
     );
     return textComposition.pages!;
   }
 
   static ui.Picture drawContent(ReadPage? readPage, int? i, bool? isDark,
       ReadSetting? setting, ui.Image? bgImage, double? electricQuantity) {
-    double safeTopHeight = Screen.topSafeHeight;
+    double safeTopHeight = setting!.topSafeHeight!.toDouble();
     TextPainter textPainter =
         TextPainter(textDirection: TextDirection.ltr, maxLines: 1);
     ui.PictureRecorder pageRecorder = new ui.PictureRecorder();
-    var contentPadding = setting!.pageSpace;
+    var contentPadding = setting.pageSpace;
     Canvas pageCanvas = new Canvas(
         pageRecorder, Rect.fromLTWH(0, 0, Screen.width, Screen.height));
     Paint selfPaint = Paint()
@@ -259,7 +260,7 @@ class TextComposition {
           textPainter.text =
               TextSpan(text: line.text!.trimRight(), style: style);
         }
-        final offset = Offset(line.dx!, line.dy!);
+        final offset = Offset(line.dx!, line.dy! + 45 + safeTopHeight);
         textPainter.layout();
         textPainter.paint(pageCanvas, offset);
       }
@@ -268,8 +269,8 @@ class TextComposition {
       double mStrokeWidth = 1.0;
       double mPaintStrokeWidth = 1.5;
       Paint mPaint = Paint()..strokeWidth = mPaintStrokeWidth;
-      var bottomH = Screen.height - 25;
-      // var bottomH = Screen.height - 25 - Screen.bottomSafeHeight;
+      // var bottomH = Screen.height - 25;
+      var bottomH = Screen.height - 25 - Screen.bottomSafeHeight;
       var bottomTextH = bottomH - 2;
       //电池头部位置
       Size size = Size(22, 10);

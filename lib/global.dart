@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:novel/common/screen.dart';
 import 'package:novel/common/values/values.dart';
 import 'package:novel/pages/login/login_model.dart';
 import 'package:novel/services/system.dart';
@@ -12,6 +13,7 @@ import 'package:novel/utils/utils.dart';
 class Global {
   /// 用户配置
   static UserProfileModel? profile = UserProfileModel(token: "");
+  static ReadSetting? setting;
 
   /// 是否第一次打开
   static bool isFirstOpen = false;
@@ -30,11 +32,20 @@ class Global {
     // Ruquest 模块初始化
     Request();
     // 本地存储初始化
-    await LoacalStorage.init();
+    await LocalStorage.init();
 
     //配置文件
     SystemApi().getConfigs();
 
+    //阅读器配置文件
+    var settingValue = LocalStorage().getJSON(ReadSetting.settingKey);
+    setting = settingValue == null
+        ? ReadSetting()
+        : ReadSetting.fromJson(settingValue);
+    if (setting!.topSafeHeight == null) {
+      setting!.topSafeHeight = Screen.topSafeHeight;
+      setting!.persistence();
+    }
     // 极光推送初始化
     // await PushManager.setup();
 
@@ -48,13 +59,13 @@ class Global {
     // );
 
     // 读取设备第一次打开
-    isFirstOpen = !LoacalStorage().getBool(STORAGE_DEVICE_ALREADY_OPEN_KEY);
+    isFirstOpen = !LocalStorage().getBool(STORAGE_DEVICE_ALREADY_OPEN_KEY);
     if (isFirstOpen) {
-      LoacalStorage().setBool(STORAGE_DEVICE_ALREADY_OPEN_KEY, true);
+      LocalStorage().setBool(STORAGE_DEVICE_ALREADY_OPEN_KEY, true);
     }
 
     // 读取离线用户信息
-    var _profileJSON = LoacalStorage().getJSON(STORAGE_USER_PROFILE_KEY);
+    var _profileJSON = LocalStorage().getJSON(STORAGE_USER_PROFILE_KEY);
     if (_profileJSON != null) {
       profile = UserProfileModel.fromJson(_profileJSON);
       isOfflineLogin = true;
@@ -71,7 +82,7 @@ class Global {
   // 持久化 用户信息
   static Future<bool> saveProfile(UserProfileModel userResponse) {
     profile = userResponse;
-    return LoacalStorage()
+    return LocalStorage()
         .setJSON(STORAGE_USER_PROFILE_KEY, userResponse.toJson());
   }
 }

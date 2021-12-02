@@ -12,7 +12,7 @@ class SystemApi {
 
     List<ParseContentConfig> configs =
         rules.map((e) => ParseContentConfig.fromJson(e)).toList();
-    LoacalStorage().setJSON("rules", configs);
-    LoacalStorage().setJSON("fonts", fonts);
+    LocalStorage().setJSON("rules", configs);
+    LocalStorage().setJSON("fonts", fonts);
   }
 }

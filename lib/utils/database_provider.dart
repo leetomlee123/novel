@@ -55,14 +55,14 @@ class DataBaseProvider {
   Future<Database> getDatabaseInstanceChapter() async {
     Directory directory = await getApplicationDocumentsDirectory();
     String path = directory.path + "$_dbChapters.db";
-    return await openDatabase(path, version: 2,
+    return await openDatabase(path, version: 3,
         onCreate: (Database db, int version) async {
       await db.execute("CREATE TABLE IF NOT EXISTS $_dbChapters("
           "id TEXT PRIMARY KEY ,"
           "name TEXT,"
           "content TEXT,"
           "book_id TEXT,"
-          "hasContent INTEGER)");
+          "has_content INTEGER)");
     });
   }
 
@@ -130,7 +130,7 @@ class DataBaseProvider {
         "name": element.chapterName,
         "content": "",
         "book_id": bookId,
-        "hasContent": "0"
+        "has_content": "1"
       });
     });
     await batch.commit(noResult: true);
@@ -146,7 +146,7 @@ class DataBaseProvider {
       cps.add(ChapterProto(
           chapterName: i['name'].toString(),
           chapterId: i['id'].toString(),
-          hasContent: i['hasContent'].toString()));
+          hasContent: i['has_content'].toString()));
     }
     return cps;
   }
@@ -163,7 +163,7 @@ class DataBaseProvider {
   updateContent(String chapterId, String? chapterContent) async {
     var dbClient = await databaseChapter;
 
-    await dbClient!.update(_dbChapters, {"content": chapterContent},
+    await dbClient!.update(_dbChapters, {"content": chapterContent,"has_content":"2"},
         where: "id=?", whereArgs: [chapterId]);
   }
 }

@@ -14,21 +14,12 @@ import 'package:novel/utils/database_provider.dart';
 import 'package:novel/utils/local_storage.dart';
 
 class HomeController extends GetxController {
-  List<String> bgImgs = [
-    "QR_bg_1.jpg",
-    "QR_bg_2.jpg",
-    "QR_bg_3.jpg",
-    "QR_bg_5.jpg",
-    "QR_bg_7.png",
-    "QR_bg_8.png",
-    "QR_bg_4.jpg",
-  ];
   //阅读页背景图片
   Map<int, ui.Image>? bgImages = Map();
   Map<String, ui.Picture> widgets = Map();
   RxList shelf = List<Book>.empty().obs;
   RxList pickList = List<int>.empty().obs;
-  ReadSetting? setting;
+
   //书架显示风格
   RxBool coverLayout = false.obs;
 
@@ -40,11 +31,7 @@ class HomeController extends GetxController {
 
   @override
   void onInit() {
-    var settingValue = LoacalStorage().getJSON(ReadSetting.settingKey);
-    setting = settingValue == null
-        ? ReadSetting()
-        : ReadSetting.fromJson(settingValue);
-    coverLayout.value = setting!.isListCover ?? false;
+    coverLayout.value = Global.setting!.isListCover ?? false;
     initShelf();
     initReadPageImages();
     super.onInit();
@@ -55,9 +42,10 @@ class HomeController extends GetxController {
 
   @override
   void onClose() {}
+
   initReadPageImages() async {
     for (int i = 0; i < 7; i++) {
-      ByteData data = await rootBundle.load("images/${bgImgs[i]}");
+      ByteData data = await rootBundle.load("images/${ReadSetting.bgImgs[i]}");
       ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
           targetWidth: Screen.width.ceil(), targetHeight: Screen.height.ceil());
       ui.FrameInfo fi = await codec.getNextFrame();
@@ -101,8 +89,8 @@ class HomeController extends GetxController {
       manage();
     } else {
       coverLayout.value = !coverLayout.value;
-      setting!.isListCover = coverLayout.value;
-      LoacalStorage().setJSON(ReadSetting.settingKey, setting!.toJson());
+      Global.setting !.isListCover = coverLayout.value;
+      LocalStorage().setJSON(ReadSetting.settingKey, Global.setting !.toJson());
     }
   }
 
