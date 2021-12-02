@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:novel/pages/find_password/find_password_model.dart';
-import 'package:novel/router/app_pages.dart';
 import 'package:novel/services/services.dart';
 
 class FindPasswordController extends GetxController {

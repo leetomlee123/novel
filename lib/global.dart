@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:novel/common/screen.dart';
 import 'package:novel/common/values/values.dart';
 import 'package:novel/pages/login/login_model.dart';
@@ -46,6 +48,9 @@ class Global {
       setting!.topSafeHeight = Screen.topSafeHeight;
       setting!.persistence();
     }
+
+    Get.changeTheme(
+        setting!.isDark ?? false ? ThemeData.light() : ThemeData.dark());
     // 极光推送初始化
     // await PushManager.setup();
 
