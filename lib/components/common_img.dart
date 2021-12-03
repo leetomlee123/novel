@@ -24,7 +24,9 @@ class CommonImg extends StatelessWidget {
           case LoadState.loading:
             return Image.asset(
               "images/nocover.jpg",
-              fit: BoxFit.fill,
+              width: this.width,
+              height: this.width / this.aspect!,
+              fit: BoxFit.cover,
             );
           case LoadState.completed:
             return ExtendedRawImage(
@@ -36,7 +38,9 @@ class CommonImg extends StatelessWidget {
           case LoadState.failed:
             return Image.asset(
               "images/nocover.jpg",
-              fit: BoxFit.fill,
+              width: this.width,
+              height: this.width / this.aspect!,
+              fit: BoxFit.cover,
             );
         }
       }),

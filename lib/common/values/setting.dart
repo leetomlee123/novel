@@ -51,15 +51,17 @@ class ReadSetting {
       this.topSafeHeight,
       this.latterHeight = 1.8,
       this.latterSpace = .2,
-      this.isDark=false,
+      this.isDark = false,
       this.paragraphHeight = .8,
       this.pageSpace = 20,
-      this.fontName,
+      this.fontName = "默认字体",
       this.leftClickNext = false,
       this.isListCover = true});
 
   ReadSetting.fromJson(Map<String, dynamic> json) {
     fontSize = json['fontSize'];
+    bgIndex = json['bgIndex'];
+    topSafeHeight = json['topSafeHeight'];
     latterHeight = json['latterHeight'];
     latterSpace = json['latterSpace'];
     leftClickNext = json['leftClickNext'];
@@ -67,11 +69,14 @@ class ReadSetting {
     pageSpace = json['pageSpace'];
     fontName = json['fontName'];
     isListCover = json['shelfCover'];
+    isDark = json['isDark'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['bgIndex'] = this.bgIndex;
     data['fontSize'] = this.fontSize;
+    data['topSafeHeight'] = this.topSafeHeight;
     data['leftClickNext'] = this.leftClickNext;
     data['latterHeight'] = this.latterHeight;
     data['latterSpace'] = this.latterSpace;
@@ -79,6 +84,8 @@ class ReadSetting {
     data['pageSpace'] = this.pageSpace;
     data['fontName'] = this.fontName;
     data['shelfCover'] = this.isListCover;
+    data['isDark'] = this.isDark;
+
     return data;
   }
 

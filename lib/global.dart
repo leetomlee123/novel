@@ -2,14 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:novel/common/screen.dart';
 import 'package:novel/common/values/values.dart';
 import 'package:novel/pages/login/login_model.dart';
 import 'package:novel/services/system.dart';
 import 'package:novel/utils/local_storage.dart';
+import 'package:novel/utils/update_app.dart';
 import 'package:novel/utils/utils.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 /// 全局配置
 class Global {
@@ -30,7 +30,11 @@ class Global {
   static Future init() async {
     // 运行初始
     WidgetsFlutterBinding.ensureInitialized();
-
+    if (Platform.isIOS || Platform.isAndroid) {
+      if (!await Permission.storage.request().isGranted) {
+        return;
+      }
+    }
     // Ruquest 模块初始化
     Request();
     // 本地存储初始化
@@ -39,7 +43,11 @@ class Global {
     //配置文件
     SystemApi().getConfigs();
 
+    //检查更新
+    UpdateAppUtil.checkUpdate();
+
     //阅读器配置文件
+    // LocalStorage().remove(ReadSetting.settingKey);
     var settingValue = LocalStorage().getJSON(ReadSetting.settingKey);
     setting = settingValue == null
         ? ReadSetting()
@@ -49,8 +57,6 @@ class Global {
       setting!.persistence();
     }
 
-    Get.changeTheme(
-        setting!.isDark ?? false ? ThemeData.light() : ThemeData.dark());
     // 极光推送初始化
     // await PushManager.setup();
 

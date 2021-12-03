@@ -15,6 +15,14 @@ parseJson(String text) {
   return compute(_parseAndDecode, text);
 }
 
+_encode(var response) {
+  return jsonEncode(response);
+}
+
+encodeJson(var text) {
+  return compute(_encode, text);
+}
+
 class ChapterParseUtil {
   static ChapterParseUtil _instance = ChapterParseUtil._internal();
 

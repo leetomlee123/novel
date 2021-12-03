@@ -14,16 +14,16 @@ class BookDetailPage extends GetView<BookDetailController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => null == controller.bookDetailModel.value.id
-        ? LoadingDialog()
-        : Stack(
-            children: [
-              CustomScrollView(
-                slivers: [_buildSliverAppBar(), _buildSliverBody()],
-              ),
-              _buildBottom()
-            ],
-          ));
+    return controller.obx((state) {
+      return Stack(
+        children: [
+          CustomScrollView(
+            slivers: [_buildSliverAppBar(), _buildSliverBody()],
+          ),
+          _buildBottom()
+        ],
+      );
+    }, onLoading: LoadingDialog());
   }
 
   Widget _buildSliverAppBar() {
@@ -96,7 +96,7 @@ class BookDetailPage extends GetView<BookDetailController> {
               height: 6,
             ),
             RatingBar.builder(
-              initialRating: book.rate!.toDouble(),
+              initialRating: double.parse( book.rate.toString()),
               minRating: 0,
               direction: Axis.horizontal,
               allowHalfRating: true,
@@ -217,44 +217,51 @@ class BookDetailPage extends GetView<BookDetailController> {
                       var book = sameAuthorBooks2[i];
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        child: Row(
-                          children: [
-                            CommonImg(
-                              book.img ?? "",
-                              aspect: .8,
-                              width: 85,
-                              fit: BoxFit.fitWidth,
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Expanded(
-                                child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Text(
-                                  book.name ?? "",
-                                  style: TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold),
-                                  maxLines: 1,
-                                ),
-                                Text(
-                                  book.author ?? "",
-                                  style: TextStyle(
-                                    fontSize: 12.0,
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () {
+                            controller.getDetail(book.id ?? "");
+                          },
+                          child: Row(
+                            children: [
+                              CommonImg(
+                                book.img ?? "",
+                                aspect: .8,
+                                width: 85,
+                                fit: BoxFit.fitWidth,
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                  child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Text(
+                                    book.name ?? "",
+                                    style: TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold),
+                                    maxLines: 1,
                                   ),
-                                  maxLines: 1,
-                                ),
-                                Text(
-                                  book.lastChapter ?? "",
-                                  style: TextStyle(fontSize: 11),
-                                  maxLines: 2,
-                                ),
-                              ],
-                            ))
-                          ],
+                                  Text(
+                                    book.author ?? "",
+                                    style: TextStyle(
+                                      fontSize: 12.0,
+                                    ),
+                                    maxLines: 1,
+                                  ),
+                                  Text(
+                                    book.lastChapter ?? "",
+                                    style: TextStyle(fontSize: 11),
+                                    maxLines: 2,
+                                  ),
+                                ],
+                              ))
+                            ],
+                          ),
                         ),
                       );
                     }),
@@ -287,8 +294,16 @@ class BookDetailPage extends GetView<BookDetailController> {
                   child: Text(controller.inShelf.value ? "移出书架" : "加入书架"),
                 )),
             TextButton(
-                onPressed: () => Get.toNamed(AppRoutes.ReadBook,
-                    arguments: {"bookId": controller.bookDetailModel.value.id}),
+                onPressed: () {
+                  if (controller.inShelf.value) {
+                    Get.toNamed(AppRoutes.ReadBook, arguments: {
+                      "bookId": controller.bookDetailModel.value.id
+                    });
+                  } else {
+                    Get.toNamed(AppRoutes.ReadBook,
+                        arguments: {"bookJson": controller.book!.toJson()});
+                  }
+                },
                 child: Text(controller.inShelf.value ? "继续阅读" : "立即阅读")),
           ],
         ),

@@ -13,6 +13,7 @@ abstract class AppRoutes {
   static const SearchBook = '/searchBook';
   static const BookDetail = '/bookDetail';
   static const BookMenu = '/bookMenu';
+  static const FontSet = '/fontSet';
 
   //moive
   static const Movie = '/movie';

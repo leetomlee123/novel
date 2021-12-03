@@ -26,7 +26,8 @@ enum OperateType { SLIDE, MORE_SETTING, DOWNLOAD }
 
 class ReadBookController extends FullLifeCycleController
     with FullLifeCycle, SingleGetTickerProviderMixin {
-  Book? book;
+  Rx<Book> book = Book().obs;
+  RxInt chapterIdx = 0.obs;
   Rx<LOAD_STATUS> loadStatus = LOAD_STATUS.LOADING.obs;
   RxBool saveReadState = true.obs;
   RxBool inShelf = false.obs;
@@ -62,21 +63,31 @@ class ReadBookController extends FullLifeCycleController
 
   var itemExtent = 50.0;
 
+  //setting
+  RxDouble fontSize = .0.obs;
+  RxDouble latterHeight = .0.obs;
+  RxDouble paragraphHeight = .0.obs;
+  RxDouble pageSpace = .0.obs;
+  RxBool leftClickNext = false.obs;
+
   @override
   void onInit() {
     super.onInit();
-    // ever(showMenu, (callback) {
-    //   if (!showMenu.value) Get.toNamed(AppRoutes.BookMenu);
-    // });
+
     homeController = Get.find<HomeController>();
     String bookId = Get.arguments['id'].toString();
-    if (bookId.isEmpty) {
-      book = Book.fromJson(Get.arguments['bookJson']);
+    if (bookId == "null") {
+      book.value = Book.fromJson(Get.arguments['bookJson']);
     } else {
-      book = homeController!.getBookById(bookId);
+      book.value = homeController!.getBookById(bookId);
       inShelf.value = true;
     }
     setting = Global.setting;
+    fontSize.value = setting!.fontSize!;
+    latterHeight.value = setting!.latterHeight!;
+    paragraphHeight.value = setting!.paragraphHeight!;
+    pageSpace.value = setting!.pageSpace!;
+    leftClickNext.value = setting!.leftClickNext!;
     if (darkModel.value) {
       bgImage = homeController!.bgImages![ReadSetting.bgImgs.length - 1];
     } else {
@@ -116,7 +127,8 @@ class ReadBookController extends FullLifeCycleController
 
   initData() async {
     try {
-      chapters.value = await DataBaseProvider.dbProvider.getChapters(book!.id);
+      chapters.value =
+          await DataBaseProvider.dbProvider.getChapters(book.value.id);
       if (chapters.isEmpty) {
         //初次打开
         await getReadRecord();
@@ -124,16 +136,23 @@ class ReadBookController extends FullLifeCycleController
       } else {
         getChapter();
       }
-      await initContent(book!.chapterIdx!, false);
+      chapterIdx.value = book.value.chapterIdx!;
+      await initContent(book.value.chapterIdx!, false);
       await cur();
       indexController = IndexedScrollController(
-          initialIndex: book!.chapterIdx ?? 0,
-          initialScrollOffset: (book!.chapterIdx ?? 0) == 0 ? 0 : -200);
+          initialIndex: book.value.chapterIdx ?? 0,
+          initialScrollOffset: (book.value.chapterIdx ?? 0) == 0 ? 0 : -200);
       loadStatus.value = LOAD_STATUS.FINISH;
     } catch (e) {
       loadStatus.value = LOAD_STATUS.FAILED;
       print(e);
     }
+  }
+
+  reInitController() {
+    indexController = IndexedScrollController(
+        initialIndex: book.value.chapterIdx ?? 0,
+        initialScrollOffset: (book.value.chapterIdx ?? 0) == 0 ? 0 : -200);
   }
 
   initContent(int idx, bool jump) async {
@@ -144,7 +163,8 @@ class ReadBookController extends FullLifeCycleController
     loadChapter(idx - 1).then((value) => {prePage = value});
 
     if (jump) {
-      book!.pageIdx = 0;
+      chapterIdx.value = book.value.chapterIdx!;
+      book.value.pageIdx = 0;
       canvasKey.currentContext?.findRenderObject()?.markNeedsPaint();
     }
   }
@@ -172,7 +192,7 @@ class ReadBookController extends FullLifeCycleController
     }
     //获取分页数据
     //本地是否有分页的缓存
-    var key = '${book!.id}pages${readPage.chapterName}';
+    var key = '${book.value.id}pages${readPage.chapterName}';
     var pageData = LocalStorage().getJSON(key);
 
     if (pageData != null) {
@@ -187,15 +207,15 @@ class ReadBookController extends FullLifeCycleController
 
   saveState() {
     if (saveReadState.value) {
-      LocalStorage()
-          .setJSON('${book!.id}pages${prePage?.chapterName}', prePage?.pages);
-      LocalStorage()
-          .setJSON('${book!.id}pages${curPage?.chapterName}', curPage?.pages);
-      LocalStorage()
-          .setJSON('${book!.id}pages${nextPage?.chapterName}', nextPage?.pages);
+      LocalStorage().setJSON(
+          '${book.value.id}pages${prePage?.chapterName}', prePage?.pages);
+      LocalStorage().setJSON(
+          '${book.value.id}pages${curPage?.chapterName}', curPage?.pages);
+      LocalStorage().setJSON(
+          '${book.value.id}pages${nextPage?.chapterName}', nextPage?.pages);
       if (Global.profile!.token!.isNotEmpty) {
-        BookApi().uploadReadRecord(
-            Global.profile!.username, book!.id, book!.chapterIdx.toString());
+        BookApi().uploadReadRecord(Global.profile!.username, book.value.id,
+            book.value.chapterIdx.toString());
       }
     }
     setting!.persistence();
@@ -227,13 +247,13 @@ class ReadBookController extends FullLifeCycleController
     if ((curWid > space) && (curWid < 2 * space) && (curH < hSpace * 3)) {
       toggleShowMenu();
     } else if ((curWid > space * 2)) {
-      if (setting!.leftClickNext ?? false) {
+      if (leftClickNext.value) {
         clickPage(1, location);
         return;
       }
       clickPage(1, location);
     } else if ((curWid > 0 && curWid < space)) {
-      if (setting!.leftClickNext ?? false) {
+      if (leftClickNext.value) {
         clickPage(1, location);
         return;
       }
@@ -267,17 +287,17 @@ class ReadBookController extends FullLifeCycleController
 
   getChapter() async {
     List<ChapterProto> cps =
-        await BookApi().getChapters(book!.id, chapters.length);
+        await BookApi().getChapters(book.value.id, chapters.length);
     if (cps.isNotEmpty) {
       chapters.addAll(cps);
-      DataBaseProvider.dbProvider.addChapters(cps, book!.id);
+      DataBaseProvider.dbProvider.addChapters(cps, book.value.id);
     }
   }
 
   getReadRecord() async {
     if (Global.profile!.token!.isNotEmpty) {
-      book!.chapterIdx =
-          await BookApi().getReadRecord(Global.profile!.username, book!.id);
+      book.value.chapterIdx = await BookApi()
+          .getReadRecord(Global.profile!.username, book.value.id);
     }
   }
 
@@ -319,12 +339,12 @@ class ReadBookController extends FullLifeCycleController
   }
 
   bool isCanGoNext() {
-    if (book!.chapterIdx! >= (chapters.length - 1)) {
-      if (book!.pageIdx! >= (curPage!.pageOffsets - 1)) {
+    if (book.value.chapterIdx! >= (chapters.length - 1)) {
+      if (book.value.pageIdx! >= (curPage!.pageOffsets - 1)) {
         return false;
       }
     }
-    if (book!.pageIdx! < (curPage!.pageOffsets - 1)) {
+    if (book.value.pageIdx! < (curPage!.pageOffsets - 1)) {
       return true;
     } else {
       return next() != null;
@@ -332,10 +352,10 @@ class ReadBookController extends FullLifeCycleController
   }
 
   bool isCanGoPre() {
-    if (book!.chapterIdx! <= 0 && book!.pageIdx! <= 0) {
+    if (book.value.chapterIdx! <= 0 && book.value.pageIdx! <= 0) {
       return false;
     }
-    if (book!.pageIdx! > 0) {
+    if (book.value.pageIdx! > 0) {
       return pre() != null;
     } else {
       return true;
@@ -343,11 +363,13 @@ class ReadBookController extends FullLifeCycleController
   }
 
   getPageCacheKey(int? chapterIdx, int? pageIndex) {
-    return book!.id.toString() + chapterIdx.toString() + pageIndex.toString();
+    return book.value.id.toString() +
+        chapterIdx.toString() +
+        pageIndex.toString();
   }
 
   cur() {
-    var key = getPageCacheKey(book!.chapterIdx, book!.pageIdx);
+    var key = getPageCacheKey(book.value.chapterIdx, book.value.pageIdx);
     if (homeController!.widgets.containsKey(key)) {
       return homeController!.widgets[key];
     } else {
@@ -356,7 +378,7 @@ class ReadBookController extends FullLifeCycleController
           key,
           () => TextComposition.drawContent(
                 curPage,
-                book!.pageIdx,
+                book.value.pageIdx,
                 darkModel.value,
                 setting,
                 bgImage,
@@ -366,15 +388,15 @@ class ReadBookController extends FullLifeCycleController
   }
 
   next() {
-    var i = book!.pageIdx! + 1;
-    var key = getPageCacheKey(book!.chapterIdx, i);
+    var i = book.value.pageIdx! + 1;
+    var key = getPageCacheKey(book.value.chapterIdx, i);
 
     if (homeController!.widgets.containsKey(key)) {
       return homeController!.widgets[key];
     } else {
       if (nextPage == null) {
-        loadChapter(book!.chapterIdx! + 1).then((value) => {nextPage = value});
-        return null;
+        loadChapter(book.value.chapterIdx! + 1)
+            .then((value) => {nextPage = value});
       }
       return homeController!.widgets.putIfAbsent(
           key,
@@ -399,15 +421,15 @@ class ReadBookController extends FullLifeCycleController
   }
 
   pre() {
-    var i = book!.pageIdx! - 1;
-    var key = getPageCacheKey(book!.chapterIdx, i);
+    var i = book.value.pageIdx! - 1;
+    var key = getPageCacheKey(book.value.chapterIdx, i);
 
     if (homeController!.widgets.containsKey(key)) {
       return homeController!.widgets[key];
     } else {
       if (prePage == null) {
-        loadChapter(book!.chapterIdx! - 1).then((value) => prePage = value);
-        return null;
+        loadChapter(book.value.chapterIdx! - 1)
+            .then((value) => prePage = value);
       }
       return homeController!.widgets.putIfAbsent(
           key,
@@ -432,7 +454,7 @@ class ReadBookController extends FullLifeCycleController
   }
 
   void changeCoverPage(int offsetDifference) {
-    int idx = book?.pageIdx ?? 0;
+    int idx = book.value.pageIdx ?? 0;
 
     int curLen = (curPage?.pageOffsets ?? 0);
     if (idx == curLen - 1 && offsetDifference > 0) {
@@ -443,26 +465,30 @@ class ReadBookController extends FullLifeCycleController
                     .batteryLevel
                     .then((value) => electricQuantity = value / 100)
               });
-      int tempCur = book!.chapterIdx! + 1;
+      int tempCur = book.value.chapterIdx! + 1;
       if (tempCur >= chapters.length) {
         Get.snackbar("", "已经是第一页", snackPosition: SnackPosition.TOP);
         return;
       } else {
-        book!.chapterIdx = book!.chapterIdx! + 1;
+        book.value.chapterIdx = book.value.chapterIdx! + 1;
+
         prePage = curPage;
         if ((nextPage?.chapterName ?? "") == "-1") {
-          loadChapter(book!.chapterIdx ?? 0).then((value) => curPage = value);
+          loadChapter(book.value.chapterIdx ?? 0)
+              .then((value) => curPage = value);
         } else {
           curPage = nextPage;
         }
-        book!.pageIdx = 0;
+        book.value.pageIdx = 0;
         nextPage = null;
         Future.delayed(Duration(milliseconds: 500), () {
           loadStatus.value = LOAD_STATUS.LOADING;
-          loadChapter(book!.chapterIdx! + 1).then((value) => nextPage = value);
+          loadChapter(book.value.chapterIdx! + 1)
+              .then((value) => nextPage = value);
           loadStatus.value = LOAD_STATUS.FINISH;
         });
 
+        chapterIdx.value = book.value.chapterIdx!;
         return;
       }
     }
@@ -474,7 +500,7 @@ class ReadBookController extends FullLifeCycleController
                     .batteryLevel
                     .then((value) => electricQuantity = value / 100)
               });
-      int tempCur = book!.chapterIdx! - 1;
+      int tempCur = book.value.chapterIdx! - 1;
       if (tempCur < 0) {
         Get.snackbar("", "第一页", snackPosition: SnackPosition.TOP);
 
@@ -482,19 +508,21 @@ class ReadBookController extends FullLifeCycleController
       }
       nextPage = curPage;
       curPage = prePage;
-      book!.chapterIdx = book!.chapterIdx! - 1;
+      book.value.chapterIdx = book.value.chapterIdx! - 1;
 
-      book!.pageIdx = curPage!.pageOffsets - 1;
+      book.value.pageIdx = curPage!.pageOffsets - 1;
       prePage = null;
       Future.delayed(Duration(milliseconds: 500), () {
-        loadChapter(book!.chapterIdx! - 1).then((value) => prePage = value);
+        loadChapter(book.value.chapterIdx! - 1)
+            .then((value) => prePage = value);
       });
 
+      chapterIdx.value = book.value.chapterIdx!;
       return;
     }
     offsetDifference > 0
-        ? (book!.pageIdx = book!.pageIdx! + 1)
-        : (book!.pageIdx = book!.pageIdx! - 1);
+        ? (book.value.pageIdx = book.value.pageIdx! + 1)
+        : (book.value.pageIdx = book.value.pageIdx! - 1);
   }
 
   panDown(DragDownDetails e) {
@@ -534,24 +562,25 @@ class ReadBookController extends FullLifeCycleController
 
   preLoadWidget() {
     if (prePage == null) return;
-    var preIdx = book!.pageIdx! - 1;
+    var preIdx = book.value.pageIdx! - 1;
     var preKey;
     if (preIdx < 0) {
-      preKey = getPageCacheKey(book!.chapterIdx! - 1, prePage!.pageOffsets - 1);
+      preKey =
+          getPageCacheKey(book.value.chapterIdx! - 1, prePage!.pageOffsets - 1);
     } else {
-      preKey = getPageCacheKey(book!.chapterIdx!, preIdx);
+      preKey = getPageCacheKey(book.value.chapterIdx!, preIdx);
     }
     if (!homeController!.widgets.containsKey(preKey)) {
       if (prePage?.pages == null) return;
       homeController!.widgets.putIfAbsent(preKey, () => pre());
     }
 
-    var nextIdx = book!.pageIdx! + 1;
+    var nextIdx = book.value.pageIdx! + 1;
     var nextKey;
     if (nextIdx >= curPage!.pageOffsets) {
-      nextKey = getPageCacheKey(book!.chapterIdx! + 1, 0);
+      nextKey = getPageCacheKey(book.value.chapterIdx! + 1, 0);
     } else {
-      nextKey = getPageCacheKey(book!.chapterIdx!, nextIdx);
+      nextKey = getPageCacheKey(book.value.chapterIdx!, nextIdx);
     }
     if (!homeController!.widgets.containsKey(nextKey)) {
       if (nextPage?.pages == null) return;
@@ -570,12 +599,13 @@ class ReadBookController extends FullLifeCycleController
         LocalStorage().remove(key);
       }
     }
-    await initContent(book!.chapterIdx ?? 0, true);
+    await initContent(book.value.chapterIdx ?? 0, true);
     canvasKey.currentContext?.findRenderObject()?.markNeedsPaint();
   }
 
   colorModelSwitch() {
     setting!.isDark = darkModel.value;
+    setting!.persistence();
 
     if (darkModel.value) {
       bgImage = homeController!.bgImages![ReadSetting.bgImgs.length - 1];
@@ -594,4 +624,16 @@ class ReadBookController extends FullLifeCycleController
   }
 
   reloadCurChapterWidget() {}
+
+  void jump(int i) {
+    try {
+      loadStatus.value = LOAD_STATUS.LOADING;
+      book.value.chapterIdx = i;
+      initContent(i, true);
+      loadStatus.value = LOAD_STATUS.FINISH;
+    } catch (e) {
+      loadStatus.value = LOAD_STATUS.FAILED;
+      print(e);
+    }
+  }
 }

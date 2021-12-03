@@ -7,7 +7,7 @@ import 'package:novel/utils/database_provider.dart';
 
 class IndexController extends GetxController {
   // 是否展示欢迎页
-  var isloadWelcomePage = true.obs;
+  var isloadWelcomePage = false.obs;
 
   final userProfileModel = Global.profile.obs;
 

@@ -31,14 +31,14 @@ class DataBaseProvider {
   Future<Database> getDatabaseInstanceShelf() async {
     Directory directory = await getApplicationDocumentsDirectory();
     String path = directory.path + "$_dbShelf.db";
-    return await openDatabase(path, version: 2,
+    return await openDatabase(path, version: 3,
         onCreate: (Database db, int version) async {
       await db.execute("CREATE TABLE IF NOT EXISTS $_dbShelf("
           "id TEXT PRIMARY KEY,"
           "name TEXT,"
           "cname TEXT,"
           "author TEXT,"
-          "rate INTEGER,"
+          "rate TEXT,"
           "book_status TEXT,"
           "u_time TEXT,"
           "img TEXT,"
@@ -163,7 +163,14 @@ class DataBaseProvider {
   updateContent(String chapterId, String? chapterContent) async {
     var dbClient = await databaseChapter;
 
-    await dbClient!.update(_dbChapters, {"content": chapterContent,"has_content":"2"},
+    await dbClient!.update(
+        _dbChapters, {"content": chapterContent, "has_content": "2"},
         where: "id=?", whereArgs: [chapterId]);
+  }
+
+  clearChapter(String bookId) async {
+    var dbClient = await databaseChapter;
+    await dbClient!
+        .delete(_dbChapters, where: "book_id=?", whereArgs: [bookId]);
   }
 }

@@ -7,7 +7,7 @@ class Book {
   String? cacheChapterContent;
   String? name;
   String? cName;
-  int? rate;
+  String? rate;
   String? author;
   String? uTime;
   String? desc;
@@ -40,7 +40,7 @@ class Book {
     id = json['Id'];
     name = json['Name'];
     cName = json['CName'];
-    rate = json['Rate'];
+    rate = json['Rate'].toString();
     author = json['Author'];
     uTime = json['UTime'];
     desc = json['Desc'];

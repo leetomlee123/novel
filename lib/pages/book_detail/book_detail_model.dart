@@ -4,7 +4,7 @@ class BookDetailModel {
   String? cName;
   String? author;
   int? hot;
-  int? rate;
+  String? rate;
   String? lastTime;
   String? desc;
   String? bookStatus;
@@ -34,7 +34,7 @@ class BookDetailModel {
     cName = json['CName'];
     author = json['Author'];
     hot = json['Hot'];
-    rate = json['Rate'];
+    rate =json['Rate'].toString();
     lastTime = json['LastTime'];
     desc = json['Desc'];
     bookStatus = json['BookStatus'];

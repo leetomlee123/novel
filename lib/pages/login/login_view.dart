@@ -97,10 +97,8 @@ class LoginPage extends GetView<LoginController> {
             SizedBox(
               height: 30,
             ),
-            ElevatedButton(
+            OutlinedButton(
               style: ButtonStyle(
-                  // shape: MaterialStateProperty.all(C.all(22.0)),
-                  // shape: MaterialStateProperty.all(BorderRadius.all(const Radius.circular(22.0))),
                   minimumSize: MaterialStateProperty.all(Size(330, 45))),
               onPressed: () => controller.login(),
               child: Text(

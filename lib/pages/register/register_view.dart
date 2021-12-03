@@ -101,30 +101,18 @@ class RegisterPage extends GetView<RegisterController> {
                     return null;
                   },
                 ),
-                SizedBox(height: 8.0),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  child: GestureDetector(
-                    child: Container(
-                      width: 320.0,
-                      height: 44.0,
-                      alignment: FractionalOffset.center,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        borderRadius:
-                            BorderRadius.all(const Radius.circular(22.0)),
-                      ),
-                      child: Text(
-                        "注 册",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.w300,
-                          letterSpacing: 0.3,
-                        ),
-                      ),
+                SizedBox(height: 20.0),
+                OutlinedButton(
+                  style: ButtonStyle(
+                      minimumSize: MaterialStateProperty.all(Size(330, 45))),
+                  onPressed: () => controller.register(),
+                  child: Text(
+                    "注 册",
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.w300,
+                      letterSpacing: 0.3,
                     ),
-                    onTap: () => controller.register(),
                   ),
                 )
               ],

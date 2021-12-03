@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:novel/common/values/values.dart';
 import 'package:novel/pages/Index/Index_controller.dart';
+import 'package:novel/utils/update_app.dart';
 
 class AppMenuPage extends GetView<IndexController> {
   const AppMenuPage({Key? key}) : super(key: key);
@@ -41,7 +43,7 @@ class AppMenuPage extends GetView<IndexController> {
                                 '免责声明',
                               ),
                               content: SingleChildScrollView(
-                                child: Text("lawWarn"
+                                child: Text(ReadSetting.lawWarn
                                     // ReadSetting.lawWarn,""
                                     ),
                               ),
@@ -85,36 +87,7 @@ class AppMenuPage extends GetView<IndexController> {
                   ImageIcon(AssetImage("images/upgrade.png")),
                   '应用更新',
                   () async {
-                    // PackageInfo packageInfo = await PackageInfo.fromPlatform();
-                    // String version = packageInfo.version;
-
-                    // Response response =
-                    //     await HttpUtil.instance.dio.get(Common.update);
-                    // var data = response.data['data'];
-                    // AppInfo appInfo = AppInfo.fromJson(data);
-                    // if (int.parse(appInfo.version.replaceAll(".", "")) >
-                    //     int.parse(version.replaceAll(".", ""))) {
-                    //   Navigator.pop(context);
-                    //   Future.delayed(Duration(milliseconds: 400), () {
-                    //     var up = UpdateEntity(
-                    //         hasUpdate: true,
-                    //         isForce: appInfo.forceUpdate == "2",
-                    //         isIgnorable: false,
-                    //         versionCode: 1,
-                    //         versionName: appInfo.version,
-                    //         updateContent: appInfo.msg,
-                    //         downloadUrl: appInfo.link,
-                    //         apkSize: int.parse(appInfo.apkSize),
-                    //         apkMd5: appInfo.apkMD5);
-
-                    //     FlutterXUpdate.updateByInfo(
-                    //       updateEntity: up,
-                    //       supportBackgroundUpdate: true,
-                    //     );
-                    //   });
-                    // } else {
-                    //   BotToast.showText(text: "暂无更新");
-                    // }
+                    UpdateAppUtil.checkUpdate();
                   },
                 ),
                 getItem(
@@ -126,7 +99,7 @@ class AppMenuPage extends GetView<IndexController> {
                         builder: (context) => AlertDialog(
                               title: Text(('清阅揽胜')),
                               content: Text(
-                                "ReadSetting.poet",
+                                ReadSetting.poet,
                                 style: TextStyle(fontSize: 15, height: 2.1),
                               ),
                               actions: <Widget>[
@@ -144,20 +117,22 @@ class AppMenuPage extends GetView<IndexController> {
                 ),
               ],
             ),
-            Obx(()=>
-            Positioned(
-              bottom: 1,
-              left: 10,
-              right: 10,
-              child: Offstage(
-                  offstage: controller.userProfileModel.value!.token!.isEmpty,
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                        minimumSize: MaterialStateProperty.all(Size(330, 45))),
-                    onPressed: () => controller.dropAccountOut(),
-                    child: Text("退出登录"),
-                  )),
-            ),),
+            Obx(
+              () => Positioned(
+                bottom: 1,
+                left: 10,
+                right: 10,
+                child: Offstage(
+                    offstage: controller.userProfileModel.value!.token!.isEmpty,
+                    child: OutlinedButton(
+                      style: ButtonStyle(
+                          minimumSize:
+                              MaterialStateProperty.all(Size(330, 45))),
+                      onPressed: () => controller.dropAccountOut(),
+                      child: Text("退出登录"),
+                    )),
+              ),
+            ),
           ],
         ),
       ),

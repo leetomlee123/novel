@@ -133,12 +133,7 @@ class HomePage extends GetView<HomeController> {
           return tapAction(
               Column(
                 children: [
-                  // Card(
-                  //   // shape: RoundedRectangleBorder(
-                  //   //     borderRadius: BorderRadiusDirectional.circular(3)),
-                  //   // clipBehavior: Clip.antiAlias,
-                  //   child: _buildBookCover(data, i),
-                  // ),
+ 
                   _buildBookCover(data, i),
                   SizedBox(
                     height: 5,

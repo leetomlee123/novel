@@ -8,6 +8,8 @@ import 'package:novel/pages/book_search/book_search_binding.dart';
 import 'package:novel/pages/book_search/book_search_view.dart';
 import 'package:novel/pages/find_password/find_password_binding.dart';
 import 'package:novel/pages/find_password/find_password_view.dart';
+import 'package:novel/pages/font_set/font_set_binding.dart';
+import 'package:novel/pages/font_set/font_set_view.dart';
 import 'package:novel/pages/home/home.binding.dart';
 import 'package:novel/pages/home/home_view.dart';
 import 'package:novel/pages/login/login_binding.dart';
@@ -75,6 +77,11 @@ class AppPages {
       name: AppRoutes.BookMenu,
       page: () => BookMenuPage(),
       binding: BookMenuBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.FontSet,
+      page: () => FontSetPage(),
+      binding: FontSetBinding(),
     ),
   ];
 

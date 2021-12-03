@@ -7,6 +7,8 @@ import 'package:novel/common/values/setting.dart';
 import 'package:novel/components/common_img.dart';
 import 'package:novel/components/loading.dart';
 import 'package:novel/pages/book_chapters/chapter.pbserver.dart';
+import 'package:novel/router/app_pages.dart';
+import 'package:novel/utils/database_provider.dart';
 
 import 'read_book_controller.dart';
 
@@ -87,25 +89,23 @@ class ReadBookPage extends GetView<ReadBookController> {
     );
   }
 
-  confirmAddToShelf() {
-    Get.dialog(AlertDialog(
+  confirmAddToShelf() async {
+    await Get.dialog(AlertDialog(
       title: Text("提示"),
       content: Text('是否加入本书'),
       actions: <Widget>[
         TextButton(
             onPressed: () {
               Get.back();
-
-              // Store.value<ShelfModel>(context)
-              //     .modifyShelf(this.widget.book);
+              controller.homeController!.modifyShelf(controller.book.value);
             },
             child: Text('确定')),
         TextButton(
             onPressed: () async {
               controller.saveReadState.value = false;
 
-              // await Store.value<ShelfModel>(context)
-              //     .delLocalCache([this.widget.book.Id]);
+              DataBaseProvider.dbProvider
+                  .clearChapter(controller.book.value.id ?? "");
               Get.back();
             },
             child: Text('取消')),
@@ -207,7 +207,6 @@ class ReadBookPage extends GetView<ReadBookController> {
         switch (title) {
           case '目录':
             {
-              // Routes.navigateTo(context, Routes.chapters,replace: true);
               scaffoldKey.currentState!.openDrawer();
               controller.toggleShowMenu();
             }
@@ -261,47 +260,43 @@ class ReadBookPage extends GetView<ReadBookController> {
           children: <Widget>[
             TextButton(
                 onPressed: () async {
-                  if ((controller.book!.chapterIdx! - 1) < 0) {
+                  if ((controller.book.value.chapterIdx! - 1) < 0) {
                     Get.snackbar("", '已经是第一章');
                     return;
                   }
-                  controller.book!.chapterIdx =
-                      controller.book!.chapterIdx! - 1;
+                  controller.book.value.chapterIdx =
+                      controller.book.value.chapterIdx! - 1;
                   await controller.initContent(
-                      controller.book!.chapterIdx!, true);
+                      controller.book.value.chapterIdx!, true);
                 },
                 child: Text('上一章')),
             Expanded(
-              child: Container(
-                child: Slider(
-                  value: controller.book!.chapterIdx!.toDouble(),
-                  max: (controller.chapters.length - 1).toDouble(),
-                  min: 0.0,
-                  onChanged: (newValue) {
-                    int temp = newValue.round();
-                    controller.book!.chapterIdx = temp;
-
-                    controller.initContent(controller.book!.chapterIdx!, true);
-                  },
-                  label:
-                      '${controller.chapters[controller.book!.chapterIdx!].chapterName} ',
-                  semanticFormatterCallback: (newValue) {
-                    return '${newValue.round()} dollars';
-                  },
-                ),
+              child: Slider(
+                value: controller.chapterIdx.value.toDouble(),
+                max: (controller.chapters.length - 1).toDouble(),
+                min: 0.0,
+                onChanged: (newValue) {
+                  int temp = newValue.round();
+                  controller.book.value.chapterIdx = temp;
+                  controller.chapterIdx.value = temp;
+                },
+                onChangeEnd: (_) {
+                  controller.initContent(
+                      controller.book.value.chapterIdx!, true);
+                },
               ),
             ),
             TextButton(
                 onPressed: () async {
-                  if ((controller.book!.chapterIdx! + 1) >=
+                  if ((controller.book.value.chapterIdx! + 1) >=
                       controller.chapters.length) {
                     Get.snackbar("", "已经是最后一章");
                     return;
                   }
-                  controller.book!.chapterIdx =
-                      controller.book!.chapterIdx! + 1;
+                  controller.book.value.chapterIdx =
+                      controller.book.value.chapterIdx! + 1;
                   await controller.initContent(
-                      controller.book!.chapterIdx!, true);
+                      controller.book.value.chapterIdx!, true);
                 },
                 child: Text('下一章')),
           ],
@@ -395,6 +390,7 @@ class ReadBookPage extends GetView<ReadBookController> {
                 onPressed: () {
                   controller.setting!.fontSize =
                       controller.setting!.fontSize! - 1;
+                  controller.fontSize.value = controller.setting!.fontSize!;
                   controller.setting!.persistence();
                   controller.updPage();
                 },
@@ -410,10 +406,13 @@ class ReadBookPage extends GetView<ReadBookController> {
                       overlayShape: SliderComponentShape.noOverlay,
                     ),
                     child: Slider(
-                      value: controller.setting!.fontSize ?? .0,
+                      value: controller.fontSize.value,
                       onChanged: (v) {
                         controller.setting!.fontSize = v;
+                        controller.fontSize.value = v;
                         controller.setting!.persistence();
+                      },
+                      onChangeEnd: (_) {
                         controller.updPage();
                       },
                       min: 10,
@@ -426,6 +425,7 @@ class ReadBookPage extends GetView<ReadBookController> {
                 onPressed: () {
                   controller.setting!.fontSize =
                       controller.setting!.fontSize! + .1;
+                  controller.fontSize.value = controller.setting!.fontSize!;
                   controller.setting!.persistence();
                   controller.updPage();
                 },
@@ -441,6 +441,8 @@ class ReadBookPage extends GetView<ReadBookController> {
                 onPressed: () {
                   controller.setting!.latterHeight =
                       controller.setting!.latterHeight! - .1;
+                  controller.latterHeight.value =
+                      controller.setting!.latterHeight!;
                   controller.setting!.persistence();
                   controller.updPage();
                 },
@@ -456,10 +458,13 @@ class ReadBookPage extends GetView<ReadBookController> {
                       overlayShape: SliderComponentShape.noOverlay,
                     ),
                     child: Slider(
-                      value: controller.setting!.latterHeight ?? .0,
+                      value: controller.latterHeight.value,
                       onChanged: (v) {
                         controller.setting!.latterHeight = v;
+                        controller.latterHeight.value = v;
                         controller.setting!.persistence();
+                      },
+                      onChangeEnd: (_) {
                         controller.updPage();
                       },
                       min: .1,
@@ -472,6 +477,8 @@ class ReadBookPage extends GetView<ReadBookController> {
                 onPressed: () {
                   controller.setting!.latterHeight =
                       controller.setting!.latterHeight! + .1;
+                  controller.latterHeight.value =
+                      controller.setting!.latterHeight!;
                   controller.setting!.persistence();
                   controller.updPage();
                 },
@@ -486,6 +493,8 @@ class ReadBookPage extends GetView<ReadBookController> {
                 onPressed: () {
                   controller.setting!.paragraphHeight =
                       controller.setting!.paragraphHeight! - .1;
+                  controller.paragraphHeight.value =
+                      controller.setting!.paragraphHeight!;
                   controller.setting!.persistence();
                   controller.updPage();
                 },
@@ -501,10 +510,12 @@ class ReadBookPage extends GetView<ReadBookController> {
                       overlayShape: SliderComponentShape.noOverlay,
                     ),
                     child: Slider(
-                      value: controller.setting!.paragraphHeight ?? .0,
+                      value: controller.paragraphHeight.value,
                       onChanged: (v) {
                         controller.setting!.paragraphHeight = v;
                         controller.setting!.persistence();
+                      },
+                      onChangeEnd: (_) {
                         controller.updPage();
                       },
                       min: .1,
@@ -517,6 +528,8 @@ class ReadBookPage extends GetView<ReadBookController> {
                 onPressed: () {
                   controller.setting!.paragraphHeight =
                       controller.setting!.paragraphHeight! + .1;
+                  controller.paragraphHeight.value =
+                      controller.setting!.paragraphHeight!;
                   controller.setting!.persistence();
                   controller.updPage();
                 },
@@ -531,6 +544,7 @@ class ReadBookPage extends GetView<ReadBookController> {
                 onPressed: () {
                   controller.setting!.pageSpace =
                       controller.setting!.pageSpace! - 1;
+                  controller.pageSpace.value = controller.setting!.pageSpace!;
                   controller.setting!.persistence();
                   controller.updPage();
                 },
@@ -546,10 +560,13 @@ class ReadBookPage extends GetView<ReadBookController> {
                       overlayShape: SliderComponentShape.noOverlay,
                     ),
                     child: Slider(
-                      value: controller.setting!.pageSpace ?? 0,
+                      value: controller.pageSpace.value,
                       onChanged: (v) {
                         controller.setting!.pageSpace = v;
+                        controller.pageSpace.value = v;
                         controller.setting!.persistence();
+                      },
+                      onChangeEnd: (_) {
                         controller.updPage();
                       },
                       min: 0,
@@ -562,6 +579,7 @@ class ReadBookPage extends GetView<ReadBookController> {
                 onPressed: () {
                   controller.setting!.pageSpace =
                       controller.setting!.pageSpace! + 1;
+                  controller.pageSpace.value = controller.setting!.pageSpace!;
                   controller.setting!.persistence();
                   controller.updPage();
                 },
@@ -594,7 +612,7 @@ class ReadBookPage extends GetView<ReadBookController> {
                       ),
                     ),
                     onPressed: () {
-                      // Routes.navigateTo(context, Routes.fontSet);
+                      Get.toNamed(AppRoutes.FontSet);
                     },
                     child: Text('字体')),
               ),
@@ -603,10 +621,11 @@ class ReadBookPage extends GetView<ReadBookController> {
                 flex: 3,
                 child: SwitchListTile(
                   contentPadding: EdgeInsets.only(left: 15),
-                  value: controller.setting!.leftClickNext ?? false,
+                  value: controller.leftClickNext.value,
                   onChanged: (value) {
-                    controller.setting!.leftClickNext =
-                        !(controller.setting!.leftClickNext ?? false);
+                    controller.leftClickNext.value = value;
+                    controller.setting!.leftClickNext = value;
+                    controller.setting!.persistence();
                   },
                   title: Text(
                     '单手模式',
@@ -614,7 +633,7 @@ class ReadBookPage extends GetView<ReadBookController> {
                       fontSize: 13,
                     ),
                   ),
-                  selected: controller.setting!.leftClickNext ?? false,
+                  selected: controller.leftClickNext.value,
                 ),
               ),
             ],
@@ -699,6 +718,7 @@ class ReadBookPage extends GetView<ReadBookController> {
   }
 
   _buildChapters() {
+    controller.reInitController();
     return Column(
       children: [
         _buildChaptersHead(),
@@ -716,6 +736,7 @@ class ReadBookPage extends GetView<ReadBookController> {
           child: IndexedListView.builder(
             itemExtent: controller.itemExtent,
             maxItemCount: controller.chapters.length,
+            addAutomaticKeepAlives: true,
             minItemCount: 0,
             itemBuilder: (c, i) {
               ChapterProto chapter = controller.chapters[i];
@@ -730,14 +751,10 @@ class ReadBookPage extends GetView<ReadBookController> {
                   chapter.hasContent == "2" ? "已缓存" : "",
                   style: TextStyle(fontSize: 10, color: Colors.grey),
                 ),
-                selected: i == controller.book!.chapterIdx,
-                onTap: () async {
+                selected: i == controller.book.value.chapterIdx,
+                onTap: () {
                   Get.back();
-                  //不是卷目录
-                  controller.book!.chapterIdx = i;
-                  Future.delayed(Duration(milliseconds: 400), () async {
-                    await controller.initContent(i, true);
-                  });
+                  controller.jump(i);
                 },
               );
             },
@@ -764,7 +781,7 @@ class ReadBookPage extends GetView<ReadBookController> {
               width: 10,
             ),
             CommonImg(
-              controller.book!.img ?? "",
+              controller.book.value.img ?? "",
               width: 65,
             ),
             SizedBox(
@@ -777,7 +794,7 @@ class ReadBookPage extends GetView<ReadBookController> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    controller.book!.name ?? "",
+                    controller.book.value.name ?? "",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
@@ -785,7 +802,7 @@ class ReadBookPage extends GetView<ReadBookController> {
                     overflow: TextOverflow.clip,
                   ),
                   Text(
-                    controller.book!.author ?? "",
+                    controller.book.value.author ?? "",
                     style: TextStyle(
                       fontWeight: FontWeight.w100,
                       fontSize: 10,
@@ -806,40 +823,10 @@ class ReadBookPage extends GetView<ReadBookController> {
         ),
       ),
       onTap: () async {
-        // await goDetail(data, context);
+        Get.offNamed(AppRoutes.BookDetail,
+            arguments: {"bookId": controller.book.value.id ?? ""});
       },
     );
-  }
-
-  _buildListView() {
-    return IndexedListView.builder(
-        controller: controller.indexController,
-        itemExtent: 50.0,
-        maxItemCount: controller.chapters.length,
-        itemBuilder: (c, i) {
-          ChapterProto chapter = controller.chapters[i];
-          return ListTile(
-            title: Text(
-              chapter.chapterName,
-              maxLines: 2,
-              style: TextStyle(fontSize: 15),
-              overflow: TextOverflow.ellipsis,
-            ),
-            trailing: Text(
-              chapter.hasContent == "2" ? "已缓存" : "",
-              style: TextStyle(fontSize: 10, color: Colors.grey),
-            ),
-            selected: i == controller.book!.chapterIdx,
-            onTap: () async {
-              Get.back();
-              //不是卷目录
-              controller.book!.chapterIdx = i;
-              Future.delayed(Duration(milliseconds: 400), () async {
-                await controller.initContent(i, true);
-              });
-            },
-          );
-        });
   }
 
   // Widget flipType() {
