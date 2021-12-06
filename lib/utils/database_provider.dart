@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:common_utils/common_utils.dart';
 import 'package:novel/pages/book_chapters/chapter.pb.dart';
 import 'package:novel/pages/home/home_model.dart';
+import 'package:novel/utils/chapter_parse.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -166,6 +167,17 @@ class DataBaseProvider {
     await dbClient!.update(
         _dbChapters, {"content": chapterContent, "has_content": "2"},
         where: "id=?", whereArgs: [chapterId]);
+  }
+
+  downContent(List<DownChapter> downs) async {
+    var dbClient = await databaseChapter;
+    var batch = dbClient!.batch();
+    downs.forEach((element) {
+      batch.update(
+          _dbChapters, {"content": element.chapterContent, "has_content": "2"},
+          where: "id=?", whereArgs: [element.chapterId]);
+    });
+    await batch.commit();
   }
 
   clearChapter(String bookId) async {

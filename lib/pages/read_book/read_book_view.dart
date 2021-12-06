@@ -313,14 +313,16 @@ class ReadBookPage extends GetView<ReadBookController> {
         children: <Widget>[
           Expanded(
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Container(
                   height: 40,
-                  width: (Screen.width - 40) / 2,
-                  margin: EdgeInsets.only(top: 15, bottom: 15),
+                  width: (Screen.width - 40) / 2.5,
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                   child: GestureDetector(
                     onTap: () {
-                      Get.snackbar("", '从当前章节开始下载...');
+                      controller.dowload(controller.book.value.chapterIdx ?? 0);
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -343,11 +345,12 @@ class ReadBookPage extends GetView<ReadBookController> {
                 ),
                 Container(
                   height: 40,
-                  width: (Screen.width - 40) / 2,
-                  margin: EdgeInsets.only(top: 15, bottom: 15),
+                  width: (Screen.width - 40) / 2.5,
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                   child: GestureDetector(
                     onTap: () {
-                      Get.snackbar("", '开始全本下载...');
+                      controller.dowload(controller.book.value.chapterIdx ?? 0);
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -375,273 +378,306 @@ class ReadBookPage extends GetView<ReadBookController> {
   }
 
   Widget moreSetting() {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-      ),
-      height: controller.settingH,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: [
-              Text("字号", style: TextStyle(fontSize: 13.0)),
-              IconButton(
-                onPressed: () {
-                  controller.setting!.fontSize =
-                      controller.setting!.fontSize! - 1;
-                  controller.fontSize.value = controller.setting!.fontSize!;
-                  controller.setting!.persistence();
-                  controller.updPage();
-                },
-                icon: Icon(Icons.remove),
-              ),
-              Expanded(
-                child: Container(
-                  height: 12,
-                  child: SliderTheme(
-                    data: Get.theme.sliderTheme.copyWith(
-                      trackHeight: 1,
-                      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6),
-                      overlayShape: SliderComponentShape.noOverlay,
-                    ),
-                    child: Slider(
-                      value: controller.fontSize.value,
-                      onChanged: (v) {
-                        controller.setting!.fontSize = v;
-                        controller.fontSize.value = v;
-                        controller.setting!.persistence();
-                      },
-                      onChangeEnd: (_) {
-                        controller.updPage();
-                      },
-                      min: 10,
-                      max: 30,
-                    ),
-                  ),
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  controller.setting!.fontSize =
-                      controller.setting!.fontSize! + .1;
-                  controller.fontSize.value = controller.setting!.fontSize!;
-                  controller.setting!.persistence();
-                  controller.updPage();
-                },
-                icon: Icon(Icons.add),
-              ),
-            ],
+    return Obx(() => Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
           ),
-
-          Row(
-            children: [
-              Text("行距", style: TextStyle(fontSize: 13.0)),
-              IconButton(
-                onPressed: () {
-                  controller.setting!.latterHeight =
-                      controller.setting!.latterHeight! - .1;
-                  controller.latterHeight.value =
-                      controller.setting!.latterHeight!;
-                  controller.setting!.persistence();
-                  controller.updPage();
-                },
-                icon: Icon(Icons.remove),
-              ),
-              Expanded(
-                child: Container(
-                  height: 12,
-                  child: SliderTheme(
-                    data: Get.theme.sliderTheme.copyWith(
-                      trackHeight: 1,
-                      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6),
-                      overlayShape: SliderComponentShape.noOverlay,
-                    ),
-                    child: Slider(
-                      value: controller.latterHeight.value,
-                      onChanged: (v) {
-                        controller.setting!.latterHeight = v;
-                        controller.latterHeight.value = v;
-                        controller.setting!.persistence();
-                      },
-                      onChangeEnd: (_) {
-                        controller.updPage();
-                      },
-                      min: .1,
-                      max: 4.0,
-                    ),
-                  ),
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  controller.setting!.latterHeight =
-                      controller.setting!.latterHeight! + .1;
-                  controller.latterHeight.value =
-                      controller.setting!.latterHeight!;
-                  controller.setting!.persistence();
-                  controller.updPage();
-                },
-                icon: Icon(Icons.add),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Text("段距", style: TextStyle(fontSize: 13.0)),
-              IconButton(
-                onPressed: () {
-                  controller.setting!.paragraphHeight =
-                      controller.setting!.paragraphHeight! - .1;
-                  controller.paragraphHeight.value =
-                      controller.setting!.paragraphHeight!;
-                  controller.setting!.persistence();
-                  controller.updPage();
-                },
-                icon: Icon(Icons.remove),
-              ),
-              Expanded(
-                child: Container(
-                  height: 12,
-                  child: SliderTheme(
-                    data: Get.theme.sliderTheme.copyWith(
-                      trackHeight: 1,
-                      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6),
-                      overlayShape: SliderComponentShape.noOverlay,
-                    ),
-                    child: Slider(
-                      value: controller.paragraphHeight.value,
-                      onChanged: (v) {
-                        controller.setting!.paragraphHeight = v;
-                        controller.setting!.persistence();
-                      },
-                      onChangeEnd: (_) {
-                        controller.updPage();
-                      },
-                      min: .1,
-                      max: 2.0,
-                    ),
-                  ),
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  controller.setting!.paragraphHeight =
-                      controller.setting!.paragraphHeight! + .1;
-                  controller.paragraphHeight.value =
-                      controller.setting!.paragraphHeight!;
-                  controller.setting!.persistence();
-                  controller.updPage();
-                },
-                icon: Icon(Icons.add),
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              Text("页距", style: TextStyle(fontSize: 13.0)),
-              IconButton(
-                onPressed: () {
-                  controller.setting!.pageSpace =
-                      controller.setting!.pageSpace! - 1;
-                  controller.pageSpace.value = controller.setting!.pageSpace!;
-                  controller.setting!.persistence();
-                  controller.updPage();
-                },
-                icon: Icon(Icons.remove),
-              ),
-              Expanded(
-                child: Container(
-                  height: 12,
-                  child: SliderTheme(
-                    data: Get.theme.sliderTheme.copyWith(
-                      trackHeight: 1,
-                      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6),
-                      overlayShape: SliderComponentShape.noOverlay,
-                    ),
-                    child: Slider(
-                      value: controller.pageSpace.value,
-                      onChanged: (v) {
-                        controller.setting!.pageSpace = v;
-                        controller.pageSpace.value = v;
-                        controller.setting!.persistence();
-                      },
-                      onChangeEnd: (_) {
-                        controller.updPage();
-                      },
-                      min: 0,
-                      max: 50,
-                    ),
-                  ),
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  controller.setting!.pageSpace =
-                      controller.setting!.pageSpace! + 1;
-                  controller.pageSpace.value = controller.setting!.pageSpace!;
-                  controller.setting!.persistence();
-                  controller.updPage();
-                },
-                icon: Icon(Icons.add),
-              ),
-            ],
-          ),
-          Expanded(
-              child: ListView(
-            children: bgThemes(),
-            scrollDirection: Axis.horizontal,
-          )),
-          // Expanded(
-          //   child: flipType(),
-          // ),
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                      ),
-                      side: BorderSide(
-                        width: 2,
-                        color: controller.darkModel.value
-                            ? Colors.white
-                            : Get.theme.primaryColor,
-                      ),
-                    ),
+          height: controller.settingH,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                children: [
+                  Text("字号", style: TextStyle(fontSize: 13.0)),
+                  IconButton(
                     onPressed: () {
-                      Get.toNamed(AppRoutes.FontSet);
+                      if (controller.setting!.fontSize! <= 11) {
+                        return;
+                      }
+                      controller.setting!.fontSize =
+                          controller.setting!.fontSize! - 1;
+                      controller.fontSize.value = controller.setting!.fontSize!;
+                      controller.setting!.persistence();
+                      controller.updPage();
                     },
-                    child: Text('字体')),
-              ),
-              Expanded(child: Container(), flex: 2),
-              Expanded(
-                flex: 3,
-                child: SwitchListTile(
-                  contentPadding: EdgeInsets.only(left: 15),
-                  value: controller.leftClickNext.value,
-                  onChanged: (value) {
-                    controller.leftClickNext.value = value;
-                    controller.setting!.leftClickNext = value;
-                    controller.setting!.persistence();
-                  },
-                  title: Text(
-                    '单手模式',
-                    style: TextStyle(
-                      fontSize: 13,
+                    icon: Icon(Icons.remove),
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 12,
+                      child: SliderTheme(
+                        data: Get.theme.sliderTheme.copyWith(
+                          trackHeight: 1,
+                          thumbShape:
+                              RoundSliderThumbShape(enabledThumbRadius: 6),
+                          overlayShape: SliderComponentShape.noOverlay,
+                        ),
+                        child: Slider(
+                          value: controller.fontSize.value,
+                          onChanged: (v) {
+                            controller.setting!.fontSize = v;
+                            controller.fontSize.value = v;
+                            controller.setting!.persistence();
+                          },
+                          onChangeEnd: (_) {
+                            controller.updPage();
+                          },
+                          min: 10,
+                          max: 30,
+                        ),
+                      ),
                     ),
                   ),
-                  selected: controller.leftClickNext.value,
-                ),
+                  IconButton(
+                    onPressed: () {
+                      if (controller.setting!.fontSize! >= 29) {
+                        return;
+                      }
+                      controller.setting!.fontSize =
+                          controller.setting!.fontSize! + 1;
+                      controller.fontSize.value = controller.setting!.fontSize!;
+                      controller.setting!.persistence();
+                      controller.updPage();
+                    },
+                    icon: Icon(Icons.add),
+                  ),
+                ],
+              ),
+
+              Row(
+                children: [
+                  Text("行距", style: TextStyle(fontSize: 13.0)),
+                  IconButton(
+                    onPressed: () {
+                      if (controller.setting!.latterHeight! <= 1.1) {
+                        return;
+                      }
+                      controller.setting!.latterHeight =
+                          controller.setting!.latterHeight! - .1;
+                      controller.latterHeight.value =
+                          controller.setting!.latterHeight!;
+                      controller.setting!.persistence();
+                      controller.updPage();
+                    },
+                    icon: Icon(Icons.remove),
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 12,
+                      child: SliderTheme(
+                        data: Get.theme.sliderTheme.copyWith(
+                          trackHeight: 1,
+                          thumbShape:
+                              RoundSliderThumbShape(enabledThumbRadius: 6),
+                          overlayShape: SliderComponentShape.noOverlay,
+                        ),
+                        child: Slider(
+                          divisions: 20,
+                          value: controller.latterHeight.value,
+                          onChanged: (v) {
+                            controller.setting!.latterHeight = v;
+                            controller.latterHeight.value = v;
+                            controller.setting!.persistence();
+                          },
+                          onChangeEnd: (_) {
+                            controller.updPage();
+                          },
+                          min: 1,
+                          max: 2.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      if (controller.setting!.latterHeight! >= 1.9) {
+                        return;
+                      }
+                      controller.setting!.latterHeight =
+                          controller.setting!.latterHeight! + .1;
+                      controller.latterHeight.value =
+                          controller.setting!.latterHeight!;
+                      controller.setting!.persistence();
+                      controller.updPage();
+                    },
+                    icon: Icon(Icons.add),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Text("段距", style: TextStyle(fontSize: 13.0)),
+                  IconButton(
+                    onPressed: () {
+                      if (controller.setting!.paragraphHeight! <= .1) {
+                        return;
+                      }
+                      controller.setting!.paragraphHeight =
+                          controller.setting!.paragraphHeight! - .1;
+                      controller.paragraphHeight.value =
+                          controller.setting!.paragraphHeight!;
+                      controller.setting!.persistence();
+                      controller.updPage();
+                    },
+                    icon: Icon(Icons.remove),
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 12,
+                      child: SliderTheme(
+                        data: Get.theme.sliderTheme.copyWith(
+                          trackHeight: 1,
+                          thumbShape:
+                              RoundSliderThumbShape(enabledThumbRadius: 6),
+                          overlayShape: SliderComponentShape.noOverlay,
+                        ),
+                        child: Slider(
+                          divisions: 20,
+                          value: controller.paragraphHeight.value,
+                          onChanged: (v) {
+                            controller.setting!.paragraphHeight = v;
+                            controller.setting!.persistence();
+                          },
+                          onChangeEnd: (_) {
+                            controller.updPage();
+                          },
+                          min: 0,
+                          max: 2.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      if (controller.setting!.paragraphHeight! >= 1.9) {
+                        return;
+                      }
+                      controller.setting!.paragraphHeight =
+                          controller.setting!.paragraphHeight! + .1;
+                      controller.paragraphHeight.value =
+                          controller.setting!.paragraphHeight!;
+                      controller.setting!.persistence();
+                      controller.updPage();
+                    },
+                    icon: Icon(Icons.add),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Text("页距", style: TextStyle(fontSize: 13.0)),
+                  IconButton(
+                    onPressed: () {
+                      if (controller.setting!.pageSpace! <= 1) {
+                        return;
+                      }
+                      controller.setting!.pageSpace =
+                          controller.setting!.pageSpace! - 1;
+                      controller.pageSpace.value =
+                          controller.setting!.pageSpace!;
+                      controller.setting!.persistence();
+                      controller.updPage();
+                    },
+                    icon: Icon(Icons.remove),
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 12,
+                      child: SliderTheme(
+                        data: Get.theme.sliderTheme.copyWith(
+                          trackHeight: 1,
+                          thumbShape:
+                              RoundSliderThumbShape(enabledThumbRadius: 6),
+                          overlayShape: SliderComponentShape.noOverlay,
+                        ),
+                        child: Slider(
+                          divisions: 40,
+                          value: controller.pageSpace.value,
+                          onChanged: (v) {
+                            controller.setting!.pageSpace = v;
+                            controller.pageSpace.value = v;
+                            controller.setting!.persistence();
+                          },
+                          onChangeEnd: (_) {
+                            controller.updPage();
+                          },
+                          min: 0,
+                          max: 40,
+                        ),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      if (controller.setting!.pageSpace! >= 39) {
+                        return;
+                      }
+                      controller.setting!.pageSpace =
+                          controller.setting!.pageSpace! + 1;
+                      controller.pageSpace.value =
+                          controller.setting!.pageSpace!;
+                      controller.setting!.persistence();
+                      controller.updPage();
+                    },
+                    icon: Icon(Icons.add),
+                  ),
+                ],
+              ),
+              Expanded(
+                  child: ListView(
+                children: bgThemes(),
+                scrollDirection: Axis.horizontal,
+              )),
+              // Expanded(
+              //   child: flipType(),
+              // ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          ),
+                          side: BorderSide(
+                            width: 2,
+                            color: controller.darkModel.value
+                                ? Colors.white
+                                : Get.theme.primaryColor,
+                          ),
+                        ),
+                        onPressed: () {
+                          Get.toNamed(AppRoutes.FontSet);
+                        },
+                        child: Text('字体')),
+                  ),
+                  Expanded(child: Container(), flex: 2),
+                  Expanded(
+                    flex: 3,
+                    child: SwitchListTile(
+                      contentPadding: EdgeInsets.only(left: 15),
+                      value: controller.leftClickNext.value,
+                      onChanged: (value) {
+                        controller.leftClickNext.value = value;
+                        controller.setting!.leftClickNext = value;
+                        controller.setting!.persistence();
+                      },
+                      title: Text(
+                        '单手模式',
+                        style: TextStyle(
+                          fontSize: 13,
+                        ),
+                      ),
+                      selected: controller.leftClickNext.value,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
-      padding: EdgeInsets.all(15),
-    );
+          padding: EdgeInsets.all(15),
+        ));
   }
 
   List<Widget> bgThemes() {
@@ -752,9 +788,9 @@ class ReadBookPage extends GetView<ReadBookController> {
                   style: TextStyle(fontSize: 10, color: Colors.grey),
                 ),
                 selected: i == controller.book.value.chapterIdx,
-                onTap: () {
+                onTap: () async {
                   Get.back();
-                  controller.jump(i);
+                  await controller.jump(i);
                 },
               );
             },
@@ -817,7 +853,7 @@ class ReadBookPage extends GetView<ReadBookController> {
             ),
             Spacer(),
             Icon(
-              Icons.arrow_forward_ios_outlined,
+              Icons.arrow_forward_sharp,
             )
           ],
         ),

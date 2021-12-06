@@ -48,14 +48,12 @@ class HomePage extends GetView<HomeController> {
                 )
               : AppBar(
                   actions: [
-            
                     IconButton(
                       icon: Icon(Icons.search),
                       onPressed: () {
                         Get.toNamed(AppRoutes.SearchBook);
                       },
-                      // onPressed: () => showSearch(
-                      //     context: context, delegate: SearchBarDelegate()),
+                    
                     ),
                     _popupMenuButton(context)
                   ],
@@ -125,7 +123,7 @@ class HomePage extends GetView<HomeController> {
         itemCount: controller.shelf.length,
         gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
-          crossAxisSpacing: 20.0,
+          crossAxisSpacing: 50.0,
           mainAxisSpacing: 30.0,
         ),
         itemBuilder: (itemBuilder, i) {
@@ -133,7 +131,6 @@ class HomePage extends GetView<HomeController> {
           return tapAction(
               Column(
                 children: [
- 
                   _buildBookCover(data, i),
                   SizedBox(
                     height: 5,
@@ -154,7 +151,7 @@ class HomePage extends GetView<HomeController> {
 
   Widget _buildBookCover(Book book, int i) {
     return Stack(
-      alignment: AlignmentDirectional.bottomEnd,
+      alignment: AlignmentDirectional.topEnd,
       children: <Widget>[
         CommonImg(
           book.img ?? "",
@@ -176,14 +173,9 @@ class HomePage extends GetView<HomeController> {
         ),
         Visibility(
           visible: controller.manageShelf.value,
-          child: Image.asset(
-            'images/pick.png',
-            width: 30,
-            height: 30,
-            color: !controller.pickList.contains(i)
-                ? Colors.white
-                : Get.theme.primaryColor,
-          ),
+          child: Icon(controller.pickList.contains(i)
+              ? Icons.radio_button_checked
+              : Icons.radio_button_unchecked,size: 30.0,),
         ),
       ],
     );

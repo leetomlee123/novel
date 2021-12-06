@@ -17,7 +17,7 @@ class HomeController extends GetxController {
   //阅读页背景图片
   Map<int, ui.Image>? bgImages = Map();
   Map<String, ui.Picture> widgets = Map();
-  RxList shelf = List<Book>.empty().obs;
+  RxList<Book> shelf = List<Book>.empty().obs;
   RxList pickList = List<int>.empty().obs;
 
   //书架显示风格
@@ -32,8 +32,10 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     coverLayout.value = Global.setting!.isListCover ?? false;
+
     initShelf();
     initReadPageImages();
+
     super.onInit();
   }
 
@@ -51,6 +53,8 @@ class HomeController extends GetxController {
       ui.FrameInfo fi = await codec.getNextFrame();
       bgImages!.putIfAbsent(i, () => fi.image);
     }
+    //预加载阅读页
+    loadReadPage();
   }
 
   initShelf() async {
@@ -89,8 +93,8 @@ class HomeController extends GetxController {
       manage();
     } else {
       coverLayout.value = !coverLayout.value;
-      Global.setting !.isListCover = coverLayout.value;
-      LocalStorage().setJSON(ReadSetting.settingKey, Global.setting !.toJson());
+      Global.setting!.isListCover = coverLayout.value;
+      LocalStorage().setJSON(ReadSetting.settingKey, Global.setting!.toJson());
     }
   }
 
@@ -133,7 +137,7 @@ class HomeController extends GetxController {
       elementAt.sortTime = DateUtil.getNowDateMs();
       DataBaseProvider.dbProvider.updBook(elementAt);
       Get.toNamed(AppRoutes.ReadBook, arguments: {"id": elementAt.id});
-      shelf.sort((o1, o2) => o2.sortTime.compareTo(o1.sortTime));
+      shelf.sort((o1, o2) => o2.sortTime!.compareTo(o1.sortTime!.toInt()));
     }
   }
 
@@ -166,7 +170,50 @@ class HomeController extends GetxController {
   syncBooks2Cloud() async {
     for (var value in shelf) {
       var id = value.id;
-      await BookApi().modifyShelf(id, 'add');
+      await BookApi().modifyShelf(id!, 'add');
     }
+  }
+
+  //
+  loadReadPage() {
+    //   shelf.forEach((book) async {
+    //     var id = book.id;
+    //     List<ChapterProto> cps =
+    //         await DataBaseProvider.dbProvider.getChapters(id);
+
+    //     if (cps.isNotEmpty) {
+    //       var key = book.id.toString() +
+    //           book.chapterIdx.toString() +
+    //           book.pageIdx.toString();
+    //       bool? darkModel = Global.setting!.isDark;
+    //       var bgImage;
+    //       if (darkModel!) {
+    //         bgImage = bgImages![ReadSetting.bgImgs.length - 1];
+    //       } else {
+    //         bgImage = bgImages![Global.setting!.bgIndex ?? 0];
+    //       }
+    //       var electricQuantity = await Battery().batteryLevel / 100;
+
+    //        var pages = 'pages_${book.id}_${book.chapterIdx}';
+    //           var pageData = LocalStorage().getJSON(key);
+
+    //   if (pageData != null) {
+    //        ReadPage readPage = ReadPage();
+    //     readPage.pages =
+    //         pageData.map((e) => TextPage.fromJson(e)).toList().cast<TextPage>();
+    //     LocalStorage().remove(key);
+    //   }
+    //       widgets.putIfAbsent(
+    //           key,
+    //           () => TextComposition.drawContent(
+    //                 readPage,
+    //                 book.pageIdx,
+    //                 Global.setting!.isDark,
+    //                 Global.setting,
+    //                 bgImage,
+    //                 electricQuantity,
+    //               ));
+    //     }}
+    //   });
   }
 }

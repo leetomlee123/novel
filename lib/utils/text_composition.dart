@@ -103,7 +103,7 @@ class TextComposition {
     final offset = Offset(columnWidth!, 1);
     final size = style!.fontSize ?? 14;
     final _dx = padding?.left ?? 0;
-    final _dy = (padding?.top ?? 0);
+    final _dy = padding?.top ?? 0;
     final _width = columnWidth;
     final _width2 = _width! - size;
     final _height = this.boxSize!.height - (padding?.vertical ?? 0);
@@ -117,7 +117,7 @@ class TextComposition {
 
     /// 下一页 判断分页 依据: `_boxHeight` `_boxHeight2`是否可以容纳下一行
     void newPage([bool shouldJustifyHeight = true, bool lastPage = false]) {
-      if (shouldJustifyHeight) {
+      if (shouldJustifyHeight && this.shouldJustifyHeight!) {
         final len = lines.length - startLine;
         double justify = (_height - dy) / (len - 1);
         for (var i = 0; i < len; i++) {
@@ -147,15 +147,16 @@ class TextComposition {
     }
 
     for (var p in this.paragraphs!) {
+      double? spacing;
       while (true) {
         tp.text = TextSpan(text: p, style: style);
         tp.layout(maxWidth: columnWidth!);
         final textCount = tp.getPositionForOffset(offset).offset;
-        double? spacing;
+
         final text = p.substring(0, textCount);
         if (tp.width > _width2) {
-          tp.text = TextSpan(text: text, style: style);
-          tp.layout();
+          // tp.text = TextSpan(text: text, style: style);
+          // tp.layout();
           spacing = (_width - tp.width) / (textCount + 1);
         }
         lines.add(Lines(text: text, dx: dx, dy: dy, spacing: spacing));
@@ -180,6 +181,7 @@ class TextComposition {
     // print("_height $_height _height2 $_height2");
     // this.pages!.forEach((element) {
     //   print(element.height);
+    //   // print(element.lines!.first.text);
     // });
   }
 

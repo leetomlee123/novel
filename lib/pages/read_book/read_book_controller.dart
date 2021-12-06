@@ -1,3 +1,4 @@
+import 'dart:isolate';
 import 'dart:ui' as ui;
 
 import 'package:battery_plus/battery_plus.dart';
@@ -63,6 +64,8 @@ class ReadBookController extends FullLifeCycleController
 
   var itemExtent = 50.0;
 
+  int downCommitLen = 100;
+
   //setting
   RxDouble fontSize = .0.obs;
   RxDouble latterHeight = .0.obs;
@@ -73,7 +76,6 @@ class ReadBookController extends FullLifeCycleController
   @override
   void onInit() {
     super.onInit();
-
     homeController = Get.find<HomeController>();
     String bookId = Get.arguments['id'].toString();
     if (bookId == "null") {
@@ -127,6 +129,8 @@ class ReadBookController extends FullLifeCycleController
 
   initData() async {
     try {
+      electricQuantity = await Battery().batteryLevel / 100;
+
       chapters.value =
           await DataBaseProvider.dbProvider.getChapters(book.value.id);
       if (chapters.isEmpty) {
@@ -181,7 +185,8 @@ class ReadBookController extends FullLifeCycleController
 
     //获取章节内容
     if (readPage.chapterContent!.isEmpty) {
-      readPage.chapterContent = await getChapterContent(idx);
+      readPage.chapterContent =
+          await ChapterParseUtil().getChapterCotent(chapters[idx].chapterId);
       if (readPage.chapterContent!.isEmpty) {
         readPage.chapterContent = "章节内容加载失败,请重试.......\n";
       } else {
@@ -192,7 +197,7 @@ class ReadBookController extends FullLifeCycleController
     }
     //获取分页数据
     //本地是否有分页的缓存
-    var key = '${book.value.id}pages${readPage.chapterName}';
+    var key = 'pages_${book.value.id}_${chapter.chapterName}';
     var pageData = LocalStorage().getJSON(key);
 
     if (pageData != null) {
@@ -205,35 +210,58 @@ class ReadBookController extends FullLifeCycleController
     return readPage;
   }
 
+  //下载章节内容
+  dowload(int idx) async {
+    /// Isolate所需参数，必须要有SendPort，SendPort需要ReceivePort创建
+    final receivePort = ReceivePort();
+
+    /// 第一个参数entryPoint：必须是一个顶层方法或静态方法
+    /// 第二个参数message：通常初始化message包含一个sendPort
+    // print('执行：1'); // ----> 1. 创建Isolate
+    await Isolate.spawn(isolateTopLevelFunction, receivePort.sendPort);
+
+    /// 获取sendPort来发送数据
+    // print('执行：2'); // ----> 2. 准备获取发送过来的数据
+    final sendPort = await receivePort.first as SendPort;
+
+    /// 接收消息的receivePort
+    final answerReceivePort = ReceivePort();
+    for (var i = idx; i < chapters.length; i++) {
+      /// 发送数据
+      // print('执行：5'); // ----> 5. 开始往那边发送数据和SendPort
+      if (chapters[i].hasContent != "2") {
+        sendPort.send([
+          DownChapter(idx: i, chapterId: chapters[i].chapterId),
+          answerReceivePort.sendPort
+        ]);
+      }
+    }
+
+    /// 获取数据并返回
+    answerReceivePort.listen((message) async {
+      print('执行：6'); // ----> 6. 等待那边处理数据
+
+      final result = message as DownChapter;
+      chapters[result.idx ?? 0].hasContent = "2";
+      // DataBaseProvider.dbProvider
+      //     .updateContent(result.chapterId ?? "", result.chapterContent);
+    });
+  }
+
   saveState() {
     if (saveReadState.value) {
       LocalStorage().setJSON(
-          '${book.value.id}pages${prePage?.chapterName}', prePage?.pages);
+          'pages_${book.value.id}_${prePage?.chapterName}', prePage?.pages);
       LocalStorage().setJSON(
-          '${book.value.id}pages${curPage?.chapterName}', curPage?.pages);
+          'pages_${book.value.id}_${curPage?.chapterName}', curPage?.pages);
       LocalStorage().setJSON(
-          '${book.value.id}pages${nextPage?.chapterName}', nextPage?.pages);
+          'pages_${book.value.id}_${nextPage?.chapterName}', nextPage?.pages);
       if (Global.profile!.token!.isNotEmpty) {
         BookApi().uploadReadRecord(Global.profile!.username, book.value.id,
             book.value.chapterIdx.toString());
       }
     }
     setting!.persistence();
-  }
-
-  getChapterContent(int idx) async {
-    //从数据库中取
-    var chapterId = chapters[idx].chapterId;
-    var res = await BookApi().getContent(chapterId);
-    String chapterContent = res['content'];
-    if (chapterContent.isEmpty) {
-      //本地解析
-      chapterContent = await ChapterParseUtil().parseContent(res['link']);
-      //上传到数据库
-      BookApi().updateContent(chapterId, chapterContent);
-    }
-
-    return chapterContent;
   }
 
   /*页面点击事件 */
@@ -588,7 +616,23 @@ class ReadBookController extends FullLifeCycleController
     }
   }
 
-  void reloadCurrentPage() {}
+  Future<void> reloadCurrentPage() async {
+    String chapterId = chapters[book.value.chapterIdx!].chapterId;
+    //从数据库中取
+    var res = await BookApi().getContent(chapterId);
+
+    String chapterContent = await ChapterParseUtil().parseContent(res['link']);
+    //上传到数据库
+    BookApi().updateContent(chapterId, chapterContent);
+    curPage = await loadChapter(book.value.chapterIdx!);
+    DataBaseProvider.dbProvider.updateContent(chapterId, chapterContent);
+    chapters[book.value.chapterIdx!].hasContent = "2";
+
+    curPage!.chapterContent = chapterContent;
+    curPage!.pages = TextComposition.parseContent(curPage!, setting!);
+    canvasKey.currentContext!.findRenderObject()!.markNeedsPaint();
+    toggleShowMenu();
+  }
 
   Future<void> updPage() async {
     homeController!.widgets.clear();
@@ -625,11 +669,13 @@ class ReadBookController extends FullLifeCycleController
 
   reloadCurChapterWidget() {}
 
-  void jump(int i) {
+  Future<void> jump(int i) async {
+    await Future.delayed(Duration(seconds: 1));
+
     try {
       loadStatus.value = LOAD_STATUS.LOADING;
       book.value.chapterIdx = i;
-      initContent(i, true);
+      await initContent(i, true);
       loadStatus.value = LOAD_STATUS.FINISH;
     } catch (e) {
       loadStatus.value = LOAD_STATUS.FAILED;
