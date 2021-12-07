@@ -13,7 +13,7 @@ import 'package:novel/pages/read_book/read_book_model.dart';
 class TextComposition {
   /// 待渲染文本段落
   /// 已经预处理: 不重新计算空行 不重新缩进
-  static Color darkFont = Color(0x5FFFFFFF);
+  static Color darkFont = Color(0x6FFFFFFF);
   ReadPage? readPage;
   final List<String>? paragraphs;
   bool? justRender;
@@ -147,17 +147,18 @@ class TextComposition {
     }
 
     for (var p in this.paragraphs!) {
-      double? spacing;
       while (true) {
         tp.text = TextSpan(text: p, style: style);
         tp.layout(maxWidth: columnWidth!);
         final textCount = tp.getPositionForOffset(offset).offset;
+        double spacing = 0;
 
         final text = p.substring(0, textCount);
         if (tp.width > _width2) {
           // tp.text = TextSpan(text: text, style: style);
           // tp.layout();
-          spacing = (_width - tp.width) / (textCount + 1);
+          var w = _width - tp.width;
+          spacing = w / textCount;
         }
         lines.add(Lines(text: text, dx: dx, dy: dy, spacing: spacing));
         dy += tp.height;
@@ -178,6 +179,9 @@ class TextComposition {
     if (this.pages!.length == 0) {
       this.pages!.add(TextPage(lines: [], height: 0));
     }
+    // this.pages!.forEach((element) {
+    //   print(element.lines!.length);
+    // });
     // print("_height $_height _height2 $_height2");
     // this.pages!.forEach((element) {
     //   print(element.height);
@@ -195,7 +199,7 @@ class TextComposition {
         fontFamily: setting.fontName,
         fontSize: setting.fontSize,
         // letterSpacing: setting.latterSpace,
-        // letterSpacing: .3,
+        // letterSpacing: 1.5,
         height: setting.latterHeight,
       ),
       paragraph:
@@ -204,9 +208,15 @@ class TextComposition {
       boxSize: Size(
           Screen.width,
           Screen.height -
-              (30 + setting.topSafeHeight!.toDouble()) * 2 -
-              Screen.bottomSafeHeight),
-      padding: EdgeInsets.symmetric(horizontal: setting.pageSpace ?? .0),
+              60 -
+              setting.topSafeHeight!.toDouble() -
+              Screen.bottomSafeHeight
+          // Screen.height -
+          //     (30 + setting.topSafeHeight!.toDouble()) * 2 -
+          //     Screen.bottomSafeHeight
+          ),
+      padding: EdgeInsets.symmetric(
+          horizontal: setting.pageSpace ?? .0, vertical: 20),
     );
     return textComposition.pages!;
   }
@@ -231,10 +241,10 @@ class TextComposition {
       textPainter.text = TextSpan(
           text: "${readPage.chapterName}",
           style: TextStyle(
-            fontSize: 12 / Screen.textScaleFactor,
-            color: isDark! ? darkFont : Colors.black54,
-            fontFamily: setting.fontName,
-          ));
+              fontSize: 12 / Screen.textScaleFactor,
+              color: isDark! ? darkFont : Colors.black54,
+              fontFamily: setting.fontName,
+              letterSpacing: 2));
       textPainter.layout();
       //章节高30 画在中间
       textPainter.paint(
@@ -245,9 +255,9 @@ class TextComposition {
           locale: Locale('zh_CN'),
           fontFamily: setting.fontName,
           fontSize: setting.fontSize,
-          // letterSpacing: ReadSetting.getLatterSpace(),
-          height: setting.latterHeight);
+          // letterSpacing: 3,
 
+          height: setting.latterHeight);
       final TextPage page = readPage.pages![i!];
       final lineCount = page.lines!.length;
       for (var i = 0; i < lineCount; i++) {
@@ -259,10 +269,10 @@ class TextComposition {
             style: style.copyWith(letterSpacing: line.spacing),
           );
         } else {
-          textPainter.text =
-              TextSpan(text: line.text!.trimRight(), style: style);
+          textPainter.text = TextSpan(text: line.text!, style: style);
         }
-        final offset = Offset(line.dx!, line.dy! + 45 + safeTopHeight);
+
+        final offset = Offset(line.dx!, line.dy! + 30 + safeTopHeight);
         textPainter.layout();
         textPainter.paint(pageCanvas, offset);
       }

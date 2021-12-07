@@ -15,66 +15,76 @@ class HomePage extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Scaffold(
-          key: scaffoldKey,
-          appBar: controller.manageShelf.value
-              ? AppBar(
-                  leadingWidth: 70,
-                  leading: TextButton(
-                    onPressed: () => controller.pickAction(),
-                    child: Text(
-                      controller.pickAll.value ? "全不选" : "全选",
-                      style: TextStyle(color: Colors.white),
+    return Obx(() => WillPopScope(
+          onWillPop: () async {
+            if (controller.manageShelf.value) {
+              controller.manageShelf.value = !controller.manageShelf.value;
+              return false;
+            }
+            return false;
+          },
+          child: Scaffold(
+            key: scaffoldKey,
+            appBar: controller.manageShelf.value
+                ? AppBar(
+                    leadingWidth: 70,
+                    leading: TextButton(
+                      onPressed: () => controller.pickAction(),
+                      child: Text(
+                        controller.pickAll.value ? "全不选" : "全选",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
-                  ),
-                  centerTitle: true,
-                  title: Column(
-                    children: [
-                      Text("书架整理"),
-                      Text(
-                        "已选择${controller.pickList.length}本",
-                        style: TextStyle(fontSize: 11),
-                      )
+                    centerTitle: true,
+                    title: Column(
+                      children: [
+                        Text("书架整理"),
+                        Text(
+                          "已选择${controller.pickList.length}本",
+                          style: TextStyle(fontSize: 11),
+                        )
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                          onPressed: () => controller.manage(),
+                          child: Text(
+                            "完成",
+                            style: TextStyle(color: Colors.white),
+                          ))
                     ],
+                  )
+                : AppBar(
+                    actions: [
+                      IconButton(
+                        icon: Icon(Icons.search),
+                        onPressed: () {
+                          Get.toNamed(AppRoutes.SearchBook);
+                        },
+                      ),
+                      _popupMenuButton(context)
+                    ],
+                    centerTitle: true,
+                    title: Text("书架"),
+                    leading: IconButton(
+                        icon: Icon(Icons.person),
+                        onPressed: () =>
+                            scaffoldKey.currentState!.openDrawer()),
                   ),
-                  actions: [
-                    TextButton(
-                        onPressed: () => controller.manage(),
-                        child: Text(
-                          "完成",
-                          style: TextStyle(color: Colors.white),
-                        ))
-                  ],
-                )
-              : AppBar(
-                  actions: [
-                    IconButton(
-                      icon: Icon(Icons.search),
-                      onPressed: () {
-                        Get.toNamed(AppRoutes.SearchBook);
-                      },
-                    
-                    ),
-                    _popupMenuButton(context)
-                  ],
-                  centerTitle: true,
-                  title: Text("书架"),
-                  leading: IconButton(
-                      icon: Icon(Icons.person),
-                      onPressed: () => scaffoldKey.currentState!.openDrawer()),
-                ),
-          drawer: Drawer(
-            child: AppMenuPage(),
+            drawer: Drawer(
+              child: AppMenuPage(),
+            ),
+            body: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                child: controller.shelf.isNotEmpty
+                    ? controller.coverLayout.value
+                        ? _buildListModel()
+                        : _buildCoverModel()
+                    : Container()),
+            bottomNavigationBar:
+                controller.manageShelf.value ? _buildManageAction() : null,
           ),
-          body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-              child: controller.shelf.isNotEmpty
-                  ? controller.coverLayout.value
-                      ? _buildListModel()
-                      : _buildCoverModel()
-                  : Container()),
-          bottomNavigationBar:
-              controller.manageShelf.value ? _buildManageAction() : null,
         ));
   }
 
@@ -173,9 +183,12 @@ class HomePage extends GetView<HomeController> {
         ),
         Visibility(
           visible: controller.manageShelf.value,
-          child: Icon(controller.pickList.contains(i)
-              ? Icons.radio_button_checked
-              : Icons.radio_button_unchecked,size: 30.0,),
+          child: Icon(
+            controller.pickList.contains(i)
+                ? Icons.radio_button_checked
+                : Icons.radio_button_unchecked,
+            size: 30.0,
+          ),
         ),
       ],
     );

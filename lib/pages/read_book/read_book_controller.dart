@@ -1,11 +1,10 @@
-import 'dart:isolate';
 import 'dart:ui' as ui;
 
 import 'package:battery_plus/battery_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbar_manager/flutter_statusbar_manager.dart';
 import 'package:get/get.dart';
-import 'package:indexed_list_view/indexed_list_view.dart';
 import 'package:novel/common/animation/AnimationControllerWithListenerNumber.dart';
 import 'package:novel/common/screen.dart';
 import 'package:novel/common/values/setting.dart';
@@ -60,7 +59,7 @@ class ReadBookController extends FullLifeCycleController
   RxBool darkModel = Get.isDarkMode.obs;
 
   //chapter
-  IndexedScrollController indexController = IndexedScrollController();
+  ScrollController indexController = ScrollController();
 
   var itemExtent = 50.0;
 
@@ -143,9 +142,10 @@ class ReadBookController extends FullLifeCycleController
       chapterIdx.value = book.value.chapterIdx!;
       await initContent(book.value.chapterIdx!, false);
       await cur();
-      indexController = IndexedScrollController(
-          initialIndex: book.value.chapterIdx ?? 0,
-          initialScrollOffset: (book.value.chapterIdx ?? 0) == 0 ? 0 : -200);
+      indexController = ScrollController(
+          initialScrollOffset: (book.value.chapterIdx ?? 0) == 0
+              ? 0
+              : (book.value.chapterIdx! - 6) * itemExtent);
       loadStatus.value = LOAD_STATUS.FINISH;
     } catch (e) {
       loadStatus.value = LOAD_STATUS.FAILED;
@@ -154,9 +154,10 @@ class ReadBookController extends FullLifeCycleController
   }
 
   reInitController() {
-    indexController = IndexedScrollController(
-        initialIndex: book.value.chapterIdx ?? 0,
-        initialScrollOffset: (book.value.chapterIdx ?? 0) == 0 ? 0 : -200);
+    indexController = ScrollController(
+        initialScrollOffset: (book.value.chapterIdx ?? 0) == 0
+            ? 0
+            : (book.value.chapterIdx! - 6) * itemExtent);
   }
 
   initContent(int idx, bool jump) async {
@@ -212,40 +213,64 @@ class ReadBookController extends FullLifeCycleController
 
   //下载章节内容
   dowload(int idx) async {
+    book.value.cacheChapterContent = "1";
+    DataBaseProvider.dbProvider.updBook(book.value);
+
     /// Isolate所需参数，必须要有SendPort，SendPort需要ReceivePort创建
-    final receivePort = ReceivePort();
+    // final receivePort = ReceivePort();
 
-    /// 第一个参数entryPoint：必须是一个顶层方法或静态方法
-    /// 第二个参数message：通常初始化message包含一个sendPort
-    // print('执行：1'); // ----> 1. 创建Isolate
-    await Isolate.spawn(isolateTopLevelFunction, receivePort.sendPort);
+    // /// 第一个参数entryPoint：必须是一个顶层方法或静态方法
+    // /// 第二个参数message：通常初始化message包含一个sendPort
+    // // print('执行：1'); // ----> 1. 创建Isolate
+    // await Isolate.spawn(isolateTopLevelFunction, receivePort.sendPort);
 
-    /// 获取sendPort来发送数据
-    // print('执行：2'); // ----> 2. 准备获取发送过来的数据
-    final sendPort = await receivePort.first as SendPort;
+    // /// 获取sendPort来发送数据
+    // // print('执行：2'); // ----> 2. 准备获取发送过来的数据
+    // final sendPort = await receivePort.first as SendPort;
 
-    /// 接收消息的receivePort
-    final answerReceivePort = ReceivePort();
+    // /// 接收消息的receivePort
+    // final answerReceivePort = ReceivePort();
+
+    // do {
+    // if (chapters[i].hasContent != "2") {
+    //   sendPort.send([
+    //     DownChapter(idx: i, chapterId: chapters[i].chapterId),
+    //     answerReceivePort.sendPort
+    //   ]);
+    //   canCache = false;
+    //   i++;
+    // }
+    // } while (canCache && i < chapters.length);
+    List<DownChapter> cps = List.empty(growable: true);
     for (var i = idx; i < chapters.length; i++) {
       /// 发送数据
       // print('执行：5'); // ----> 5. 开始往那边发送数据和SendPort
       if (chapters[i].hasContent != "2") {
-        sendPort.send([
-          DownChapter(idx: i, chapterId: chapters[i].chapterId),
-          answerReceivePort.sendPort
-        ]);
+        // sendPort.send([
+        //   DownChapter(idx: i, chapterId: chapters[i].chapterId, cps: chapters),
+        //   answerReceivePort.sendPort
+        // ]);
+        cps.add(DownChapter(
+          idx: i,
+          chapterId: chapters[i].chapterId,
+        ));
       }
     }
+    cps = await compute(downChapter, cps);
+    cps.forEach((element) {
+      chapters[element.idx ?? 0].hasContent = "2";
+    });
+    DataBaseProvider.dbProvider.downContent(cps);
 
     /// 获取数据并返回
-    answerReceivePort.listen((message) async {
-      print('执行：6'); // ----> 6. 等待那边处理数据
-
-      final result = message as DownChapter;
-      chapters[result.idx ?? 0].hasContent = "2";
-      // DataBaseProvider.dbProvider
-      //     .updateContent(result.chapterId ?? "", result.chapterContent);
-    });
+    // answerReceivePort.listen((message) async {
+    //   print('执行：6'); // ----> 6. 等待那边处理数据
+    //   canCache = true;
+    //   final result = message as DownChapter;
+    // chapters[result.idx ?? 0].hasContent = "2";
+    //   DataBaseProvider.dbProvider
+    //       .updateContent(result.chapterId ?? "", result.chapterContent);
+    // });
   }
 
   saveState() {

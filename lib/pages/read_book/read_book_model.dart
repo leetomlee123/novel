@@ -38,7 +38,7 @@ class Lines {
   double? dx;
   double? spacing;
   justifyDy(double offsetDy) {
-    dy = dy ?? .0 + offsetDy;
+    dy = dy! + offsetDy;
   }
 
   Lines({this.text, this.dy, this.dx, this.spacing});

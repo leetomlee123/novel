@@ -30,7 +30,7 @@ class FontSetPage extends GetView<FontSetController> {
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 height: 1.4,
-                letterSpacing: .5,
+                letterSpacing: 2.5,
                 fontFamily: controller.fontName.value),
           ),
         ),
@@ -43,7 +43,7 @@ class FontSetPage extends GetView<FontSetController> {
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 height: 1.4,
-                letterSpacing: .5,
+                letterSpacing: 2.5,
                 fontFamily: controller.fontName.value),
           ),
         ),
@@ -56,7 +56,7 @@ class FontSetPage extends GetView<FontSetController> {
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 height: 1.4,
-                letterSpacing: .5,
+                letterSpacing: 1,
                 fontFamily: controller.fontName.value),
           ),
         ),

@@ -1,11 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:indexed_list_view/indexed_list_view.dart';
 import 'package:novel/common/screen.dart';
 import 'package:novel/common/values/setting.dart';
 import 'package:novel/components/common_img.dart';
-import 'package:novel/components/loading.dart';
+import 'package:novel/global.dart';
 import 'package:novel/pages/book_chapters/chapter.pbserver.dart';
 import 'package:novel/router/app_pages.dart';
 import 'package:novel/utils/database_provider.dart';
@@ -27,8 +26,12 @@ class ReadBookPage extends GetView<ReadBookController> {
           body: controller.loadStatus.value == LOAD_STATUS.FINISH
               ? _buildContent()
               : controller.loadStatus.value == LOAD_STATUS.FAILED
-                  ? Center(child: Text("something is wrong,please try again"))
-                  : LoadingDialog(),
+                  ? GestureDetector(
+                      child: Center(
+                          child: Text("something is wrong,please try again")),
+                      onTapUp: (e) => controller.tapPage(e),
+                    )
+                  : Center(child: Text("加载中...")),
         ));
   }
 
@@ -181,6 +184,8 @@ class ReadBookPage extends GetView<ReadBookController> {
                   ? ThemeData.light()
                   : ThemeData.dark());
               controller.darkModel.value = !controller.darkModel.value;
+              Global.setting!.isDark = controller.darkModel.value;
+
               controller.colorModelSwitch();
             }),
         buildBottomItem('缓存', Icons.cloud_download),
@@ -446,7 +451,7 @@ class ReadBookPage extends GetView<ReadBookController> {
 
               Row(
                 children: [
-                  Text("行距", style: TextStyle(fontSize: 13.0)),
+                  Text("行高", style: TextStyle(fontSize: 13.0)),
                   IconButton(
                     onPressed: () {
                       if (controller.setting!.latterHeight! <= 1.1) {
@@ -504,6 +509,7 @@ class ReadBookPage extends GetView<ReadBookController> {
                   ),
                 ],
               ),
+
               Row(
                 children: [
                   Text("段距", style: TextStyle(fontSize: 13.0)),
@@ -563,6 +569,7 @@ class ReadBookPage extends GetView<ReadBookController> {
                   ),
                 ],
               ),
+
               Row(
                 children: [
                   Text("页距", style: TextStyle(fontSize: 13.0)),
@@ -652,7 +659,7 @@ class ReadBookPage extends GetView<ReadBookController> {
                         },
                         child: Text('字体')),
                   ),
-                  Expanded(child: Container(), flex: 2),
+                  Spacer(),
                   Expanded(
                     flex: 3,
                     child: SwitchListTile(
@@ -769,11 +776,10 @@ class ReadBookPage extends GetView<ReadBookController> {
         ),
 
         Expanded(
-          child: IndexedListView.builder(
+          child: ListView.builder(
             itemExtent: controller.itemExtent,
-            maxItemCount: controller.chapters.length,
+            itemCount: controller.chapters.length,
             addAutomaticKeepAlives: true,
-            minItemCount: 0,
             itemBuilder: (c, i) {
               ChapterProto chapter = controller.chapters[i];
               return ListTile(

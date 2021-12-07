@@ -44,10 +44,10 @@ class Global {
     SystemApi().getConfigs();
 
     //检查更新
-    UpdateAppUtil.checkUpdate();
+    // UpdateAppUtil.checkUpdate();
 
     //阅读器配置文件
-    // LocalStorage().remove(ReadSetting.settingKey);
+    LocalStorage().remove(ReadSetting.settingKey);
     var settingValue = LocalStorage().getJSON(ReadSetting.settingKey);
     setting = settingValue == null
         ? ReadSetting()
