@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -171,7 +172,6 @@ class ReadBookPage extends GetView<ReadBookController> {
                     controller.darkModel.value
                         ? Icons.light_mode
                         : Icons.dark_mode,
-                    // color: Colors.white,
                   ),
                   SizedBox(height: 5),
                   Text(controller.darkModel.value ? '日间' : '夜间',
@@ -185,7 +185,6 @@ class ReadBookPage extends GetView<ReadBookController> {
                   : ThemeData.dark());
               controller.darkModel.value = !controller.darkModel.value;
               Global.setting!.isDark = controller.darkModel.value;
-
               controller.colorModelSwitch();
             }),
         buildBottomItem('缓存', Icons.cloud_download),
@@ -201,7 +200,6 @@ class ReadBookPage extends GetView<ReadBookController> {
           children: <Widget>[
             Icon(
               iconData,
-              // color: Colors.white,
             ),
             SizedBox(height: 5),
             Text(title, style: TextStyle(fontSize: 12)),
@@ -266,7 +264,7 @@ class ReadBookPage extends GetView<ReadBookController> {
             TextButton(
                 onPressed: () async {
                   if ((controller.book.value.chapterIdx! - 1) < 0) {
-                    Get.snackbar("", '已经是第一章');
+                    BotToast.showText(text: '已经是第一章');
                     return;
                   }
                   controller.book.value.chapterIdx =
@@ -295,7 +293,7 @@ class ReadBookPage extends GetView<ReadBookController> {
                 onPressed: () async {
                   if ((controller.book.value.chapterIdx! + 1) >=
                       controller.chapters.length) {
-                    Get.snackbar("", "已经是最后一章");
+                    BotToast.showText(text: "已经是最后一章");
                     return;
                   }
                   controller.book.value.chapterIdx =

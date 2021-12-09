@@ -1,4 +1,5 @@
 import 'package:novel/pages/Index/Index_controller.dart';
+import 'package:novel/pages/book_city/book_city_controller.dart';
 import 'package:novel/pages/home/home_controller.dart';
 import 'package:get/get.dart';
 
@@ -7,5 +8,6 @@ class IndexBinding extends Bindings {
   void dependencies() {
     Get.lazyPut<IndexController>(() => IndexController());
     Get.lazyPut<HomeController>(() => HomeController());
+    Get.lazyPut<BookCityController>(() => BookCityController());
   }
 }

@@ -18,7 +18,7 @@ class BookSearchPage extends GetView<BookSearchController> {
             appBar: _buildSearchBar(),
             body: Obx(
               () => controller.books.isEmpty
-                  ? Container()
+                  ? _buildHistoryAndHotBook()
                   : Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 10),
@@ -32,12 +32,46 @@ class BookSearchPage extends GetView<BookSearchController> {
                           itemCount: controller.count,
                           itemExtent: itemHeight + 5,
                         ),
-                        whenEmptyLoad: false,
+                        whenEmptyLoad: true,
                         delegate: DefaultLoadMoreDelegate(),
                         textBuilder: DefaultLoadMoreTextBuilder.chinese,
                       ),
                     ),
             )));
+  }
+
+  _buildHistoryAndHotBook() {
+    return Obx(() => Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Text(
+                    "搜索历史",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                  Spacer(),
+                  IconButton(
+                      onPressed: () => controller.clearHistory(),
+                      icon: Icon(Icons.delete_rounded))
+                ],
+              ),
+              Wrap(
+                spacing: 20,
+                runAlignment: WrapAlignment.spaceEvenly,
+                children: controller.history
+                    .map(
+                      (element) => GestureDetector(
+                        child: Chip(label: Text(element)),
+                        onTap: () => controller.historyItemSearch(element),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ],
+          ),
+        ));
   }
 
   ThemeData appBarTheme(BuildContext context) {

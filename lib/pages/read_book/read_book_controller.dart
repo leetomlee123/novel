@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:battery_plus/battery_plus.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbar_manager/flutter_statusbar_manager.dart';
@@ -18,8 +19,8 @@ import 'package:novel/pages/read_book/read_book_model.dart';
 import 'package:novel/services/book.dart';
 import 'package:novel/utils/chapter_parse.dart';
 import 'package:novel/utils/database_provider.dart';
-import 'package:novel/utils/local_storage.dart';
 import 'package:novel/utils/text_composition.dart';
+import 'package:sp_util/sp_util.dart';
 
 enum LOAD_STATUS { LOADING, FAILED, FINISH }
 enum OperateType { SLIDE, MORE_SETTING, DOWNLOAD }
@@ -199,12 +200,11 @@ class ReadBookController extends FullLifeCycleController
     //获取分页数据
     //本地是否有分页的缓存
     var key = 'pages_${book.value.id}_${chapter.chapterName}';
-    var pageData = LocalStorage().getJSON(key);
 
-    if (pageData != null) {
+    if (SpUtil.haveKey(key)!) {
       readPage.pages =
-          pageData.map((e) => TextPage.fromJson(e)).toList().cast<TextPage>();
-      LocalStorage().remove(key);
+          SpUtil.getObjList(key, (v) => TextPage.fromJson(v))!.toList();
+      SpUtil.remove(key);
     } else {
       readPage.pages = TextComposition.parseContent(readPage, setting!);
     }
@@ -216,40 +216,9 @@ class ReadBookController extends FullLifeCycleController
     book.value.cacheChapterContent = "1";
     DataBaseProvider.dbProvider.updBook(book.value);
 
-    /// Isolate所需参数，必须要有SendPort，SendPort需要ReceivePort创建
-    // final receivePort = ReceivePort();
-
-    // /// 第一个参数entryPoint：必须是一个顶层方法或静态方法
-    // /// 第二个参数message：通常初始化message包含一个sendPort
-    // // print('执行：1'); // ----> 1. 创建Isolate
-    // await Isolate.spawn(isolateTopLevelFunction, receivePort.sendPort);
-
-    // /// 获取sendPort来发送数据
-    // // print('执行：2'); // ----> 2. 准备获取发送过来的数据
-    // final sendPort = await receivePort.first as SendPort;
-
-    // /// 接收消息的receivePort
-    // final answerReceivePort = ReceivePort();
-
-    // do {
-    // if (chapters[i].hasContent != "2") {
-    //   sendPort.send([
-    //     DownChapter(idx: i, chapterId: chapters[i].chapterId),
-    //     answerReceivePort.sendPort
-    //   ]);
-    //   canCache = false;
-    //   i++;
-    // }
-    // } while (canCache && i < chapters.length);
     List<DownChapter> cps = List.empty(growable: true);
     for (var i = idx; i < chapters.length; i++) {
-      /// 发送数据
-      // print('执行：5'); // ----> 5. 开始往那边发送数据和SendPort
       if (chapters[i].hasContent != "2") {
-        // sendPort.send([
-        //   DownChapter(idx: i, chapterId: chapters[i].chapterId, cps: chapters),
-        //   answerReceivePort.sendPort
-        // ]);
         cps.add(DownChapter(
           idx: i,
           chapterId: chapters[i].chapterId,
@@ -261,26 +230,16 @@ class ReadBookController extends FullLifeCycleController
       chapters[element.idx ?? 0].hasContent = "2";
     });
     DataBaseProvider.dbProvider.downContent(cps);
-
-    /// 获取数据并返回
-    // answerReceivePort.listen((message) async {
-    //   print('执行：6'); // ----> 6. 等待那边处理数据
-    //   canCache = true;
-    //   final result = message as DownChapter;
-    // chapters[result.idx ?? 0].hasContent = "2";
-    //   DataBaseProvider.dbProvider
-    //       .updateContent(result.chapterId ?? "", result.chapterContent);
-    // });
   }
 
   saveState() {
     if (saveReadState.value) {
-      LocalStorage().setJSON(
-          'pages_${book.value.id}_${prePage?.chapterName}', prePage?.pages);
-      LocalStorage().setJSON(
-          'pages_${book.value.id}_${curPage?.chapterName}', curPage?.pages);
-      LocalStorage().setJSON(
-          'pages_${book.value.id}_${nextPage?.chapterName}', nextPage?.pages);
+      SpUtil.putObjectList('pages_${book.value.id}_${prePage?.chapterName}',
+          prePage?.pages ?? []);
+      SpUtil.putObjectList('pages_${book.value.id}_${curPage?.chapterName}',
+          curPage?.pages ?? []);
+      SpUtil.putObjectList('pages_${book.value.id}_${nextPage?.chapterName}',
+          nextPage?.pages ?? []);
       if (Global.profile!.token!.isNotEmpty) {
         BookApi().uploadReadRecord(Global.profile!.username, book.value.id,
             book.value.chapterIdx.toString());
@@ -520,7 +479,7 @@ class ReadBookController extends FullLifeCycleController
               });
       int tempCur = book.value.chapterIdx! + 1;
       if (tempCur >= chapters.length) {
-        Get.snackbar("", "已经是第一页", snackPosition: SnackPosition.TOP);
+        BotToast.showText(text: "已经是第一页");
         return;
       } else {
         book.value.chapterIdx = book.value.chapterIdx! + 1;
@@ -555,7 +514,7 @@ class ReadBookController extends FullLifeCycleController
               });
       int tempCur = book.value.chapterIdx! - 1;
       if (tempCur < 0) {
-        Get.snackbar("", "第一页", snackPosition: SnackPosition.TOP);
+        BotToast.showText(text: "第一页");
 
         return;
       }
@@ -662,10 +621,10 @@ class ReadBookController extends FullLifeCycleController
   Future<void> updPage() async {
     homeController!.widgets.clear();
 
-    var keys = LocalStorage().getKeys();
-    for (var key in keys) {
-      if (key.contains("pages")) {
-        LocalStorage().remove(key);
+    var keys = SpUtil.getKeys();
+    for (var key in keys!) {
+      if (key.startsWith("pages")) {
+        SpUtil.remove(key);
       }
     }
     await initContent(book.value.chapterIdx ?? 0, true);

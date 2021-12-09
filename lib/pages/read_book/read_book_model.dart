@@ -12,7 +12,7 @@ class TextPage {
 
   TextPage({this.height, this.lines});
 
-  TextPage.fromJson(Map<String, dynamic> json) {
+  TextPage.fromJson(Map<dynamic, dynamic> json) {
     height = json['height'];
     if (json['lines'] != null) {
       lines = <Lines>[];

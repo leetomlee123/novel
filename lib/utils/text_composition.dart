@@ -155,8 +155,8 @@ class TextComposition {
 
         final text = p.substring(0, textCount);
         if (tp.width > _width2) {
-          // tp.text = TextSpan(text: text, style: style);
-          // tp.layout();
+          tp.text = TextSpan(text: text, style: style);
+          tp.layout();
           var w = _width - tp.width;
           spacing = w / textCount;
         }
@@ -210,13 +210,9 @@ class TextComposition {
           Screen.height -
               60 -
               setting.topSafeHeight!.toDouble() -
-              Screen.bottomSafeHeight
-          // Screen.height -
-          //     (30 + setting.topSafeHeight!.toDouble()) * 2 -
-          //     Screen.bottomSafeHeight
-          ),
+              Screen.bottomSafeHeight),
       padding: EdgeInsets.symmetric(
-          horizontal: setting.pageSpace ?? .0, vertical: 20),
+          horizontal: setting.pageSpace ?? .0, vertical: 10),
     );
     return textComposition.pages!;
   }
@@ -236,6 +232,7 @@ class TextComposition {
       ..strokeCap = StrokeCap.butt
       ..strokeWidth = 30.0;
     pageCanvas.drawImage(bgImage!, Offset(0, 0), selfPaint);
+
     if (readPage != null) {
       //章节
       textPainter.text = TextSpan(

@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:novel/global.dart';
 import 'package:novel/pages/read_book/read_book_controller.dart';
 import 'package:novel/utils/CustomCacheManager.dart';
-import 'package:novel/utils/local_storage.dart';
+import 'package:sp_util/sp_util.dart';
 
 class FontSetController extends GetxController {
   RxList<FontInfo> fonts = List<FontInfo>.empty().obs;
@@ -26,7 +26,7 @@ class FontSetController extends GetxController {
 
   initFontInfos() async {
     {
-      Map map = LocalStorage().getJSON("fonts");
+      Map map =SpUtil.getObject("fonts")!;
       var entries = map.entries;
       fonts.add(FontInfo("默认字体", "", null));
       for (int i = 0; i < entries.length; i++) {

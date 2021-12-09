@@ -1,7 +1,7 @@
 import 'package:novel/utils/chapter_parse.dart';
-import 'package:novel/utils/local_storage.dart';
 import 'package:novel/utils/request.dart';
 import 'package:novel/utils/update_app.dart';
+import 'package:sp_util/sp_util.dart';
 
 class SystemApi {
   Future<void> getConfigs() async {
@@ -13,8 +13,8 @@ class SystemApi {
 
     List<ParseContentConfig> configs =
         rules.map((e) => ParseContentConfig.fromJson(e)).toList();
-    LocalStorage().setJSON("rules", configs);
-    LocalStorage().setJSON("fonts", fonts);
+    SpUtil.putObject("rules", configs);
+    SpUtil.putObject("fonts", fonts);
   }
 
   Future<AppInfo> updateApp() async {

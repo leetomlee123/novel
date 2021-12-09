@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:novel/global.dart';
@@ -24,7 +25,7 @@ class LoginController extends GetxController {
   void onClose() {}
 
   login() async {
-    Get.focusScope!.requestFocus(FocusNode());
+    Get.focusScope!.unfocus();
 
     if (key.currentState!.validate()) {
       UserProfileModel _userProfileModel =
@@ -41,10 +42,14 @@ class LoginController extends GetxController {
   }
 
   googleLogin() {
-    Get.snackbar("消息", "not support yet", snackPosition: SnackPosition.BOTTOM);
+    BotToast.showText(
+      text: "not support yet",
+    );
   }
 
   githubLogin() {
-    Get.snackbar("消息", "not support yet", snackPosition: SnackPosition.BOTTOM);
+    BotToast.showText(
+      text: "not support yet",
+    );
   }
 }

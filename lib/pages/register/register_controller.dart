@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:novel/pages/register/register_model.dart';
@@ -21,12 +22,12 @@ class RegisterController extends GetxController {
   void onClose() {}
 
   register() async {
-    Get.focusScope!.requestFocus(FocusNode());
+   Get.focusScope!.unfocus();
 
     if (key.currentState!.validate()) {
       dynamic res = await UserAPI().register(registerModel);
       if (res['code'] != 200) {
-        Get.snackbar("消息", res['msg'], snackPosition: SnackPosition.BOTTOM);
+      BotToast.showText(text:res['msg']);
       } else {
         await Future.delayed(Duration(seconds: 1));
         Get.offNamed(AppRoutes.Login);

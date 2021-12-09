@@ -8,7 +8,7 @@ class UserProfileModel {
   UserProfileModel(
       {this.username, this.email, this.token, this.pwd, this.iconPath});
 
-  UserProfileModel.fromJson(Map<String, dynamic> json) {
+  UserProfileModel.fromJson(Map<dynamic, dynamic> json) {
     username = json['username'];
     email = json['email'];
     token = json['token'];

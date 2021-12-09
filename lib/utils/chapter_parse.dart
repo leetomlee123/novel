@@ -7,8 +7,8 @@ import 'package:flutter/foundation.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:novel/services/book.dart';
-import 'package:novel/utils/local_storage.dart';
 import 'package:novel/utils/request.dart';
+import 'package:sp_util/sp_util.dart';
 
 _parseAndDecode(String response) {
   return jsonDecode(response);
@@ -90,11 +90,9 @@ class ChapterParseUtil {
   static List<ParseContentConfig>? _configs;
   Future<List<ParseContentConfig>?> get configs async {
     if (_configs == null) {
-      List rules = LocalStorage().getJSON("rules");
-      _configs = rules
-          .map((e) => ParseContentConfig.fromJson(e))
-          .toList()
-          .cast<ParseContentConfig>();
+      _configs =
+          SpUtil.getObjList("rules", (v) => ParseContentConfig.fromJson(v))!
+              .toList();
     }
     return _configs;
   }
@@ -149,7 +147,7 @@ class ParseContentConfig {
 
   ParseContentConfig({this.domain, this.encode, this.documentId});
 
-  ParseContentConfig.fromJson(Map<String, dynamic> json) {
+  ParseContentConfig.fromJson(Map<dynamic, dynamic> json) {
     domain = json['domain'];
     encode = json['encode'];
     documentId = json['documentId'];

@@ -6,10 +6,9 @@ import 'package:novel/common/screen.dart';
 import 'package:novel/common/values/values.dart';
 import 'package:novel/pages/login/login_model.dart';
 import 'package:novel/services/system.dart';
-import 'package:novel/utils/local_storage.dart';
-import 'package:novel/utils/update_app.dart';
 import 'package:novel/utils/utils.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:sp_util/sp_util.dart';
 
 /// 全局配置
 class Global {
@@ -38,7 +37,7 @@ class Global {
     // Ruquest 模块初始化
     Request();
     // 本地存储初始化
-    await LocalStorage.init();
+    await SpUtil.getInstance();
 
     //配置文件
     SystemApi().getConfigs();
@@ -47,11 +46,11 @@ class Global {
     // UpdateAppUtil.checkUpdate();
 
     //阅读器配置文件
-    LocalStorage().remove(ReadSetting.settingKey);
-    var settingValue = LocalStorage().getJSON(ReadSetting.settingKey);
-    setting = settingValue == null
-        ? ReadSetting()
-        : ReadSetting.fromJson(settingValue);
+    // LocalStorage().remove(ReadSetting.settingKey);
+    setting = SpUtil.getObj(
+        ReadSetting.settingKey, (v) => ReadSetting.fromJson(v),
+        defValue: ReadSetting());
+
     if (setting!.topSafeHeight == null) {
       setting!.topSafeHeight = Screen.topSafeHeight;
       setting!.persistence();
@@ -70,13 +69,13 @@ class Global {
     // );
 
     // 读取设备第一次打开
-    isFirstOpen = !LocalStorage().getBool(STORAGE_DEVICE_ALREADY_OPEN_KEY);
+    isFirstOpen = !SpUtil.getBool(STORAGE_DEVICE_ALREADY_OPEN_KEY)!;
     if (isFirstOpen) {
-      LocalStorage().setBool(STORAGE_DEVICE_ALREADY_OPEN_KEY, true);
+      SpUtil.putBool(STORAGE_DEVICE_ALREADY_OPEN_KEY, true);
     }
 
     // 读取离线用户信息
-    var _profileJSON = LocalStorage().getJSON(STORAGE_USER_PROFILE_KEY);
+    Map _profileJSON = SpUtil.getObject(STORAGE_USER_PROFILE_KEY)!;
     if (_profileJSON != null) {
       profile = UserProfileModel.fromJson(_profileJSON);
       isOfflineLogin = true;
@@ -93,7 +92,6 @@ class Global {
   // 持久化 用户信息
   static Future<bool> saveProfile(UserProfileModel userResponse) {
     profile = userResponse;
-    return LocalStorage()
-        .setJSON(STORAGE_USER_PROFILE_KEY, userResponse.toJson());
+    return SpUtil.putObject(STORAGE_USER_PROFILE_KEY, userResponse.toJson())!;
   }
 }

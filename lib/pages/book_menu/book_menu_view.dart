@@ -198,7 +198,7 @@ class BookMenuPage extends GetView<ReadBookController> {
   //           TextButton(
   //               onPressed: () async {
   //                 if ((controller.book!.chapterIdx! - 1) < 0) {
-  //                   Get.snackbar("", '已经是第一章');
+  //                    BotToast.showText(text: '已经是第一章');
   //                   return;
   //                 }
   //                 controller.book!.chapterIdx =
@@ -231,7 +231,7 @@ class BookMenuPage extends GetView<ReadBookController> {
   //               onPressed: () async {
   //                 if ((controller.book!.chapterIdx! + 1) >=
   //                     controller.chapters.length) {
-  //                   Get.snackbar("", "已经是最后一章");
+  //                    BotToast.showText(text: "已经是最后一章");
   //                   return;
   //                 }
   //                 controller.book!.chapterIdx =
@@ -265,7 +265,7 @@ class BookMenuPage extends GetView<ReadBookController> {
   //                 margin: EdgeInsets.only(top: 15, bottom: 15),
   //                 child: GestureDetector(
   //                   onTap: () {
-  //                     Get.snackbar("", '从当前章节开始下载...');
+  //                      BotToast.showText(text: '从当前章节开始下载...');
 
   //                     // controller.downloadAll(_readModel.book.cur);
   //                   },
@@ -293,7 +293,7 @@ class BookMenuPage extends GetView<ReadBookController> {
   //                 margin: EdgeInsets.only(top: 15, bottom: 15),
   //                 child: GestureDetector(
   //                   onTap: () {
-  //                     Get.snackbar("", '开始全本下载...');
+  //                      BotToast.showText(text: '开始全本下载...');
 
   //                     // _readModel.downloadAll(0);
   //                   },

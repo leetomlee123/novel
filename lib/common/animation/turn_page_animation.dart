@@ -1,8 +1,8 @@
 import 'dart:ui';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
+
 import 'package:get/get_navigation/src/snackbar/snack.dart';
 import 'package:novel/common/animation/AnimationControllerWithListenerNumber.dart';
 import 'package:novel/pages/read_book/ReaderPageManager.dart';
@@ -59,12 +59,12 @@ class CoverPageAnimation extends BaseAnimationPage {
       AnimationController controller, GlobalKey canvasKey) {
     if (!isTurnNext && !isCanGoPre()) {
       // BotToast.showText(text: "已经是第一页");
-      Get.snackbar("", "已经是第一页", snackPosition: SnackPosition.TOP);
+      BotToast.showText(text: "已经是第一页",);
 
       return null;
     }
     if (isTurnNext && !isCanGoNext()) {
-      Get.snackbar("", "已经是最后一页", snackPosition: SnackPosition.TOP);
+      BotToast.showText(text: "已经是最后一页");
 
       return null;
     }
@@ -119,7 +119,7 @@ class CoverPageAnimation extends BaseAnimationPage {
   void onDraw(Canvas canvas) {
     if (isStartAnimation && (mTouch.dx != 0 || mTouch.dy != 0)) {
       drawBottomPage(canvas);
-      drawCurrentShadow(canvas);
+      // drawCurrentShadow(canvas);
       drawTopPage(canvas);
     } else {
       drawStatic(canvas);

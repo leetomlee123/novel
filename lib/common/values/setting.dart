@@ -1,4 +1,4 @@
-import 'package:novel/utils/local_storage.dart';
+import 'package:sp_util/sp_util.dart';
 
 class ReadSetting {
   static List<String> bgImgs = [
@@ -31,6 +31,7 @@ class ReadSetting {
 若您和清阅小说之间发生任何纠纷或争议，首先应友好协商解决；协商不成的，您同意将纠纷或争议提交清阅小说所在地的人民法院处理。''';
 
   static String settingKey = "setting_key";
+  static String searchHistory = "search_history";
 
   double? fontSize;
   double? latterHeight;
@@ -58,7 +59,7 @@ class ReadSetting {
       this.leftClickNext = false,
       this.isListCover = true});
 
-  ReadSetting.fromJson(Map<String, dynamic> json) {
+  ReadSetting.fromJson(Map<dynamic, dynamic> json) {
     fontSize = json['fontSize'];
     bgIndex = json['bgIndex'];
     topSafeHeight = json['topSafeHeight'];
@@ -90,6 +91,6 @@ class ReadSetting {
   }
 
   persistence() {
-    LocalStorage().setJSON(ReadSetting.settingKey, this);
+    SpUtil.putObject(ReadSetting.settingKey, this);
   }
 }

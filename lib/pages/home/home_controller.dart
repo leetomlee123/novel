@@ -7,11 +7,12 @@ import 'package:get/get.dart';
 import 'package:novel/common/screen.dart';
 import 'package:novel/common/values/setting.dart';
 import 'package:novel/global.dart';
+import 'package:novel/pages/Index/Index_controller.dart';
 import 'package:novel/pages/home/home_model.dart';
 import 'package:novel/router/app_pages.dart';
 import 'package:novel/services/book.dart';
 import 'package:novel/utils/database_provider.dart';
-import 'package:novel/utils/local_storage.dart';
+import 'package:sp_util/sp_util.dart';
 
 class HomeController extends GetxController {
   //阅读页背景图片
@@ -19,7 +20,7 @@ class HomeController extends GetxController {
   Map<String, ui.Picture> widgets = Map();
   RxList<Book> shelf = List<Book>.empty().obs;
   RxList pickList = List<int>.empty().obs;
-
+  IndexController indexController = Get.find<IndexController>();
   //书架显示风格
   RxBool coverLayout = false.obs;
 
@@ -31,6 +32,10 @@ class HomeController extends GetxController {
 
   @override
   void onInit() {
+    ever(manageShelf, (_) {
+      indexController.showBottom.value = !manageShelf.value;
+    });
+
     coverLayout.value = Global.setting!.isListCover ?? false;
 
     initShelf();
@@ -94,7 +99,7 @@ class HomeController extends GetxController {
     } else {
       coverLayout.value = !coverLayout.value;
       Global.setting!.isListCover = coverLayout.value;
-      LocalStorage().setJSON(ReadSetting.settingKey, Global.setting!.toJson());
+      SpUtil.putObject(ReadSetting.settingKey, Global.setting!.toJson());
     }
   }
 

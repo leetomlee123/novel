@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:novel/common/screen.dart';
 import 'package:novel/components/common_img.dart';
-import 'package:novel/pages/app_menu/app_menu_view.dart';
 import 'package:novel/pages/home/home_controller.dart';
 import 'package:novel/pages/home/home_model.dart';
 import 'package:novel/router/app_pages.dart';
@@ -11,7 +10,6 @@ import 'package:waterfall_flow/waterfall_flow.dart';
 
 class HomePage extends GetView<HomeController> {
   HomePage({Key? key}) : super(key: key);
-  var scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +22,6 @@ class HomePage extends GetView<HomeController> {
             return false;
           },
           child: Scaffold(
-            key: scaffoldKey,
             appBar: controller.manageShelf.value
                 ? AppBar(
                     leadingWidth: 70,
@@ -64,16 +61,21 @@ class HomePage extends GetView<HomeController> {
                       ),
                       _popupMenuButton(context)
                     ],
-                    centerTitle: true,
-                    title: Text("书架"),
-                    leading: IconButton(
-                        icon: Icon(Icons.person),
-                        onPressed: () =>
-                            scaffoldKey.currentState!.openDrawer()),
+                    // centerTitle: true,
+                    // title: Text("书架"),
+                    leadingWidth: 200,
+                    leading: Center(
+                      child: Text(
+                        "DeerBook",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 25),
+                      ),
+                    ),
+                    // leading: IconButton(
+                    //     icon: Icon(Icons.person),
+                    //     onPressed: () =>
+                    //         scaffoldKey.currentState!.openDrawer()),
                   ),
-            drawer: Drawer(
-              child: AppMenuPage(),
-            ),
             body: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
@@ -188,6 +190,7 @@ class HomePage extends GetView<HomeController> {
                 ? Icons.radio_button_checked
                 : Icons.radio_button_unchecked,
             size: 30.0,
+            color: Colors.white,
           ),
         ),
       ],
