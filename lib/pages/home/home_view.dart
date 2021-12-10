@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:novel/common/screen.dart';
 import 'package:novel/components/common_img.dart';
-import 'package:novel/components/components.dart';
 import 'package:novel/pages/home/home_controller.dart';
 import 'package:novel/pages/home/home_model.dart';
 import 'package:novel/router/app_pages.dart';
@@ -37,64 +35,8 @@ class HomePage extends GetView<HomeController> {
           ),
         ));
   }
-// controller.manageShelf.value
-//                 ? MyAppBar(
-//                     leadingWidth: 70,
-//                     leading: TextButton(
-//                       onPressed: () => controller.pickAction(),
-//                       child: Text(
-//                         controller.pickAll.value ? "全不选" : "全选",
-//                         style: TextStyle(color: Colors.white),
-//                       ),
-//                     ),
-//                     centerTitle: true,
-//                     title: Column(
-//                       children: [
-//                         Text("书架整理"),
-//                         Text(
-//                           "已选择${controller.pickList.length}本",
-//                           style: TextStyle(fontSize: 11),
-//                         )
-//                       ],
-//                     ),
-//                     actions: [
-//                       TextButton(
-//                           onPressed: () => controller.manage(),
-//                           child: Text(
-//                             "完成",
-//                             style: TextStyle(color: Colors.white),
-//                           ))
-//                     ],
-//                   )
-//                 : MyAppBar(
-//                     actions: [
-//                       IconButton(
-//                         icon: Icon(Icons.search),
-//                         onPressed: () {
-//                           Get.toNamed(AppRoutes.SearchBook);
-//                         },
-//                       ),
-//                       _popupMenuButton(context)
-//                     ],
-//                     // centerTitle: true,
-//                     // title: Text("书架"),
-//                     // leadingWidth: 200,
-//                     // leading: Center(
-//                     //   child: Text(
-//                     //     "DeerBook",
-//                     //     style: TextStyle(
-//                     //         fontWeight: FontWeight.bold, fontSize: 25),
-//                     //   ),
-//                     // ),
-//                     // leading: IconButton(
-//                     //     icon: Icon(Icons.person),
-//                     //     onPressed: () =>
-//                     //         scaffoldKey.currentState!.openDrawer()),
-//                   ),
 
   _buildHead(var context) {
-
-
     return PreferredSize(
         child: Padding(
           padding:

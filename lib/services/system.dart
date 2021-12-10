@@ -13,7 +13,7 @@ class SystemApi {
 
     List<ParseContentConfig> configs =
         rules.map((e) => ParseContentConfig.fromJson(e)).toList();
-    SpUtil.putObject("rules", configs);
+    SpUtil.putObjectList("rules", configs);
     SpUtil.putObject("fonts", fonts);
   }
 

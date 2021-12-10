@@ -80,13 +80,13 @@ class Global {
       profile = UserProfileModel.fromJson(_profileJSON);
       isOfflineLogin = true;
     }
-    SystemChrome.setSystemUIOverlayStyle(setting!.isDark!
-        ? SystemUiOverlayStyle.light
-        : SystemUiOverlayStyle.dark);
+    // SystemChrome.setSystemUIOverlayStyle(setting!.isDark!
+    //     ? SystemUiOverlayStyle.light
+    //     : SystemUiOverlayStyle.dark);
     // android 状态栏为透明的沉浸
     if (Platform.isAndroid) {
       SystemUiOverlayStyle systemUiOverlayStyle =
-          SystemUiOverlayStyle(statusBarColor: Colors.transparent);
+          SystemUiOverlayStyle(statusBarColor: Colors.transparent,statusBarBrightness: setting!.isDark!?Brightness.light:Brightness.dark);
       SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
     }
   }

@@ -16,9 +16,7 @@ PreferredSize buildAppBar(
     String? title,
     double? leadingWidth,
     Iterable<Widget>? actions}) {
-  SystemChrome.setSystemUIOverlayStyle(Global.setting!.isDark!
-      ? SystemUiOverlayStyle.light
-      : SystemUiOverlayStyle.dark);
+
   return PreferredSize(
       child: Padding(
         padding:

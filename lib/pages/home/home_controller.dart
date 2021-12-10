@@ -79,7 +79,11 @@ class HomeController extends GetxController {
       return;
     }
     for (Book value in shelf) {
-      Book where = books.where((element) => value.id == element.id).first;
+      var bks = books.where((element) => value.id == element.id);
+      if (bks.isEmpty) {
+        continue;
+      }
+      Book where = bks.first;
       //有更新
       if (where.lastChapter != value.lastChapter) {
         hasUpdate = true;
@@ -182,10 +186,7 @@ class HomeController extends GetxController {
   //
   loadReadPage() {
     SpUtil.getKeys()!.forEach((key) {
-      if (key.startsWith("pages")) {
-
-        
-      }
+      if (key.startsWith("pages")) {}
     });
 
     //   shelf.forEach((book) async {

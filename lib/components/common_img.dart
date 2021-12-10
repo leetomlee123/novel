@@ -17,6 +17,26 @@ class CommonImg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // return SizedBox(
+    //   width: this.width,
+    //   height: this.width / this.aspect!,
+    //   child: OctoImage(
+    //     fit: BoxFit.cover,
+    //     image: NetworkImage(url),
+    //     placeholderBuilder: (context) => Image.asset(
+    //       "images/nocover.jpg",
+    //       width: this.width,
+    //       height: this.width / this.aspect!,
+    //       fit: BoxFit.cover,
+    //     ),
+    //     errorBuilder: (context, error, stacktrace) => Image.asset(
+    //       "images/nocover.jpg",
+    //       width: this.width,
+    //       height: this.width / this.aspect!,
+    //       fit: BoxFit.cover,
+    //     ),
+    //   ),
+    // );
     return Container(
       child: ExtendedImage.network(url, fit: this.fit,
           loadStateChanged: (ExtendedImageState state) {

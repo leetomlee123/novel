@@ -134,7 +134,7 @@ class ReadBookController extends FullLifeCycleController
   }
 
   initData() async {
-    try {
+    // try {
       electricQuantity = await Battery().batteryLevel / 100;
 
       chapters.value =
@@ -154,10 +154,10 @@ class ReadBookController extends FullLifeCycleController
               ? 0
               : (book.value.chapterIdx! - 6) * itemExtent);
       loadStatus.value = LOAD_STATUS.FINISH;
-    } catch (e) {
-      loadStatus.value = LOAD_STATUS.FAILED;
-      print(e);
-    }
+    // } catch (e) {
+    //   loadStatus.value = LOAD_STATUS.FAILED;
+    //   print(e);
+    // }
   }
 
   reInitController() {

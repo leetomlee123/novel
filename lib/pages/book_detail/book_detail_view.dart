@@ -279,10 +279,10 @@ class BookDetailPage extends GetView<BookDetailController> {
           borderRadius: BorderRadius.all(Radius.circular(1.0)),
         ),
         padding: EdgeInsets.only(bottom: Screen.bottomSafeHeight),
-        child: ButtonBar(
+        child:  Obx(()=> ButtonBar(
           alignment: MainAxisAlignment.spaceEvenly,
           children: [
-            TextButton(
+          TextButton(
                 onPressed: () => controller.modifyShelf(),
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 500),
@@ -306,7 +306,7 @@ class BookDetailPage extends GetView<BookDetailController> {
                 },
                 child: Text(controller.inShelf.value ? "继续阅读" : "立即阅读")),
           ],
-        ),
+        )),
       ),
     );
   }
