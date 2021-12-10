@@ -69,11 +69,6 @@ class IndexController extends GetxController with SingleGetTickerProviderMixin {
     }
   }
 
-  setNavBar() {
-    SystemChrome.restoreSystemUIOverlays();
-
-  }
-
   @override
   void onClose() {}
 
