@@ -28,7 +28,8 @@ enum LOAD_STATUS { LOADING, FAILED, FINISH }
 enum OperateType { SLIDE, MORE_SETTING, DOWNLOAD }
 
 class ReadBookController extends FullLifeCycleController
-    with FullLifeCycle, SingleGetTickerProviderMixin {
+with
+  GetSingleTickerProviderStateMixin {
   Rx<Book> book = Book().obs;
   RxInt chapterIdx = 0.obs;
   Rx<LOAD_STATUS> loadStatus = LOAD_STATUS.LOADING.obs;

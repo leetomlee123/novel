@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 
-import 'package:get/get_navigation/src/snackbar/snack.dart';
+
 import 'package:novel/common/animation/AnimationControllerWithListenerNumber.dart';
 import 'package:novel/pages/read_book/ReaderPageManager.dart';
 
