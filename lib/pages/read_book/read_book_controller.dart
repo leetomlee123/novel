@@ -4,6 +4,7 @@ import 'package:battery_plus/battery_plus.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_statusbar_manager/flutter_statusbar_manager.dart';
 import 'package:get/get.dart';
 import 'package:novel/common/animation/AnimationControllerWithListenerNumber.dart';
@@ -75,6 +76,11 @@ class ReadBookController extends FullLifeCycleController
 
   @override
   void onInit() {
+    ever(darkModel, (_) {
+      SystemChrome.setSystemUIOverlayStyle(darkModel.value
+          ? SystemUiOverlayStyle.light
+          : SystemUiOverlayStyle.dark);
+    });
     super.onInit();
     homeController = Get.find<HomeController>();
     String bookId = Get.arguments['id'].toString();

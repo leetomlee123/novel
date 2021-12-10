@@ -181,6 +181,13 @@ class HomeController extends GetxController {
 
   //
   loadReadPage() {
+    SpUtil.getKeys()!.forEach((key) {
+      if (key.startsWith("pages")) {
+
+        
+      }
+    });
+
     //   shelf.forEach((book) async {
     //     var id = book.id;
     //     List<ChapterProto> cps =

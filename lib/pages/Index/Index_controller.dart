@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:novel/global.dart';
 import 'package:novel/pages/Index/NavigationIconView.dart';
@@ -42,7 +43,11 @@ class IndexController extends GetxController with SingleGetTickerProviderMixin {
           iconData: Icons.all_inclusive, title: "书城", vsync: this),
       NavigationIconView(iconData: Icons.person, title: "个人中心", vsync: this),
     ];
-
+    ever(darkModel, (_) {
+          SystemChrome.setSystemUIOverlayStyle(darkModel.value
+        ? SystemUiOverlayStyle.light
+        : SystemUiOverlayStyle.dark);
+    });
     pageList = [HomePage(), BookCityPage(), AppMenuPage()];
     super.onInit();
   }

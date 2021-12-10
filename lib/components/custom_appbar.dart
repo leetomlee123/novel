@@ -11,6 +11,7 @@ class MyAppBar extends AppBar implements PreferredSizeWidget {
   MyAppBar({
     Key? key,
     Widget? title,
+    double? leadingWidth,
     AppBarBackType? leadingType,
     WillPopCallback? onWillPop,
     Widget? leading,
@@ -23,7 +24,7 @@ class MyAppBar extends AppBar implements PreferredSizeWidget {
           key: key,
           title: title,
           centerTitle: centerTitle,
-          brightness: brightness ?? Brightness.light,
+          // brightness: brightness ?? Brightness.light,
           backgroundColor: backgroundColor ?? AppColors.primaryBackground,
           leading: leading ??
               (leadingType == AppBarBackType.None
@@ -33,7 +34,7 @@ class MyAppBar extends AppBar implements PreferredSizeWidget {
                       onWillPop: onWillPop,
                     )),
           actions: actions,
-          elevation: elevation ?? 0.5,
+          elevation: elevation ?? .0,
         );
   @override
   get preferredSize => Size.fromHeight(44);

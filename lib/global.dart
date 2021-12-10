@@ -87,6 +87,9 @@ class Global {
           SystemUiOverlayStyle(statusBarColor: Colors.transparent);
       SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
     }
+    SystemChrome.setSystemUIOverlayStyle(setting!.isDark!
+        ? SystemUiOverlayStyle.light
+        : SystemUiOverlayStyle.dark);
   }
 
   // 持久化 用户信息

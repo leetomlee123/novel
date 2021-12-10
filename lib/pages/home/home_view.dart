@@ -22,60 +22,7 @@ class HomePage extends GetView<HomeController> {
             return false;
           },
           child: Scaffold(
-            appBar: controller.manageShelf.value
-                ? AppBar(
-                    leadingWidth: 70,
-                    leading: TextButton(
-                      onPressed: () => controller.pickAction(),
-                      child: Text(
-                        controller.pickAll.value ? "全不选" : "全选",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    centerTitle: true,
-                    title: Column(
-                      children: [
-                        Text("书架整理"),
-                        Text(
-                          "已选择${controller.pickList.length}本",
-                          style: TextStyle(fontSize: 11),
-                        )
-                      ],
-                    ),
-                    actions: [
-                      TextButton(
-                          onPressed: () => controller.manage(),
-                          child: Text(
-                            "完成",
-                            style: TextStyle(color: Colors.white),
-                          ))
-                    ],
-                  )
-                : AppBar(
-                    actions: [
-                      IconButton(
-                        icon: Icon(Icons.search),
-                        onPressed: () {
-                          Get.toNamed(AppRoutes.SearchBook);
-                        },
-                      ),
-                      _popupMenuButton(context)
-                    ],
-                    // centerTitle: true,
-                    // title: Text("书架"),
-                    leadingWidth: 200,
-                    leading: Center(
-                      child: Text(
-                        "DeerBook",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 25),
-                      ),
-                    ),
-                    // leading: IconButton(
-                    //     icon: Icon(Icons.person),
-                    //     onPressed: () =>
-                    //         scaffoldKey.currentState!.openDrawer()),
-                  ),
+            appBar: _buildHead(context),
             body: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
@@ -88,6 +35,112 @@ class HomePage extends GetView<HomeController> {
                 controller.manageShelf.value ? _buildManageAction() : null,
           ),
         ));
+  }
+// controller.manageShelf.value
+//                 ? MyAppBar(
+//                     leadingWidth: 70,
+//                     leading: TextButton(
+//                       onPressed: () => controller.pickAction(),
+//                       child: Text(
+//                         controller.pickAll.value ? "全不选" : "全选",
+//                         style: TextStyle(color: Colors.white),
+//                       ),
+//                     ),
+//                     centerTitle: true,
+//                     title: Column(
+//                       children: [
+//                         Text("书架整理"),
+//                         Text(
+//                           "已选择${controller.pickList.length}本",
+//                           style: TextStyle(fontSize: 11),
+//                         )
+//                       ],
+//                     ),
+//                     actions: [
+//                       TextButton(
+//                           onPressed: () => controller.manage(),
+//                           child: Text(
+//                             "完成",
+//                             style: TextStyle(color: Colors.white),
+//                           ))
+//                     ],
+//                   )
+//                 : MyAppBar(
+//                     actions: [
+//                       IconButton(
+//                         icon: Icon(Icons.search),
+//                         onPressed: () {
+//                           Get.toNamed(AppRoutes.SearchBook);
+//                         },
+//                       ),
+//                       _popupMenuButton(context)
+//                     ],
+//                     // centerTitle: true,
+//                     // title: Text("书架"),
+//                     // leadingWidth: 200,
+//                     // leading: Center(
+//                     //   child: Text(
+//                     //     "DeerBook",
+//                     //     style: TextStyle(
+//                     //         fontWeight: FontWeight.bold, fontSize: 25),
+//                     //   ),
+//                     // ),
+//                     // leading: IconButton(
+//                     //     icon: Icon(Icons.person),
+//                     //     onPressed: () =>
+//                     //         scaffoldKey.currentState!.openDrawer()),
+//                   ),
+
+  _buildHead(var context) {
+    return PreferredSize(
+        child: Padding(
+          padding:
+              EdgeInsets.only(top: Screen.topSafeHeight, left: 5, right: 5),
+          child: Row(
+            children: controller.manageShelf.value
+                ? [
+                    TextButton(
+                      onPressed: () => controller.pickAction(),
+                      child: Text(
+                        controller.pickAll.value ? "全不选" : "全选",
+                      ),
+                    ),
+                    Spacer(),
+                    Column(
+                      children: [
+                        Text("书架整理"),
+                        Text(
+                          "已选择${controller.pickList.length}本",
+                          style: TextStyle(fontSize: 11),
+                        )
+                      ],
+                    ),
+                    Spacer(),
+                    TextButton(
+                        onPressed: () => controller.manage(),
+                        child: Text(
+                          "完成",
+                        ))
+                  ]
+                : [
+                    IconButton(
+                      icon: Icon(Icons.person),
+                      onPressed: () {
+                        controller.indexController.index.value = 2;
+                      },
+                    ),
+                    Spacer(),
+                    IconButton(
+                      icon: Icon(Icons.search),
+                      onPressed: () {
+                        Get.toNamed(AppRoutes.SearchBook);
+                      },
+                    ),
+                    _popupMenuButton(context)
+                  ],
+          ),
+        ),
+        preferredSize: const Size.fromHeight(kToolbarHeight));
   }
 
   Widget _buildManageAction() {
