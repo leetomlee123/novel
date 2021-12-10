@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:novel/common/screen.dart';
 import 'package:novel/components/common_img.dart';
+import 'package:novel/components/components.dart';
 import 'package:novel/pages/home/home_controller.dart';
 import 'package:novel/pages/home/home_model.dart';
 import 'package:novel/router/app_pages.dart';
@@ -92,6 +93,8 @@ class HomePage extends GetView<HomeController> {
 //                   ),
 
   _buildHead(var context) {
+
+
     return PreferredSize(
         child: Padding(
           padding:
@@ -188,7 +191,7 @@ class HomePage extends GetView<HomeController> {
         itemCount: controller.shelf.length,
         gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
-          crossAxisSpacing: 50.0,
+          crossAxisSpacing: 40.0,
           mainAxisSpacing: 30.0,
         ),
         itemBuilder: (itemBuilder, i) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:novel/components/components.dart';
 
 import 'register_controller.dart';
 
@@ -10,9 +11,7 @@ class RegisterPage extends GetView<RegisterController> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: Text("注册"),
-      ),
+      appBar: buildAppBar(title: "注册"),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
         child: Center(

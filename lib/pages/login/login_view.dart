@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:novel/common/screen.dart';
+import 'package:novel/components/components.dart';
 import 'package:novel/router/app_pages.dart';
 
 import 'login_controller.dart';
@@ -12,9 +13,7 @@ class LoginPage extends GetView<LoginController> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: Text("登录"),
-      ),
+      appBar: buildAppBar(title: "登录"),
       body: SingleChildScrollView(
           child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 10),

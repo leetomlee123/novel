@@ -1,10 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get_core/get_core.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:novel/common/colors/colors.dart';
+import 'package:novel/common/screen.dart';
+import 'package:novel/global.dart';
 
 /// appbar 返回按钮类型
 enum AppBarBackType { Back, Close, None }
 
 const double kNavigationBarHeight = 44.0;
+PreferredSize buildAppBar(
+    {bool centerTitle = false,
+    Widget? leading,
+    String? title,
+    double? leadingWidth,
+    Iterable<Widget>? actions}) {
+  SystemChrome.setSystemUIOverlayStyle(Global.setting!.isDark!
+      ? SystemUiOverlayStyle.light
+      : SystemUiOverlayStyle.dark);
+  return PreferredSize(
+      child: Padding(
+        padding:
+            EdgeInsets.only(left: 10, right: 10, top: Screen.topSafeHeight),
+        child: Row(
+          children: [
+            leading ??
+                IconButton(
+                    onPressed: () => Get.back(), icon: Icon(Icons.arrow_back)),
+            centerTitle ? Spacer() : Container(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: Text(
+                title ?? "",
+                style: TextStyle(fontSize: 22),
+              ),
+            ),
+            Spacer()
+          ]..addAll(actions ?? []),
+        ),
+      ),
+      preferredSize: const Size.fromHeight(kToolbarHeight));
+}
 
 // 自定义 AppBar
 class MyAppBar extends AppBar implements PreferredSizeWidget {

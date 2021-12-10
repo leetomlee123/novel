@@ -1,6 +1,7 @@
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:novel/components/custom_appbar.dart';
 
 import 'font_set_controller.dart';
 
@@ -10,9 +11,7 @@ class FontSetPage extends GetView<FontSetController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("字体"),
-        ),
+        appBar: buildAppBar(title: "字体选择"),
         body: Obx(() => controller.fonts.isEmpty
             ? Container()
             : Container(
@@ -55,8 +54,8 @@ class FontSetPage extends GetView<FontSetController> {
             "晚来天欲雪，能饮一杯无？",
             style: TextStyle(
                 fontWeight: FontWeight.bold,
-                height: 1.4,
-                letterSpacing: 1,
+                  height: 1.4,
+                letterSpacing: 2.5,
                 fontFamily: controller.fontName.value),
           ),
         ),

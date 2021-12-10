@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:novel/components/components.dart';
 
 import 'find_password_controller.dart';
 
@@ -10,9 +11,7 @@ class FindPasswordPage extends GetView<FindPasswordController> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: Text("忘记密码"),
-      ),
+      appBar: buildAppBar(title: "重置密码"),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),

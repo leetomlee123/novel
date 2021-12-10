@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:novel/common/values/setting.dart';
+import 'package:novel/components/components.dart';
 import 'package:novel/global.dart';
 import 'package:novel/pages/Index/Index_controller.dart';
 import 'package:novel/pages/home/home_controller.dart';
@@ -15,7 +16,7 @@ class AppMenuPage extends GetView<IndexController> {
       appBar: _buildAppBar(),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -23,7 +24,6 @@ class AppMenuPage extends GetView<IndexController> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: _buildHeader(context),
               ),
-              
               getItem(
                 ImageIcon(AssetImage("images/info.png")),
                 '公告',
@@ -115,13 +115,13 @@ class AppMenuPage extends GetView<IndexController> {
                           ));
                 },
               ),
-      
               Obx(
                 () => Offstage(
                     offstage: controller.userProfileModel.value!.token!.isEmpty,
                     child: OutlinedButton(
                       style: ButtonStyle(
-                          minimumSize: MaterialStateProperty.all(Size(330, 45))),
+                          minimumSize:
+                              MaterialStateProperty.all(Size(330, 45))),
                       onPressed: () => controller.dropAccountOut(),
                       child: Text("退出登录"),
                     )),
@@ -134,18 +134,10 @@ class AppMenuPage extends GetView<IndexController> {
   }
 
   _buildAppBar() {
-    return PreferredSize(
-        child: Obx(() => Padding(
-              padding: EdgeInsets.only(
-                  top: kToolbarHeight, left: 10,right: 10),
-              child: Row(
-                children: [
-                  IconButton(
+    return buildAppBar(leading: IconButton(
                     icon: Icon(Icons.settings),
                     onPressed: () {},
-                  ),
-                  Spacer(),
-                  GestureDetector(
+                  ),actions: [       GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () {
                       Get.changeTheme(controller.darkModel.value
@@ -173,8 +165,9 @@ class AppMenuPage extends GetView<IndexController> {
                                 : Icons.dark_mode,
                           ),
                           SizedBox(height: 1),
-                          Text(controller.darkModel.value ? '日间' : '夜间',
-                             ),
+                          Text(
+                            controller.darkModel.value ? '日间' : '夜间',
+                          ),
                         ],
                       ),
                     ),
@@ -184,19 +177,19 @@ class AppMenuPage extends GetView<IndexController> {
                     onPressed: () {
                       print("object");
                     },
-                  ),
-                ],
-              ),
-            )),
-        preferredSize: const Size.fromHeight(100));
-  }
+                  ),] );
+
+ }
 
   Widget getItem(imageIcon, text, fun) {
     return ListTile(
       onTap: fun,
       leading: imageIcon,
       title: Text(text),
-      trailing: Icon(Icons.arrow_forward_ios_sharp,size: 17,),
+      trailing: Icon(
+        Icons.arrow_forward_ios_sharp,
+        size: 17,
+      ),
     );
   }
 
@@ -212,13 +205,15 @@ class AppMenuPage extends GetView<IndexController> {
 
   Widget _buildHeader(BuildContext context) {
     return Obx(() => Container(
-      height: 200,
-      child: Visibility(
+          height: 200,
+          child: Visibility(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 _headImg(),
-                SizedBox(width: 5,),
+                SizedBox(
+                  width: 5,
+                ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -256,6 +251,6 @@ class AppMenuPage extends GetView<IndexController> {
               onTap: () => controller.toLogin(),
             ),
           ),
-    ));
+        ));
   }
 }
