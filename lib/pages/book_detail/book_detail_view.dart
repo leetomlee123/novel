@@ -297,7 +297,7 @@ class BookDetailPage extends GetView<BookDetailController> {
                 onPressed: () {
                   if (controller.inShelf.value) {
                     Get.toNamed(AppRoutes.ReadBook, arguments: {
-                      "bookId": controller.bookDetailModel.value.id
+                      "id": controller.bookDetailModel.value.id
                     });
                   } else {
                     Get.toNamed(AppRoutes.ReadBook,

@@ -125,13 +125,15 @@ class HomeController extends GetxController {
   }
 
   deleteBooks() {
-    for (var value in pickList) {
-      modifyShelf(shelf[value]);
+    var bks = pickList.map((element) => shelf.elementAt(element)).toList();
+    for (var bk in bks) {
+      modifyShelf(bk);
     }
     pickList.clear();
   }
 
   tapAction(int i) {
+    print(i);
     //整理书架点击动作
     if (manageShelf.value) {
       if (pickList.contains(i)) {

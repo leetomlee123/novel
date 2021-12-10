@@ -12,6 +12,28 @@ import 'package:sp_util/sp_util.dart';
 
 /// 全局配置
 class Global {
+  /// System overlays should be drawn with a light color. Intended for
+  /// applications with a dark background.
+  static const SystemUiOverlayStyle light = SystemUiOverlayStyle(
+    systemNavigationBarColor: Color(0xFF000000),
+    systemNavigationBarDividerColor: null,
+    statusBarColor: Colors.transparent,
+    systemNavigationBarIconBrightness: Brightness.light,
+    statusBarIconBrightness: Brightness.light,
+    statusBarBrightness: Brightness.dark,
+  );
+
+  /// System overlays should be drawn with a dark color. Intended for
+  /// applications with a light background.
+  static const SystemUiOverlayStyle dark = SystemUiOverlayStyle(
+    systemNavigationBarColor: Color(0xFF000000),
+    systemNavigationBarDividerColor: null,
+    statusBarColor: Colors.transparent,
+    systemNavigationBarIconBrightness: Brightness.light,
+    statusBarIconBrightness: Brightness.dark,
+    statusBarBrightness: Brightness.light,
+  );
+
   /// 用户配置
   static UserProfileModel? profile = UserProfileModel(token: "");
   static ReadSetting? setting;
@@ -80,14 +102,10 @@ class Global {
       profile = UserProfileModel.fromJson(_profileJSON);
       isOfflineLogin = true;
     }
-    // SystemChrome.setSystemUIOverlayStyle(setting!.isDark!
-    //     ? SystemUiOverlayStyle.light
-    //     : SystemUiOverlayStyle.dark);
+
     // android 状态栏为透明的沉浸
     if (Platform.isAndroid) {
-      SystemUiOverlayStyle systemUiOverlayStyle =
-          SystemUiOverlayStyle(statusBarColor: Colors.transparent,statusBarBrightness: setting!.isDark!?Brightness.light:Brightness.dark);
-      SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+      SystemChrome.setSystemUIOverlayStyle(setting!.isDark! ? light : dark);
     }
   }
 
