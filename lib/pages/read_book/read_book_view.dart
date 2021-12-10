@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:novel/common/screen.dart';
 import 'package:novel/common/values/setting.dart';
 import 'package:novel/components/common_img.dart';
-import 'package:novel/global.dart';
 import 'package:novel/pages/book_chapters/chapter.pbserver.dart';
 import 'package:novel/router/app_pages.dart';
 import 'package:novel/utils/database_provider.dart';
@@ -180,11 +179,8 @@ class ReadBookPage extends GetView<ReadBookController> {
               ),
             ),
             onPressed: () {
-              Get.changeTheme(controller.darkModel.value
-                  ? ThemeData.light()
-                  : ThemeData.dark());
               controller.darkModel.value = !controller.darkModel.value;
-              Global.setting!.isDark = controller.darkModel.value;
+
               controller.colorModelSwitch();
             }),
         buildBottomItem('缓存', Icons.cloud_download),

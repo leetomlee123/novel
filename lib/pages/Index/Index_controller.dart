@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:novel/common/values/setting.dart';
 import 'package:novel/global.dart';
 import 'package:novel/pages/Index/NavigationIconView.dart';
 import 'package:novel/pages/app_menu/app_menu_view.dart';
@@ -19,6 +22,7 @@ class IndexController extends GetxController with SingleGetTickerProviderMixin {
   RxBool showBottom = true.obs;
   List<NavigationIconView>? navigationViews;
   final userProfileModel = Global.profile.obs;
+  int i = 0;
   List<Widget>? pageList;
   toLogin() {
     if (userProfileModel.value!.token!.isEmpty) {
@@ -41,13 +45,9 @@ class IndexController extends GetxController with SingleGetTickerProviderMixin {
       NavigationIconView(iconData: Icons.book_sharp, title: "书架", vsync: this),
       NavigationIconView(
           iconData: Icons.all_inclusive, title: "书城", vsync: this),
-      NavigationIconView(iconData: Icons.person, title: "个人中心", vsync: this),
+      NavigationIconView(iconData: Icons.person, title: "我", vsync: this),
     ];
-    ever(darkModel, (_) {
-          SystemChrome.setSystemUIOverlayStyle(darkModel.value
-        ? SystemUiOverlayStyle.light
-        : SystemUiOverlayStyle.dark);
-    });
+
     pageList = [HomePage(), BookCityPage(), AppMenuPage()];
     super.onInit();
   }
@@ -55,6 +55,23 @@ class IndexController extends GetxController with SingleGetTickerProviderMixin {
   @override
   void onReady() {
     startCountdownTimer();
+  }
+
+  toggleModel() {
+    darkModel.value = !darkModel.value;
+    Get.changeTheme(!darkModel.value ? ThemeData.light() : ThemeData.dark());
+    Global.setting!.isDark = darkModel.value;
+    Global.setting!.persistence();
+    Get.find<HomeController>().widgets.clear();
+    if (Platform.isAndroid) {
+      SystemChrome.setSystemUIOverlayStyle(
+          darkModel.value ? ReadSetting.light : ReadSetting.dark);
+    }
+  }
+
+  setNavBar() {
+    SystemChrome.restoreSystemUIOverlays();
+
   }
 
   @override

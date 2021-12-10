@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:novel/common/values/setting.dart';
 import 'package:novel/components/components.dart';
-import 'package:novel/global.dart';
 import 'package:novel/pages/Index/Index_controller.dart';
-import 'package:novel/pages/home/home_controller.dart';
 import 'package:novel/utils/update_app.dart';
 
 class AppMenuPage extends GetView<IndexController> {
@@ -134,52 +132,48 @@ class AppMenuPage extends GetView<IndexController> {
   }
 
   _buildAppBar() {
-    return buildAppBar(leading: IconButton(
-                    icon: Icon(Icons.settings),
-                    onPressed: () {},
-                  ),actions: [       GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      Get.changeTheme(controller.darkModel.value
-                          ? ThemeData.light()
-                          : ThemeData.dark());
-                      controller.darkModel.value = !controller.darkModel.value;
-                      Global.setting!.isDark = controller.darkModel.value;
-                      Get.find<HomeController>().widgets.clear();
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                        color: controller.darkModel.value
-                            ? Colors.white10
-                            : Colors.black12,
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 1),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Icon(
-                            controller.darkModel.value
-                                ? Icons.light_mode
-                                : Icons.dark_mode,
-                          ),
-                          SizedBox(height: 1),
-                          Text(
-                            controller.darkModel.value ? '日间' : '夜间',
-                          ),
-                        ],
-                      ),
-                    ),
+    return buildAppBar(
+        leading: IconButton(
+          icon: Icon(Icons.settings),
+          onPressed: () {},
+        ),
+        actions: [
+          Obx(() => GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  controller.toggleModel();
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                    color: controller.darkModel.value
+                        ? Colors.white10
+                        : Colors.black12,
                   ),
-                  IconButton(
-                    icon: Icon(Icons.email),
-                    onPressed: () {
-                      print("object");
-                    },
-                  ),] );
-
- }
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(
+                        controller.darkModel.value
+                            ? Icons.light_mode
+                            : Icons.dark_mode,
+                      ),
+                      SizedBox(height: 1),
+                      Text(
+                        controller.darkModel.value ? '日间' : '夜间',
+                      ),
+                    ],
+                  ),
+                ),
+              )),
+          IconButton(
+            icon: Icon(Icons.email),
+            onPressed: () {},
+          ),
+        ]);
+  }
 
   Widget getItem(imageIcon, text, fun) {
     return ListTile(

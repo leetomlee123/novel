@@ -4,13 +4,13 @@ import 'package:battery_plus/battery_plus.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_statusbar_manager/flutter_statusbar_manager.dart';
 import 'package:get/get.dart';
 import 'package:novel/common/animation/AnimationControllerWithListenerNumber.dart';
 import 'package:novel/common/screen.dart';
 import 'package:novel/common/values/setting.dart';
 import 'package:novel/global.dart';
+import 'package:novel/pages/Index/Index_controller.dart';
 import 'package:novel/pages/book_chapters/chapter.pb.dart';
 import 'package:novel/pages/home/home_controller.dart';
 import 'package:novel/pages/home/home_model.dart';
@@ -53,6 +53,7 @@ class ReadBookController extends FullLifeCycleController
 
   //
   HomeController? homeController;
+  IndexController? idxController;
   //menu
   double? settingH = 340;
   ReadSetting? setting;
@@ -76,13 +77,10 @@ class ReadBookController extends FullLifeCycleController
 
   @override
   void onInit() {
-    ever(darkModel, (_) {
-      SystemChrome.setSystemUIOverlayStyle(darkModel.value
-          ? SystemUiOverlayStyle.light
-          : SystemUiOverlayStyle.dark);
-    });
     super.onInit();
+
     homeController = Get.find<HomeController>();
+    idxController = Get.find<IndexController>();
     String bookId = Get.arguments['id'].toString();
     if (bookId == "null") {
       book.value = Book.fromJson(Get.arguments['bookJson']);
@@ -135,25 +133,25 @@ class ReadBookController extends FullLifeCycleController
 
   initData() async {
     // try {
-      electricQuantity = await Battery().batteryLevel / 100;
+    electricQuantity = await Battery().batteryLevel / 100;
 
-      chapters.value =
-          await DataBaseProvider.dbProvider.getChapters(book.value.id);
-      if (chapters.isEmpty) {
-        //初次打开
-        await getReadRecord();
-        await getChapter();
-      } else {
-        getChapter();
-      }
-      chapterIdx.value = book.value.chapterIdx!;
-      await initContent(book.value.chapterIdx!, false);
-      await cur();
-      indexController = ScrollController(
-          initialScrollOffset: (book.value.chapterIdx ?? 0) == 0
-              ? 0
-              : (book.value.chapterIdx! - 6) * itemExtent);
-      loadStatus.value = LOAD_STATUS.FINISH;
+    chapters.value =
+        await DataBaseProvider.dbProvider.getChapters(book.value.id);
+    if (chapters.isEmpty) {
+      //初次打开
+      await getReadRecord();
+      await getChapter();
+    } else {
+      getChapter();
+    }
+    chapterIdx.value = book.value.chapterIdx!;
+    await initContent(book.value.chapterIdx!, false);
+    await cur();
+    indexController = ScrollController(
+        initialScrollOffset: (book.value.chapterIdx ?? 0) == 0
+            ? 0
+            : (book.value.chapterIdx! - 6) * itemExtent);
+    loadStatus.value = LOAD_STATUS.FINISH;
     // } catch (e) {
     //   loadStatus.value = LOAD_STATUS.FAILED;
     //   print(e);
@@ -328,7 +326,9 @@ class ReadBookController extends FullLifeCycleController
     super.onClose();
     indexController.dispose();
     animationController?.dispose();
+
     FlutterStatusbarManager.setFullscreen(false);
+    idxController!.setNavBar();
   }
 
   @override
@@ -638,8 +638,7 @@ class ReadBookController extends FullLifeCycleController
   }
 
   colorModelSwitch() {
-    setting!.isDark = darkModel.value;
-    setting!.persistence();
+    idxController!.toggleModel();
 
     if (darkModel.value) {
       bgImage = homeController!.bgImages![ReadSetting.bgImgs.length - 1];
@@ -647,7 +646,6 @@ class ReadBookController extends FullLifeCycleController
       bgImage = homeController!.bgImages![setting!.bgIndex ?? 0];
     }
     homeController!.widgets.clear();
-
     canvasKey.currentContext?.findRenderObject()?.markNeedsPaint();
   }
 

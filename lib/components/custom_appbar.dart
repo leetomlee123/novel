@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get_core/get_core.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:novel/common/colors/colors.dart';
 import 'package:novel/common/screen.dart';
-import 'package:novel/global.dart';
 
 /// appbar 返回按钮类型
 enum AppBarBackType { Back, Close, None }
@@ -16,7 +14,6 @@ PreferredSize buildAppBar(
     String? title,
     double? leadingWidth,
     Iterable<Widget>? actions}) {
-
   return PreferredSize(
       child: Padding(
         padding:
