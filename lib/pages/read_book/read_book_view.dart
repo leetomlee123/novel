@@ -787,10 +787,11 @@ class ReadBookPage extends GetView<ReadBookController> {
                   style: TextStyle(fontSize: 15),
                   overflow: TextOverflow.ellipsis,
                 ),
-                trailing: Text(
-                  chapter.hasContent == "2" ? "已缓存" : "",
-                  style: TextStyle(fontSize: 10, color: Colors.grey),
-                ),
+                // trailing: Text(
+                //   chapter.hasContent == "2" ? "已缓存" : "",
+                //   style: TextStyle(fontSize: 10, color: Colors.grey),
+                // ),
+                trailing: chapter.hasContent != "2" ? Icon(Icons.cloud) : null,
                 selected: i == controller.book.value.chapterIdx,
                 onTap: () async {
                   Get.back();

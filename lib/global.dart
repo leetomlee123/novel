@@ -75,21 +75,20 @@ class Global {
     }
 
     // 读取离线用户信息
-    Map _profileJSON = SpUtil.getObject(STORAGE_USER_PROFILE_KEY)!;
+    Map? _profileJSON = SpUtil.getObject(STORAGE_USER_PROFILE_KEY);
     if (_profileJSON != null) {
       profile = UserProfileModel.fromJson(_profileJSON);
       isOfflineLogin = true;
     }
-
+    SystemChrome.setSystemUIOverlayStyle(setting!.isDark!
+        ? SystemUiOverlayStyle.light
+        : SystemUiOverlayStyle.dark);
     // android 状态栏为透明的沉浸
     if (Platform.isAndroid) {
       SystemUiOverlayStyle systemUiOverlayStyle =
           SystemUiOverlayStyle(statusBarColor: Colors.transparent);
       SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
     }
-    SystemChrome.setSystemUIOverlayStyle(setting!.isDark!
-        ? SystemUiOverlayStyle.light
-        : SystemUiOverlayStyle.dark);
   }
 
   // 持久化 用户信息
