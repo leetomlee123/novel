@@ -158,7 +158,7 @@ class TextComposition {
           tp.text = TextSpan(text: text, style: style);
           tp.layout();
           var w = _width - tp.width;
-          spacing = w / textCount;
+          spacing = w / (textCount+1);
         }
         lines.add(Lines(text: text, dx: dx, dy: dy, spacing: spacing));
         dy += tp.height;
@@ -262,7 +262,7 @@ class TextComposition {
         if (line.spacing != null &&
             (line.spacing! < -0.1 || line.spacing! > 0.1)) {
           textPainter.text = TextSpan(
-            text: line.text!.trimRight(),
+            text: line.text!,
             style: style.copyWith(letterSpacing: line.spacing),
           );
         } else {
