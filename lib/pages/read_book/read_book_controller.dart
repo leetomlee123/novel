@@ -610,21 +610,29 @@ class ReadBookController extends FullLifeCycleController
   }
 
   Future<void> reloadCurrentPage() async {
-    String chapterId = chapters[book.value.chapterIdx!].chapterId;
-    //从数据库中取
-    var res = await BookApi().getContent(chapterId);
+    try {
+      loadStatus.value = LOAD_STATUS.LOADING;
+      toggleShowMenu();
 
-    String chapterContent = await ChapterParseUtil().parseContent(res['link']);
-    //上传到数据库
-    BookApi().updateContent(chapterId, chapterContent);
-    curPage = await loadChapter(book.value.chapterIdx!);
-    DataBaseProvider.dbProvider.updateContent(chapterId, chapterContent);
-    chapters[book.value.chapterIdx!].hasContent = "2";
+      String chapterId = chapters[book.value.chapterIdx!].chapterId;
+      //从数据库中取
+      var res = await BookApi().getContent(chapterId);
 
-    curPage!.chapterContent = chapterContent;
-    curPage!.pages = TextComposition.parseContent(curPage!, setting!);
-    canvasKey.currentContext!.findRenderObject()!.markNeedsPaint();
-    toggleShowMenu();
+      String chapterContent =
+          await ChapterParseUtil().parseContent(res['link']);
+      //上传到数据库
+      BookApi().updateContent(chapterId, chapterContent);
+      curPage = await loadChapter(book.value.chapterIdx!);
+      DataBaseProvider.dbProvider.updateContent(chapterId, chapterContent);
+      chapters[book.value.chapterIdx!].hasContent = "2";
+
+      curPage!.chapterContent = chapterContent;
+      curPage!.pages = TextComposition.parseContent(curPage!, setting!);
+      loadStatus.value = LOAD_STATUS.FINISH;
+      canvasKey.currentContext!.findRenderObject()!.markNeedsPaint();
+    } catch (e) {
+      loadStatus.value = LOAD_STATUS.FAILED;
+    }
   }
 
   Future<void> updPage() async {
