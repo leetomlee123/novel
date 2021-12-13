@@ -28,8 +28,7 @@ enum LOAD_STATUS { LOADING, FAILED, FINISH }
 enum OperateType { SLIDE, MORE_SETTING, DOWNLOAD }
 
 class ReadBookController extends FullLifeCycleController
-with
-  GetSingleTickerProviderStateMixin {
+    with GetSingleTickerProviderStateMixin {
   Rx<Book> book = Book().obs;
   RxInt chapterIdx = 0.obs;
   Rx<LOAD_STATUS> loadStatus = LOAD_STATUS.LOADING.obs;
@@ -134,30 +133,30 @@ with
   }
 
   initData() async {
-    // try {
-    electricQuantity = await Battery().batteryLevel / 100;
+    try {
+      electricQuantity = await Battery().batteryLevel / 100;
 
-    chapters.value =
-        await DataBaseProvider.dbProvider.getChapters(book.value.id);
-    if (chapters.isEmpty) {
-      //初次打开
-      await getReadRecord();
-      await getChapter();
-    } else {
-      getChapter();
+      chapters.value =
+          await DataBaseProvider.dbProvider.getChapters(book.value.id);
+      if (chapters.isEmpty) {
+        //初次打开
+        await getReadRecord();
+        await getChapter();
+      } else {
+        getChapter();
+      }
+      chapterIdx.value = book.value.chapterIdx!;
+      await initContent(book.value.chapterIdx!, false);
+      await cur();
+      indexController = ScrollController(
+          initialScrollOffset: (book.value.chapterIdx ?? 0) == 0
+              ? 0
+              : (book.value.chapterIdx! - 6) * itemExtent);
+      loadStatus.value = LOAD_STATUS.FINISH;
+    } catch (e) {
+      loadStatus.value = LOAD_STATUS.FAILED;
+      print(e);
     }
-    chapterIdx.value = book.value.chapterIdx!;
-    await initContent(book.value.chapterIdx!, false);
-    await cur();
-    indexController = ScrollController(
-        initialScrollOffset: (book.value.chapterIdx ?? 0) == 0
-            ? 0
-            : (book.value.chapterIdx! - 6) * itemExtent);
-    loadStatus.value = LOAD_STATUS.FINISH;
-    // } catch (e) {
-    //   loadStatus.value = LOAD_STATUS.FAILED;
-    //   print(e);
-    // }
   }
 
   reInitController() {
@@ -246,6 +245,8 @@ with
           curPage?.pages ?? []);
       SpUtil.putObjectList('pages_${book.value.id}_${nextPage?.chapterName}',
           nextPage?.pages ?? []);
+      DataBaseProvider.dbProvider.updBook(book.value);
+
       if (Global.profile!.token!.isNotEmpty) {
         BookApi().uploadReadRecord(Global.profile!.username, book.value.id,
             book.value.chapterIdx.toString());
