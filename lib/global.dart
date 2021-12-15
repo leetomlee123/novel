@@ -12,8 +12,6 @@ import 'package:sp_util/sp_util.dart';
 
 /// 全局配置
 class Global {
-
-
   /// 用户配置
   static UserProfileModel? profile = UserProfileModel(token: "");
   static ReadSetting? setting;
@@ -85,7 +83,8 @@ class Global {
 
     // android 状态栏为透明的沉浸
     if (Platform.isAndroid) {
-      SystemChrome.setSystemUIOverlayStyle(setting!.isDark! ?ReadSetting. light :ReadSetting.  dark);
+      SystemChrome.setSystemUIOverlayStyle(
+          setting!.isDark! ? ReadSetting.light : ReadSetting.dark);
     }
   }
 

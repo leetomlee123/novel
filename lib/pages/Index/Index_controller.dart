@@ -60,6 +60,7 @@ class IndexController extends GetxController with SingleGetTickerProviderMixin {
   toggleModel() {
     darkModel.value = !darkModel.value;
     Get.changeTheme(!darkModel.value ? ThemeData.light() : ThemeData.dark());
+    Get.forceAppUpdate();
     Global.setting!.isDark = darkModel.value;
     Global.setting!.persistence();
     Get.find<HomeController>().widgets.clear();
