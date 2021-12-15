@@ -37,7 +37,7 @@ dependencies:
   bot_toast: ^4.0.1
 
   # getx
-  get: ^4.5.1
+  get: ^4.6.1
 
   # 日期格式
   intl: ^0.17.0
