@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:novel/config.dart';
 import 'package:novel/global.dart';
 
@@ -53,7 +53,7 @@ class Request {
       // 当请求失败时做一些预处理
       ErrorEntity eInfo = createErrorEntity(e);
       // 错误提示
-      EasyLoading.showInfo(eInfo.message.toString());
+      BotToast.showText(text:eInfo.message.toString());
       // 错误交互处理
       switch (eInfo.code) {
         case 401: // 没有权限 重新登录

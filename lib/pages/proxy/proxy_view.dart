@@ -1,8 +1,8 @@
 import 'dart:io';
+
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:novel/components/components.dart';
 import 'package:novel/utils/utils.dart';
 
@@ -54,11 +54,11 @@ class ProxyPage extends StatelessWidget {
     String ip = _controllerIP.text.trim();
     String port = _controllerPort.text.trim();
     if (ip.isEmpty) {
-      EasyLoading.showToast('IP不能为空');
+      // EasyLoading.showToast('IP不能为空');
       return;
     }
     if (port.isEmpty) {
-      EasyLoading.showToast('端口不能为空');
+      // EasyLoading.showToast('端口不能为空');
       return;
     }
     Dio dio = Request().dio;
@@ -73,6 +73,6 @@ class ProxyPage extends StatelessWidget {
       client.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
     };
-    EasyLoading.showToast('代理设置成功');
+    // EasyLoading.showToast('代理设置成功');
   }
 }

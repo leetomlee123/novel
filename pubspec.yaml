@@ -42,9 +42,6 @@ dependencies:
   # 日期格式
   intl: ^0.17.0
 
-  # loaing
-  flutter_easyloading: ^3.0.0
-
   # http
   dio: ^4.0.1
 

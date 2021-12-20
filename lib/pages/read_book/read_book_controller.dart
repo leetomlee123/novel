@@ -27,7 +27,7 @@ import 'package:sp_util/sp_util.dart';
 enum LOAD_STATUS { LOADING, FINISH }
 enum OperateType { SLIDE, MORE_SETTING, DOWNLOAD }
 
-class ReadBookController extends FullLifeCycleController
+class ReadBookController extends SuperController
     with GetSingleTickerProviderStateMixin {
   Rx<Book> book = Book().obs;
   RxInt chapterIdx = 0.obs;
@@ -334,27 +334,6 @@ class ReadBookController extends FullLifeCycleController
     SystemChrome.restoreSystemUIOverlays();
   }
 
-  @override
-  void onDetached() {
-    // TODO: implement onDetached
-  }
-
-  @override
-  void onInactive() {
-    // TODO: implement onInactive
-  }
-
-  @override
-  void onPaused() {
-    print("挂起");
-    saveState();
-  }
-
-  @override
-  void onResumed() {
-    print("恢复");
-  }
-
   void toggleShowMenu() {
     showMenu.value = !showMenu.value;
   }
@@ -479,7 +458,6 @@ class ReadBookController extends FullLifeCycleController
 
     int curLen = (curPage?.pageOffsets ?? 0);
     if (idx == curLen - 1 && offsetDifference > 0) {
-      saveState();
       Future.delayed(
           Duration(milliseconds: 500),
           () => {
@@ -515,8 +493,6 @@ class ReadBookController extends FullLifeCycleController
       }
     }
     if (idx == 0 && offsetDifference < 0) {
-      saveState();
-
       Future.delayed(
           Duration(milliseconds: 500),
           () => {
@@ -679,10 +655,30 @@ class ReadBookController extends FullLifeCycleController
       loadStatus.value = LOAD_STATUS.LOADING;
       book.value.chapterIdx = i;
       await initContent(i, true);
-      saveState();
       loadStatus.value = LOAD_STATUS.FINISH;
     } catch (e) {
       loadStatus.value = LOAD_STATUS.FINISH;
     }
+  }
+
+  @override
+  void onDetached() {
+    // TODO: implement onDetached
+  }
+
+  @override
+  void onInactive() {
+    // TODO: implement onInactive
+    saveState();
+  }
+
+  @override
+  void onPaused() {
+    // TODO: implement onPaused
+  }
+
+  @override
+  void onResumed() {
+    // TODO: implement onResumed
   }
 }
