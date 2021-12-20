@@ -70,10 +70,10 @@ class ReadSetting {
   int? bgIndex;
 
   ReadSetting(
-      {this.fontSize = 24,
+      {this.fontSize = 22,
       this.bgIndex = 0,
       this.topSafeHeight,
-      this.latterHeight = 1.5,
+      this.latterHeight = 1.6,
       this.latterSpace = .2,
       this.isDark = false,
       this.paragraphHeight = 1,

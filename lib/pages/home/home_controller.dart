@@ -18,7 +18,7 @@ class HomeController extends GetxController {
   //阅读页背景图片
   Map<int, ui.Image>? bgImages = Map();
   Map<String, ui.Picture> widgets = Map();
-  RxList<Book> shelf = List<Book>.empty().obs;
+  RxList<Book> shelf = RxList<Book>();
   RxList pickList = List<int>.empty().obs;
   IndexController indexController = Get.find<IndexController>();
   //书架显示风格
@@ -72,43 +72,49 @@ class HomeController extends GetxController {
   }
 
   updateShelf() async {
-    bool hasUpdate = false;
+    // bool hasUpdate = false;
     var books = await BookApi().shelf();
     if (shelf.isEmpty) {
       shelf.value = books;
       return;
     }
+    List<Book> booksTemp = List.empty(growable: true);
+
     for (Book value in shelf) {
       var bks = books.where((element) => value.id == element.id);
       if (bks.isEmpty) {
+        booksTemp.add(value);
         continue;
       }
       Book where = bks.first;
       //有更新
       if (where.lastChapter != value.lastChapter) {
-        hasUpdate = true;
+        // hasUpdate = true;
         value.newChapter = 1;
         value.uTime = where.uTime;
         value.lastChapter = where.lastChapter;
         value.img = where.img;
         DataBaseProvider.dbProvider.updBook(value);
       }
+      booksTemp.add(value);
     }
-    if (hasUpdate) update();
+    shelf.value = booksTemp;
+    // update();
+    // if (hasUpdate) update();
   }
 
   menuAction(var value) {
     if (value == "书架整理") {
       manage();
     } else {
-      coverLayout.value = !coverLayout.value;
+      coverLayout.toggle();
       Global.setting!.isListCover = coverLayout.value;
       SpUtil.putObject(ReadSetting.settingKey, Global.setting!.toJson());
     }
   }
 
   pickAction() {
-    pickAll.value = !pickAll.value;
+    pickAll.toggle();
     pickList.clear();
 
     if (pickAll.value) {
@@ -121,7 +127,7 @@ class HomeController extends GetxController {
   manage() {
     pickList.clear();
     pickAll.value = false;
-    manageShelf.value = !manageShelf.value;
+    manageShelf.toggle();
   }
 
   deleteBooks() {

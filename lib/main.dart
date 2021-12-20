@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -19,10 +20,13 @@ class MyApp extends StatelessWidget {
       theme: (Global.setting!.isDark ?? false)
           ? ThemeData.dark()
           : ThemeData.light(),
+          themeMode: (Global.setting!.isDark ?? false)
+          ? ThemeMode.dark
+          : ThemeMode.light,
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
       unknownRoute: AppPages.unknownRoute,
-      builder: EasyLoading.init(),
+      builder: BotToastInit(),
       locale: TranslationService.locale,
       fallbackLocale: TranslationService.fallbackLocale,
     );
