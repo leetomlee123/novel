@@ -319,7 +319,7 @@ class ReadBookPage extends GetView<ReadBookController> {
                       const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                   child: GestureDetector(
                     onTap: () {
-                      controller.dowload(controller.book.value.chapterIdx ?? 0);
+                      controller.download(controller.book.value.chapterIdx ?? 0);
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -347,7 +347,7 @@ class ReadBookPage extends GetView<ReadBookController> {
                       const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                   child: GestureDetector(
                     onTap: () {
-                      controller.dowload(controller.book.value.chapterIdx ?? 0);
+                      controller.download(controller.book.value.chapterIdx ?? 0);
                     },
                     child: Container(
                       decoration: BoxDecoration(

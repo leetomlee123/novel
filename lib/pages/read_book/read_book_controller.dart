@@ -67,7 +67,7 @@ class ReadBookController extends SuperController
 
   var itemExtent = 50.0;
 
-  int downCommitLen = 100;
+  int downCommitLen = 20;
 
   //setting
   RxDouble fontSize = .0.obs;
@@ -174,6 +174,7 @@ class ReadBookController extends SuperController
     loadChapter(idx - 1).then((value) => {prePage = value});
 
     if (jump) {
+      reInitController();
       chapterIdx.value = book.value.chapterIdx!;
       book.value.pageIdx = 0;
       canvasKey.currentContext?.findRenderObject()?.markNeedsPaint();
@@ -217,7 +218,7 @@ class ReadBookController extends SuperController
   }
 
   //下载章节内容
-  dowload(int idx) async {
+  download(int idx) async {
     book.value.cacheChapterContent = "1";
     DataBaseProvider.dbProvider.updBook(book.value);
 
@@ -228,13 +229,16 @@ class ReadBookController extends SuperController
           idx: i,
           chapterId: chapters[i].chapterId,
         ));
+        if (cps.length % downCommitLen == 0) {
+          cps = await compute(downChapter, cps);
+          cps.forEach((element) {
+            chapters[element.idx ?? 0].hasContent = "2";
+          });
+          DataBaseProvider.dbProvider.downContent(cps);
+          cps.clear();
+        }
       }
     }
-    cps = await compute(downChapter, cps);
-    cps.forEach((element) {
-      chapters[element.idx ?? 0].hasContent = "2";
-    });
-    DataBaseProvider.dbProvider.downContent(cps);
   }
 
   saveState() {
@@ -489,6 +493,8 @@ class ReadBookController extends SuperController
         });
 
         chapterIdx.value = book.value.chapterIdx!;
+        reInitController();
+
         return;
       }
     }
@@ -518,6 +524,8 @@ class ReadBookController extends SuperController
       });
 
       chapterIdx.value = book.value.chapterIdx!;
+      reInitController();
+
       return;
     }
     offsetDifference > 0

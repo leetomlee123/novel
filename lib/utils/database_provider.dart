@@ -158,7 +158,7 @@ class DataBaseProvider {
     List list = await dbClient!
         .query(_dbChapters, where: "id=?", whereArgs: [chapterId]);
 
-    return list[0]['content'];
+    return list[0]['content']??"";
   }
 
   updateContent(String chapterId, String? chapterContent) async {

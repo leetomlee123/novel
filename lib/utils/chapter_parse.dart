@@ -39,9 +39,9 @@ Future<List<DownChapter>> downChapter(List<DownChapter> cps) async {
   for (var i = 0; i < len; i++) {
     String chapterContent =
         await ChapterParseUtil().getChapterCotent(cps[i].chapterId ?? "");
-    print("down ok");
     cps[i].chapterContent = chapterContent;
   }
+  print("download all");
   return cps;
 }
 
