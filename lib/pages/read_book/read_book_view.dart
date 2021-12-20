@@ -18,21 +18,12 @@ class ReadBookPage extends GetView<ReadBookController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Scaffold(
-          key: scaffoldKey,
-          drawer: Drawer(
-            child: _buildChapters(),
-          ),
-          body: controller.loadStatus.value == LOAD_STATUS.FINISH
-              ? _buildContent()
-              : controller.loadStatus.value == LOAD_STATUS.FAILED
-                  ? GestureDetector(
-                      child: Center(
-                          child: Text("something is wrong,please try again")),
-                      onTapUp: (e) => controller.tapPage(e),
-                    )
-                  : Center(child: Text("加载中...")),
-        ));
+    return Scaffold(
+        key: scaffoldKey,
+        drawer: Drawer(
+          child: _buildChapters(),
+        ),
+        body: _buildContent());
   }
 
   //拦截菜单和章节view
@@ -66,30 +57,34 @@ class ReadBookPage extends GetView<ReadBookController> {
   }
 
   _buildPage() {
-    return Stack(
-      children: [
-        GestureDetector(
-          child: RepaintBoundary(
-              child: CustomPaint(
-            key: controller.canvasKey,
-            isComplex: true,
-            size: Size(Screen.width, Screen.height),
-            painter: controller.mPainter,
-          )),
-          onTapUp: (e) => controller.tapPage(e),
-          onPanDown: (e) => controller.panDown(e),
-          onPanUpdate: (e) => controller.panUpdate(e),
-          onPanEnd: (e) => controller.panEnd(e),
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Offstage(
-            child: _buildMenu(),
-            offstage: !controller.showMenu.value,
-          ),
-        ),
-      ],
-    );
+    return Obx(() => controller.loadStatus.value == LOAD_STATUS.FINISH
+        ? Stack(
+            children: [
+              GestureDetector(
+                child: RepaintBoundary(
+                    child: CustomPaint(
+                  key: controller.canvasKey,
+                  isComplex: true,
+                  size: Size(Screen.width, Screen.height),
+                  painter: controller.mPainter,
+                )),
+                onTapUp: (e) => controller.tapPage(e),
+                onPanDown: (e) => controller.panDown(e),
+                onPanUpdate: (e) => controller.panUpdate(e),
+                onPanEnd: (e) => controller.panEnd(e),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Offstage(
+                  child: _buildMenu(),
+                  offstage: !controller.showMenu.value,
+                ),
+              ),
+            ],
+          )
+        : Center(
+            child: Text("加载中..."),
+          ));
   }
 
   confirmAddToShelf() async {
@@ -279,6 +274,9 @@ class ReadBookPage extends GetView<ReadBookController> {
                   controller.book.value.chapterIdx = temp;
                   controller.chapterIdx.value = temp;
                 },
+                divisions: controller.chapters.length,
+                label: controller
+                    .chapters[controller.chapterIdx.value].chapterName,
                 onChangeEnd: (_) {
                   controller.initContent(
                       controller.book.value.chapterIdx!, true);
@@ -421,6 +419,8 @@ class ReadBookPage extends GetView<ReadBookController> {
                           onChangeEnd: (_) {
                             controller.updPage();
                           },
+                          divisions: 20,
+                          label: controller.setting!.fontSize.toString(),
                           min: 10,
                           max: 30,
                         ),
@@ -481,6 +481,7 @@ class ReadBookPage extends GetView<ReadBookController> {
                           onChangeEnd: (_) {
                             controller.updPage();
                           },
+                          label: controller.setting!.latterHeight.toString(),
                           min: 1,
                           max: 2.0,
                         ),
@@ -536,6 +537,7 @@ class ReadBookPage extends GetView<ReadBookController> {
                           value: controller.paragraphHeight.value,
                           onChanged: (v) {
                             controller.setting!.paragraphHeight = v;
+                            controller.paragraphHeight.value = v;
                             controller.setting!.persistence();
                           },
                           onChangeEnd: (_) {
@@ -543,6 +545,7 @@ class ReadBookPage extends GetView<ReadBookController> {
                           },
                           min: 0,
                           max: 2.0,
+                          label: controller.setting!.paragraphHeight.toString(),
                         ),
                       ),
                     ),
@@ -603,6 +606,7 @@ class ReadBookPage extends GetView<ReadBookController> {
                             controller.updPage();
                           },
                           min: 0,
+                          label: controller.setting!.pageSpace.toString(),
                           max: 40,
                         ),
                       ),
@@ -756,51 +760,51 @@ class ReadBookPage extends GetView<ReadBookController> {
 
   _buildChapters() {
     controller.reInitController();
-    return Column(
-      children: [
-        _buildChaptersHead(),
-        SizedBox(
-          height: 5,
-        ),
-        Divider(
-          indent: 10,
-          thickness: 1,
-          endIndent: 10,
-          height: 10,
-        ),
+    return Obx(() => Column(
+          children: [
+            _buildChaptersHead(),
+            SizedBox(
+              height: 5,
+            ),
+            Divider(
+              indent: 10,
+              thickness: 1,
+              endIndent: 10,
+              height: 10,
+            ),
 
-        Expanded(
-          child: ListView.builder(
-            itemExtent: controller.itemExtent,
-            itemCount: controller.chapters.length,
-            addAutomaticKeepAlives: true,
-            itemBuilder: (c, i) {
-              ChapterProto chapter = controller.chapters[i];
-              return ListTile(
-                title: Text(
-                  chapter.chapterName,
-                  maxLines: 2,
-                  style: TextStyle(fontSize: 15),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                trailing: Text(
-                  chapter.hasContent == "2" ? "已缓存" : "",
-                  style: TextStyle(fontSize: 10),
-                ),
-                // trailing: chapter.hasContent != "2" ? Icon(Icons.cloud) : null,
-                selected: i == controller.book.value.chapterIdx,
-                onTap: () async {
-                  Get.back();
-                  await controller.jump(i);
+            Expanded(
+              child: ListView.builder(
+                itemExtent: controller.itemExtent,
+                itemCount: controller.chapters.length,
+                addAutomaticKeepAlives: true,
+                itemBuilder: (c, i) {
+                  ChapterProto chapter = controller.chapters[i];
+                  return ListTile(
+                    title: Text(
+                      chapter.chapterName,
+                      maxLines: 2,
+                      style: TextStyle(fontSize: 15),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    trailing: Text(
+                      chapter.hasContent == "2" ? "已缓存" : "",
+                      style: TextStyle(fontSize: 10),
+                    ),
+                    // trailing: chapter.hasContent != "2" ? Icon(Icons.cloud) : null,
+                    selected: i == controller.book.value.chapterIdx,
+                    onTap: () async {
+                      Get.back();
+                      await controller.jump(i);
+                    },
+                  );
                 },
-              );
-            },
-            controller: controller.indexController,
-          ),
-        )
-        // _buildListView()
-      ],
-    );
+                controller: controller.indexController,
+              ),
+            )
+            // _buildListView()
+          ],
+        ));
   }
 
   _buildChaptersHead() {

@@ -24,7 +24,7 @@ import 'package:novel/utils/database_provider.dart';
 import 'package:novel/utils/text_composition.dart';
 import 'package:sp_util/sp_util.dart';
 
-enum LOAD_STATUS { LOADING, FAILED, FINISH }
+enum LOAD_STATUS { LOADING, FINISH }
 enum OperateType { SLIDE, MORE_SETTING, DOWNLOAD }
 
 class ReadBookController extends FullLifeCycleController
@@ -154,7 +154,7 @@ class ReadBookController extends FullLifeCycleController
               : (book.value.chapterIdx! - 6) * itemExtent);
       loadStatus.value = LOAD_STATUS.FINISH;
     } catch (e) {
-      loadStatus.value = LOAD_STATUS.FAILED;
+      loadStatus.value = LOAD_STATUS.FINISH;
       print(e);
     }
   }
@@ -298,7 +298,7 @@ class ReadBookController extends FullLifeCycleController
     currentTouchEvent = TouchEvent(TouchEvent.ACTION_CANCEL, offset);
 
     mPainter!.setCurrentTouchEvent(currentTouchEvent);
-    canvasKey.currentContext!.findRenderObject()!.markNeedsPaint();
+    canvasKey.currentContext?.findRenderObject()?.markNeedsPaint();
   }
 
   //章节切换
@@ -552,7 +552,7 @@ class ReadBookController extends FullLifeCycleController
         currentTouchEvent.touchPos != e.localPosition) {
       currentTouchEvent = TouchEvent(TouchEvent.ACTION_DOWN, e.localPosition);
       mPainter!.setCurrentTouchEvent(currentTouchEvent);
-      canvasKey.currentContext!.findRenderObject()!.markNeedsPaint();
+      canvasKey.currentContext?.findRenderObject()?.markNeedsPaint();
     }
   }
 
@@ -562,7 +562,7 @@ class ReadBookController extends FullLifeCycleController
           currentTouchEvent.touchPos != e.localPosition) {
         currentTouchEvent = TouchEvent(TouchEvent.ACTION_MOVE, e.localPosition);
         mPainter!.setCurrentTouchEvent(currentTouchEvent);
-        canvasKey.currentContext!.findRenderObject()!.markNeedsPaint();
+        canvasKey.currentContext?.findRenderObject()?.markNeedsPaint();
       }
     }
   }
@@ -576,7 +576,7 @@ class ReadBookController extends FullLifeCycleController
         currentTouchEvent.touchDetail = e;
 
         mPainter!.setCurrentTouchEvent(currentTouchEvent);
-        canvasKey.currentContext!.findRenderObject()!.markNeedsPaint();
+        canvasKey.currentContext?.findRenderObject()?.markNeedsPaint();
       }
     }
   }
@@ -629,9 +629,10 @@ class ReadBookController extends FullLifeCycleController
       curPage!.chapterContent = chapterContent;
       curPage!.pages = TextComposition.parseContent(curPage!, setting!);
       loadStatus.value = LOAD_STATUS.FINISH;
-      canvasKey.currentContext!.findRenderObject()!.markNeedsPaint();
+      canvasKey.currentContext?.findRenderObject()?.markNeedsPaint();
     } catch (e) {
-      loadStatus.value = LOAD_STATUS.FAILED;
+      loadStatus.value = LOAD_STATUS.FINISH;
+      BotToast.showText(text: "加载失败");
     }
   }
 
@@ -677,8 +678,7 @@ class ReadBookController extends FullLifeCycleController
       await initContent(i, true);
       loadStatus.value = LOAD_STATUS.FINISH;
     } catch (e) {
-      loadStatus.value = LOAD_STATUS.FAILED;
-      print(e);
+      loadStatus.value = LOAD_STATUS.FINISH;
     }
   }
 }
