@@ -239,13 +239,13 @@ class ReadBookController extends SuperController
 
   saveState() {
     if (saveReadState.value) {
+      DataBaseProvider.dbProvider.updBook(book.value);
       SpUtil.putObjectList('pages_${book.value.id}_${prePage?.chapterName}',
           prePage?.pages ?? []);
       SpUtil.putObjectList('pages_${book.value.id}_${curPage?.chapterName}',
           curPage?.pages ?? []);
       SpUtil.putObjectList('pages_${book.value.id}_${nextPage?.chapterName}',
           nextPage?.pages ?? []);
-      DataBaseProvider.dbProvider.updBook(book.value);
 
       if (Global.profile!.token!.isNotEmpty) {
         BookApi().uploadReadRecord(Global.profile!.username, book.value.id,

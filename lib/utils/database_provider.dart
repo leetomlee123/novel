@@ -185,4 +185,9 @@ class DataBaseProvider {
     await dbClient!
         .delete(_dbChapters, where: "book_id=?", whereArgs: [bookId]);
   }
+
+  clearChapters() async {
+    var dbClient = await databaseChapter;
+    await dbClient!.delete(_dbChapters);
+  }
 }

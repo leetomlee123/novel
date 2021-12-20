@@ -13,6 +13,7 @@ import 'package:novel/pages/home/home_view.dart';
 import 'package:novel/pages/login/login_model.dart';
 import 'package:novel/router/app_pages.dart';
 import 'package:novel/utils/database_provider.dart';
+import 'package:sp_util/sp_util.dart';
 
 class IndexController extends GetxController with SingleGetTickerProviderMixin {
   // 是否展示欢迎页
@@ -35,7 +36,13 @@ class IndexController extends GetxController with SingleGetTickerProviderMixin {
     Global.profile = UserProfileModel(token: "");
     userProfileModel.value = Global.profile;
     DataBaseProvider.dbProvider.clearBooks();
+    DataBaseProvider.dbProvider.clearChapters();
     Get.find<HomeController>().shelf.clear();
+    SpUtil.getKeys()!.forEach((element) {
+      if (element.startsWith("pages")) {
+        SpUtil.remove(element);
+      }
+    });
     Global.saveProfile(Global.profile!);
   }
 
