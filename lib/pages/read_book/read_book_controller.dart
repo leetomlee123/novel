@@ -479,6 +479,7 @@ class ReadBookController extends FullLifeCycleController
 
     int curLen = (curPage?.pageOffsets ?? 0);
     if (idx == curLen - 1 && offsetDifference > 0) {
+      saveState();
       Future.delayed(
           Duration(milliseconds: 500),
           () => {
@@ -514,6 +515,8 @@ class ReadBookController extends FullLifeCycleController
       }
     }
     if (idx == 0 && offsetDifference < 0) {
+      saveState();
+
       Future.delayed(
           Duration(milliseconds: 500),
           () => {
@@ -676,6 +679,7 @@ class ReadBookController extends FullLifeCycleController
       loadStatus.value = LOAD_STATUS.LOADING;
       book.value.chapterIdx = i;
       await initContent(i, true);
+      saveState();
       loadStatus.value = LOAD_STATUS.FINISH;
     } catch (e) {
       loadStatus.value = LOAD_STATUS.FINISH;
