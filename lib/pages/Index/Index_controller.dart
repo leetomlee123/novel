@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -71,10 +69,8 @@ class IndexController extends GetxController with SingleGetTickerProviderMixin {
     Global.setting!.isDark = darkModel.value;
     Global.setting!.persistence();
     Get.find<HomeController>().widgets.clear();
-    if (Platform.isAndroid) {
-      SystemChrome.setSystemUIOverlayStyle(
-          darkModel.value ? ReadSetting.light : ReadSetting.dark);
-    }
+    SystemChrome.setSystemUIOverlayStyle(
+        darkModel.value ? ReadSetting.light : ReadSetting.dark);
   }
 
   @override

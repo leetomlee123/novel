@@ -18,10 +18,7 @@ class AppMenuPage extends GetView<IndexController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: _buildHeader(context),
-              ),
+              _buildHeader(context),
               getItem(
                 ImageIcon(AssetImage("images/info.png")),
                 '公告',
@@ -199,6 +196,8 @@ class AppMenuPage extends GetView<IndexController> {
 
   Widget _buildHeader(BuildContext context) {
     return Obx(() => Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      // decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8)),color: Colors.white),
           height: 200,
           child: Visibility(
             child: Row(
