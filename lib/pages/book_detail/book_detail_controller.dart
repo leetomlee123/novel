@@ -22,10 +22,7 @@ class BookDetailController extends GetxController with StateMixin {
     change(null, status: RxStatus.loading());
     var value = await BookApi().detail(bookId);
     bookDetailModel.value = value;
-    inShelf.value = _homeController.shelf
-        .map((element) => element.id)
-        .toList()
-        .contains(bookDetailModel.value.id);
+
     book = Book(
         id: value.id,
         name: value.name,
@@ -39,6 +36,10 @@ class BookDetailController extends GetxController with StateMixin {
         img: value.img,
         lastChapter: value.lastChapter);
     change(null, status: RxStatus.success());
+    inShelf.value = _homeController.shelf
+        .map((element) => element.id)
+        .toList()
+        .contains(bookDetailModel.value.id);
   }
 
   modifyShelf() async {
