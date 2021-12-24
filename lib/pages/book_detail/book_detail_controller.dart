@@ -43,8 +43,7 @@ class BookDetailController extends GetxController with StateMixin {
 
   modifyShelf() async {
     await _homeController.modifyShelf(book!);
-    inShelf.value = !inShelf.value;
-    print("ddd");
+    inShelf.toggle();
   }
 
   @override
