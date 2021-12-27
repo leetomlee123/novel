@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:novel/common/values/setting.dart';
 import 'package:novel/components/components.dart';
 import 'package:novel/pages/Index/Index_controller.dart';
-import 'package:novel/utils/update_app.dart';
 
 class AppMenuPage extends GetView<IndexController> {
   const AppMenuPage({Key? key}) : super(key: key);
@@ -19,108 +17,109 @@ class AppMenuPage extends GetView<IndexController> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _buildHeader(context),
-              getItem(
-                ImageIcon(AssetImage("images/info.png")),
-                '公告',
-                () {
-                  // Navigator.of(context).push(MaterialPageRoute(
-                  //     builder: (BuildContext context) => InfoPage()));
-                },
-              ),
-              getItem(
-                ImageIcon(AssetImage("images/re.png")),
-                '免责声明',
-                () {
-                  showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                            title: Text(
-                              '免责声明',
-                            ),
-                            content: SingleChildScrollView(
-                              child: Text(ReadSetting.lawWarn
-                                  // ReadSetting.lawWarn,""
-                                  ),
-                            ),
-                            actions: <Widget>[
-                              TextButton(
-                                child: Text(
-                                  "确定",
-                                ),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
-                          ));
-                },
-              ),
-              getItem(
-                ImageIcon(AssetImage("images/skin.png")),
-                '主题',
-                () {
-                  // Navigator.of(context).push(MaterialPageRoute(
-                  //     builder: (BuildContext context) => Skin()));
-                },
-              ),
-              getItem(
-                ImageIcon(AssetImage("images/fe.png")),
-                '意见反馈',
-                () {
-                  // locator<TelAndSmsService>()
-                  //     .sendEmail('leetomlee123@gmail.com');
-                },
-              ),
-              getItem(
-                ImageIcon(AssetImage("images/github.png")),
-                '开源地址',
-                () {
-                  // launch('https://github.com/leetomlee123/book');
-                },
-              ),
-              getItem(
-                ImageIcon(AssetImage("images/upgrade.png")),
-                '应用更新',
-                () async {
-                  UpdateAppUtil.checkUpdate();
-                },
-              ),
-              getItem(
-                ImageIcon(AssetImage("images/ab.png")),
-                '关于',
-                () {
-                  showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                            title: Text(('清阅揽胜')),
-                            content: Text(
-                              ReadSetting.poet,
-                              style: TextStyle(fontSize: 15, height: 2.1),
-                            ),
-                            actions: <Widget>[
-                              TextButton(
-                                child: new Text(
-                                  "确定",
-                                ),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
-                          ));
-                },
-              ),
-              Obx(
-                () => Offstage(
-                    offstage: controller.userProfileModel.value!.token!.isEmpty,
-                    child: OutlinedButton(
-                      style: ButtonStyle(
-                          minimumSize:
-                              MaterialStateProperty.all(Size(330, 45))),
-                      onPressed: () => controller.dropAccountOut(),
-                      child: Text("退出登录"),
-                    )),
-              ),
+
+              // getItem(
+              //   ImageIcon(AssetImage("images/info.png")),
+              //   '公告',
+              //   () {
+              //     // Navigator.of(context).push(MaterialPageRoute(
+              //     //     builder: (BuildContext context) => InfoPage()));
+              //   },
+              // ),
+              // getItem(
+              //   ImageIcon(AssetImage("images/re.png")),
+              //   '免责声明',
+              //   () {
+              //     showDialog(
+              //         context: context,
+              //         builder: (context) => AlertDialog(
+              //               title: Text(
+              //                 '免责声明',
+              //               ),
+              //               content: SingleChildScrollView(
+              //                 child: Text(ReadSetting.lawWarn
+              //                     // ReadSetting.lawWarn,""
+              //                     ),
+              //               ),
+              //               actions: <Widget>[
+              //                 TextButton(
+              //                   child: Text(
+              //                     "确定",
+              //                   ),
+              //                   onPressed: () {
+              //                     Navigator.of(context).pop();
+              //                   },
+              //                 ),
+              //               ],
+              //             ));
+              //   },
+              // ),
+              // getItem(
+              //   ImageIcon(AssetImage("images/skin.png")),
+              //   '主题',
+              //   () {
+              //     // Navigator.of(context).push(MaterialPageRoute(
+              //     //     builder: (BuildContext context) => Skin()));
+              //   },
+              // ),
+              // getItem(
+              //   ImageIcon(AssetImage("images/fe.png")),
+              //   '意见反馈',
+              //   () {
+              //     // locator<TelAndSmsService>()
+              //     //     .sendEmail('leetomlee123@gmail.com');
+              //   },
+              // ),
+              // getItem(
+              //   ImageIcon(AssetImage("images/github.png")),
+              //   '开源地址',
+              //   () {
+              //     // launch('https://github.com/leetomlee123/book');
+              //   },
+              // ),
+              // getItem(
+              //   ImageIcon(AssetImage("images/upgrade.png")),
+              //   '应用更新',
+              //   () async {
+              //     UpdateAppUtil.checkUpdate();
+              //   },
+              // ),
+              // getItem(
+              //   ImageIcon(AssetImage("images/ab.png")),
+              //   '关于',
+              //   () {
+              //     showDialog(
+              //         context: context,
+              //         builder: (context) => AlertDialog(
+              //               title: Text(('清阅揽胜')),
+              //               content: Text(
+              //                 ReadSetting.poet,
+              //                 style: TextStyle(fontSize: 15, height: 2.1),
+              //               ),
+              //               actions: <Widget>[
+              //                 TextButton(
+              //                   child: new Text(
+              //                     "确定",
+              //                   ),
+              //                   onPressed: () {
+              //                     Navigator.of(context).pop();
+              //                   },
+              //                 ),
+              //               ],
+              //             ));
+              //   },
+              // ),
+              // Obx(
+              //   () => Offstage(
+              //       offstage: controller.userProfileModel.value!.token!.isEmpty,
+              //       child: OutlinedButton(
+              //         style: ButtonStyle(
+              //             minimumSize:
+              //                 MaterialStateProperty.all(Size(330, 45))),
+              //         onPressed: () => controller.dropAccountOut(),
+              //         child: Text("退出登录"),
+              //       )),
+              // ),
             ],
           ),
         ),
@@ -196,8 +195,8 @@ class AppMenuPage extends GetView<IndexController> {
 
   Widget _buildHeader(BuildContext context) {
     return Obx(() => Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      // decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8)),color: Colors.white),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          // decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8)),color: Colors.white),
           height: 200,
           child: Visibility(
             child: Row(

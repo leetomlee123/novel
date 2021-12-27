@@ -6,6 +6,7 @@ import 'package:novel/global.dart';
 import 'package:novel/pages/Index/Index_view.dart';
 import 'package:novel/pages/Index/index_binding.dart';
 import 'package:novel/router/app_pages.dart';
+import 'package:novel/router/router_observer.dart';
 
 void main() => Global.init().then((e) => runApp(MyApp()));
 
@@ -19,12 +20,12 @@ class MyApp extends StatelessWidget {
       theme: (Global.setting!.isDark ?? false)
           ? ThemeData.dark()
           : ThemeData.light(),
-          themeMode: (Global.setting!.isDark ?? false)
-          ? ThemeMode.dark
-          : ThemeMode.light,
+      themeMode:
+          (Global.setting!.isDark ?? false) ? ThemeMode.dark : ThemeMode.light,
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
       unknownRoute: AppPages.unknownRoute,
+      navigatorObservers: [RouterObserver()],
       builder: BotToastInit(),
       locale: TranslationService.locale,
       fallbackLocale: TranslationService.fallbackLocale,

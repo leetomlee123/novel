@@ -1,5 +1,7 @@
 import 'package:common_utils/common_utils.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:novel/common/values/setting.dart';
 import 'package:novel/pages/book_detail/book_detail_model.dart';
 import 'package:novel/pages/home/home_controller.dart';
 import 'package:novel/pages/home/home_model.dart';
@@ -10,6 +12,7 @@ class BookDetailController extends GetxController with StateMixin {
   RxBool inShelf = false.obs;
   HomeController _homeController = Get.find<HomeController>();
   Book? book;
+  RxBool ok = false.obs;
 
   @override
   void onInit() {
@@ -19,7 +22,7 @@ class BookDetailController extends GetxController with StateMixin {
   }
 
   getDetail(String bookId) async {
-    change(null, status: RxStatus.loading());
+    ok.value = false;
     var value = await BookApi().detail(bookId);
     bookDetailModel.value = value;
 
@@ -35,11 +38,11 @@ class BookDetailController extends GetxController with StateMixin {
         bookStatus: value.bookStatus,
         img: value.img,
         lastChapter: value.lastChapter);
-    change(null, status: RxStatus.success());
     inShelf.value = _homeController.shelf
         .map((element) => element.id)
         .toList()
         .contains(bookDetailModel.value.id);
+    ok.toggle();
   }
 
   modifyShelf() async {
@@ -48,8 +51,14 @@ class BookDetailController extends GetxController with StateMixin {
   }
 
   @override
-  void onReady() {}
+  void onReady() {
+    SystemChrome.setSystemUIOverlayStyle(
+        Get.isDarkMode ? ReadSetting.light : ReadSetting.dark);
+  }
 
   @override
-  void onClose() {}
+  void onClose() {
+    SystemChrome.setSystemUIOverlayStyle(
+        Get.isDarkMode ? ReadSetting.light : ReadSetting.dark);
+  }
 }

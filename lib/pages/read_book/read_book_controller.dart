@@ -612,7 +612,8 @@ class ReadBookController extends SuperController
       curPage = await loadChapter(book.value.chapterIdx!);
       DataBaseProvider.dbProvider.updateContent(chapterId, chapterContent);
       chapters[book.value.chapterIdx!].hasContent = "2";
-
+      homeController!.widgets.removeWhere(
+          (key, value) => key.startsWith(chapterIdx.value.toString()));
       curPage!.chapterContent = chapterContent;
       curPage!.pages = TextComposition.parseContent(curPage!, setting!);
       loadStatus.value = LOAD_STATUS.FINISH;
@@ -651,7 +652,13 @@ class ReadBookController extends SuperController
   void switchBgColor(int i) {
     setting!.bgIndex = i;
     setting!.persistence();
-    colorModelSwitch();
+    if (darkModel.value) {
+      bgImage = homeController!.bgImages![ReadSetting.bgImgs.length - 1];
+    } else {
+      bgImage = homeController!.bgImages![setting!.bgIndex ?? 0];
+    }
+    homeController!.widgets.clear();
+    canvasKey.currentContext?.findRenderObject()?.markNeedsPaint();
   }
 
   reloadCurChapterWidget() {}

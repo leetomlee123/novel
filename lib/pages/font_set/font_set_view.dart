@@ -70,7 +70,7 @@ class FontSetPage extends GetView<FontSetController> {
   }
 
   _buildFontView() {
-    print("rea");
+
     return ListView.builder(
       itemCount: controller.fonts.length,
       itemExtent: 40,

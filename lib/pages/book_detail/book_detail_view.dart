@@ -14,18 +14,19 @@ class BookDetailPage extends GetView<BookDetailController> {
 
   @override
   Widget build(BuildContext context) {
-    return controller.obx((state) {
-      return Scaffold(
-        body: Stack(
-          children: [
-            CustomScrollView(
-              slivers: [_buildSliverAppBar(), _buildSliverBody()],
-            ),
-            _buildBottom()
-          ],
-        ),
-      );
-    }, onLoading: LoadingDialog());
+    return Scaffold(
+        body: Obx(
+      () => controller.ok.value
+          ? Stack(
+              children: [
+                CustomScrollView(
+                  slivers: [_buildSliverAppBar(), _buildSliverBody()],
+                ),
+                _buildBottom()
+              ],
+            )
+          : LoadingDialog(),
+    ));
   }
 
   Widget _buildSliverAppBar() {
@@ -37,7 +38,7 @@ class BookDetailPage extends GetView<BookDetailController> {
       expandedHeight: 220,
       actions: [
         TextButton(
-            onPressed: () => Get.toNamed(AppRoutes.Index),
+            onPressed: () => Get.offNamed(AppRoutes.Index),
             child: Text(
               "书架",
               style: TextStyle(color: Colors.white),
@@ -98,7 +99,7 @@ class BookDetailPage extends GetView<BookDetailController> {
               height: 6,
             ),
             RatingBar.builder(
-              initialRating: double.parse( book.rate.toString()),
+              initialRating: double.parse(book.rate.toString()),
               minRating: 0,
               direction: Axis.horizontal,
               allowHalfRating: true,
@@ -281,34 +282,34 @@ class BookDetailPage extends GetView<BookDetailController> {
           borderRadius: BorderRadius.all(Radius.circular(1.0)),
         ),
         padding: EdgeInsets.only(bottom: Screen.bottomSafeHeight),
-        child:  Obx(()=> ButtonBar(
-          alignment: MainAxisAlignment.spaceEvenly,
-          children: [
-          TextButton(
-                onPressed: () => controller.modifyShelf(),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 500),
-                  transitionBuilder:
-                      (Widget child, Animation<double> animation) {
-                    //执行缩放动画
-                    return ScaleTransition(child: child, scale: animation);
-                  },
-                  child: Text(controller.inShelf.value ? "移出书架" : "加入书架"),
-                )),
-            TextButton(
-                onPressed: () {
-                  if (controller.inShelf.value) {
-                    Get.toNamed(AppRoutes.ReadBook, arguments: {
-                      "id": controller.bookDetailModel.value.id
-                    });
-                  } else {
-                    Get.toNamed(AppRoutes.ReadBook,
-                        arguments: {"bookJson": controller.book!.toJson()});
-                  }
-                },
-                child: Text(controller.inShelf.value ? "继续阅读" : "立即阅读")),
-          ],
-        )),
+        child: Obx(() => ButtonBar(
+              alignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextButton(
+                    onPressed: () => controller.modifyShelf(),
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 500),
+                      transitionBuilder:
+                          (Widget child, Animation<double> animation) {
+                        //执行缩放动画
+                        return ScaleTransition(child: child, scale: animation);
+                      },
+                      child: Text(controller.inShelf.value ? "移出书架" : "加入书架"),
+                    )),
+                TextButton(
+                    onPressed: () {
+                      if (controller.inShelf.value) {
+                        Get.toNamed(AppRoutes.ReadBook, arguments: {
+                          "id": controller.bookDetailModel.value.id
+                        });
+                      } else {
+                        Get.toNamed(AppRoutes.ReadBook,
+                            arguments: {"bookJson": controller.book!.toJson()});
+                      }
+                    },
+                    child: Text(controller.inShelf.value ? "继续阅读" : "立即阅读")),
+              ],
+            )),
       ),
     );
   }

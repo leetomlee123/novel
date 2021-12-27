@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_statusbar_manager/flutter_statusbar_manager.dart';
 import 'package:get/get.dart';
+import 'package:novel/common/values/setting.dart';
 import 'package:novel/global.dart';
 import 'package:novel/pages/read_book/read_book_controller.dart';
 import 'package:novel/utils/CustomCacheManager.dart';
@@ -21,12 +22,15 @@ class FontSetController extends GetxController {
   void onInit() {
     super.onInit();
     initFontInfos();
+
     FlutterStatusbarManager.setFullscreen(false);
+    SystemChrome.setSystemUIOverlayStyle(
+        Get.isDarkMode ? ReadSetting.light : ReadSetting.dark);
   }
 
   initFontInfos() async {
     {
-      Map map =SpUtil.getObject("fonts")!;
+      Map map = SpUtil.getObject("fonts")!;
       var entries = map.entries;
       fonts.add(FontInfo("默认字体", "", null));
       for (int i = 0; i < entries.length; i++) {

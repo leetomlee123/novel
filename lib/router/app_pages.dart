@@ -28,6 +28,7 @@ part 'app_routes.dart';
 class AppPages {
   static const INITIAL = AppRoutes.Index;
 
+
   static final routes = [
     GetPage(
       name: AppRoutes.Index,
