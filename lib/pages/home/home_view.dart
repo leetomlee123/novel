@@ -134,7 +134,7 @@ class HomePage extends GetView<HomeController> {
         gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
           crossAxisSpacing: 40.0,
-          mainAxisSpacing: 30.0,
+          mainAxisSpacing: 40.0,
         ),
         itemBuilder: (itemBuilder, i) {
           var data = controller.shelf[i];
