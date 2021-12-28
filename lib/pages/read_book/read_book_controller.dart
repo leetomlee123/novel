@@ -141,9 +141,9 @@ class ReadBookController extends SuperController
       if (chapters.isEmpty) {
         //初次打开
         await getReadRecord();
-        await getChapter();
+        await getChapters();
       } else {
-        getChapter();
+        getChapters();
       }
       chapterIdx.value = book.value.chapterIdx!;
       await initContent(book.value.chapterIdx!, false);
@@ -184,7 +184,7 @@ class ReadBookController extends SuperController
   loadChapter(int idx) async {
     ReadPage readPage = ReadPage();
     if (idx < 0 || idx >= chapters.length) {
-      return readPage;
+      return null;
     }
     var chapter = chapters[idx];
     readPage.chapterName = chapter.chapterName;
@@ -308,7 +308,7 @@ class ReadBookController extends SuperController
   //章节切换
   // chapter
 
-  getChapter() async {
+  getChapters() async {
     List<ChapterProto> cps =
         await BookApi().getChapters(book.value.id, chapters.length);
     if (cps.isNotEmpty) {
@@ -339,7 +339,7 @@ class ReadBookController extends SuperController
   }
 
   void toggleShowMenu() {
-    showMenu.value = !showMenu.value;
+    showMenu.toggle();
   }
 
   bool isCanGoNext() {
