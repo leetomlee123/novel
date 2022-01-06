@@ -613,8 +613,9 @@ class ReadBookController extends SuperController
           .updateContent(chapterId, chapterContent);
       curPage = await loadChapter(book.value.chapterIdx!);
       chapters[book.value.chapterIdx!].hasContent = "2";
-      // homeController!.widgets.removeWhere(
-      //     (key, value) => key.startsWith(chapterIdx.value.toString()));
+      homeController!.widgets.removeWhere((key, value) => key
+          .startsWith(book.value.id.toString() + chapterIdx.value.toString()));
+
       // curPage!.chapterContent = chapterContent;
       // curPage!.pages = TextComposition.parseContent(curPage!, setting!);
       loadStatus.value = LOAD_STATUS.FINISH;
