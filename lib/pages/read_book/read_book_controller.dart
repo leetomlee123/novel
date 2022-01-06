@@ -609,13 +609,14 @@ class ReadBookController extends SuperController
           await ChapterParseUtil().parseContent(res['link']);
       //上传到数据库
       BookApi().updateContent(chapterId, chapterContent);
+      await DataBaseProvider.dbProvider
+          .updateContent(chapterId, chapterContent);
       curPage = await loadChapter(book.value.chapterIdx!);
-      DataBaseProvider.dbProvider.updateContent(chapterId, chapterContent);
       chapters[book.value.chapterIdx!].hasContent = "2";
-      homeController!.widgets.removeWhere(
-          (key, value) => key.startsWith(chapterIdx.value.toString()));
-      curPage!.chapterContent = chapterContent;
-      curPage!.pages = TextComposition.parseContent(curPage!, setting!);
+      // homeController!.widgets.removeWhere(
+      //     (key, value) => key.startsWith(chapterIdx.value.toString()));
+      // curPage!.chapterContent = chapterContent;
+      // curPage!.pages = TextComposition.parseContent(curPage!, setting!);
       loadStatus.value = LOAD_STATUS.FINISH;
       canvasKey.currentContext?.findRenderObject()?.markNeedsPaint();
     } catch (e) {

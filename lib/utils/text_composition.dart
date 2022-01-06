@@ -179,14 +179,6 @@ class TextComposition {
     if (this.pages!.length == 0) {
       this.pages!.add(TextPage(lines: [], height: 0));
     }
-    // this.pages!.forEach((element) {
-    //   print(element.lines!.length);
-    // });
-    // print("_height $_height _height2 $_height2");
-    // this.pages!.forEach((element) {
-    //   print(element.height);
-    //   // print(element.lines!.first.text);
-    // });
   }
 
   static List<TextPage> parseContent(ReadPage readPage, ReadSetting setting,
