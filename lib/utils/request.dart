@@ -1,7 +1,9 @@
 import 'dart:async';
 
-import 'package:bot_toast/bot_toast.dart';
+import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:dio_smart_retry/dio_smart_retry.dart';
 import 'package:novel/config.dart';
 import 'package:novel/global.dart';
 
@@ -20,6 +22,7 @@ class Request {
   factory Request() => _instance;
 
   late Dio dio;
+  late CookieJar cookieJar;
   CancelToken cancelToken = new CancelToken();
 
   Request._internal() {
@@ -35,13 +38,30 @@ class Request {
       receiveTimeout: 5000,
 
       // Http请求头.
-      headers: {},
+      headers: {
+        "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36 Edg/96.0.1054.62",
+        "referer": "https://ting55.com/"
+      },
       contentType: 'application/json; charset=utf-8',
       responseType: ResponseType.json,
     );
 
     dio = new Dio(options);
+    cookieJar = CookieJar();
+    dio.interceptors.add(CookieManager(cookieJar));
 
+    dio.interceptors.add(RetryInterceptor(
+      dio: dio,
+      logPrint: print, // specify log function (optional)
+      retries: 3, // retry count (optional)
+      retryDelays: const [
+        // set delays between retries (optional)
+        Duration(seconds: 1), // wait 1 sec before first retry
+        Duration(seconds: 2), // wait 2 sec before second retry
+        Duration(seconds: 3), // wait 3 sec before third retry
+      ],
+    ));
     // 添加拦截器
     dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
       // 在请求被发送之前做一些预处理
@@ -93,12 +113,15 @@ class Request {
   }
 
   /// restful post 操作
-  Future post(String path, {dynamic params, Options? options}) async {
+  Future post(String path,
+      {dynamic params, Options? options, bool? useToken = true}) async {
     Options requestOptions = options ?? Options();
+
     Map<String, dynamic> _authorization = getAuthorizationHeader();
-    if (_authorization.isNotEmpty) {
+    if (useToken! && _authorization.isNotEmpty) {
       requestOptions = requestOptions.copyWith(headers: _authorization);
     }
+
     var response = await dio.post(path,
         data: params, options: requestOptions, cancelToken: cancelToken);
     return response.data;
@@ -161,11 +184,13 @@ class Request {
   }
 
   /// restful post form 表单提交操作
-  Future postForm(String path, {dynamic params, Options? options}) async {
+  Future postForm(String path,
+      {dynamic params, Options? options, bool? useToken = true}) async {
     Options requestOptions = options ?? Options();
 
     Map<String, dynamic> _authorization = getAuthorizationHeader();
-    if (_authorization.isNotEmpty) {
+
+    if (useToken! && _authorization.isNotEmpty) {
       requestOptions = requestOptions.copyWith(headers: _authorization);
     }
     var response = await dio.post(path,

@@ -12,6 +12,8 @@ import 'package:novel/pages/font_set/font_set_binding.dart';
 import 'package:novel/pages/font_set/font_set_view.dart';
 import 'package:novel/pages/home/home.binding.dart';
 import 'package:novel/pages/home/home_view.dart';
+import 'package:novel/pages/listen/listen_binding.dart';
+import 'package:novel/pages/listen/listen_view.dart';
 import 'package:novel/pages/login/login_binding.dart';
 import 'package:novel/pages/login/login_view.dart';
 import 'package:novel/pages/notfound/notfound_view.dart';
@@ -83,6 +85,11 @@ class AppPages {
       name: AppRoutes.FontSet,
       page: () => FontSetPage(),
       binding: FontSetBinding(),
+    ),
+        GetPage(
+      name: AppRoutes.listen,
+      page: () => ListenPage(),
+      binding: ListenBinding(),
     ),
   ];
 

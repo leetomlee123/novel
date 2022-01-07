@@ -5,9 +5,9 @@ import 'package:novel/common/values/setting.dart';
 import 'package:novel/global.dart';
 import 'package:novel/pages/Index/NavigationIconView.dart';
 import 'package:novel/pages/app_menu/app_menu_view.dart';
-import 'package:novel/pages/book_city/book_city_view.dart';
 import 'package:novel/pages/home/home_controller.dart';
 import 'package:novel/pages/home/home_view.dart';
+import 'package:novel/pages/listen/listen_view.dart';
 import 'package:novel/pages/login/login_model.dart';
 import 'package:novel/router/app_pages.dart';
 import 'package:novel/utils/database_provider.dart';
@@ -48,12 +48,11 @@ class IndexController extends GetxController with SingleGetTickerProviderMixin {
   void onInit() {
     navigationViews = <NavigationIconView>[
       NavigationIconView(iconData: Icons.book_sharp, title: "书架", vsync: this),
-      NavigationIconView(
-          iconData: Icons.all_inclusive, title: "书城", vsync: this),
+      NavigationIconView(iconData: Icons.voice_chat, title: "鳞听", vsync: this),
       NavigationIconView(iconData: Icons.person, title: "我", vsync: this),
     ];
 
-    pageList = [HomePage(), BookCityPage(), AppMenuPage()];
+    pageList = [HomePage(), ListenPage(), AppMenuPage()];
     super.onInit();
   }
 

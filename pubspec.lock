@@ -15,6 +15,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.8.2"
+  audioplayers:
+    dependency: "direct main"
+    description:
+      name: audioplayers
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.20.1"
   battery_plus:
     dependency: "direct main"
     description:
@@ -71,6 +78,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.0.1"
+  bottom_sheet:
+    dependency: "direct main"
+    description:
+      name: bottom_sheet
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.5"
   characters:
     dependency: transitive
     description:
@@ -110,6 +124,13 @@ packages:
     dependency: transitive
     description:
       name: convert
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.0.1"
+  cookie_jar:
+    dependency: transitive
+    description:
+      name: cookie_jar
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.0.1"
@@ -154,7 +175,21 @@ packages:
       name: dio
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "4.0.1"
+    version: "4.0.4"
+  dio_cookie_manager:
+    dependency: "direct main"
+    description:
+      name: dio_cookie_manager
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.0"
+  dio_smart_retry:
+    dependency: "direct main"
+    description:
+      name: dio_smart_retry
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.1.0"
   extended_image:
     dependency: "direct main"
     description:
