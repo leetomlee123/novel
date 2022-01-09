@@ -177,7 +177,7 @@ class ListenPage extends GetView<ListenController> {
                           duration: Duration(milliseconds: 300),
                           child: IconButton(
                               key: ValueKey(controller.playerState.value),
-                              iconSize: 40,
+                              iconSize: 80,
                               onPressed: () => controller.playToggle(),
                               icon: Icon(controller.playerState.value ==
                                       PlayerState.PLAYING
