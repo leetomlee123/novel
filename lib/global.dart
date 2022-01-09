@@ -7,7 +7,7 @@ import 'package:novel/common/values/values.dart';
 import 'package:novel/pages/login/login_model.dart';
 import 'package:novel/services/system.dart';
 import 'package:novel/utils/utils.dart';
-import 'package:permission_handler/permission_handler.dart';
+// import 'package:permission_handler/permission_handler.dart';
 import 'package:sp_util/sp_util.dart';
 
 /// 全局配置
@@ -29,11 +29,11 @@ class Global {
   static Future init() async {
     // 运行初始
     WidgetsFlutterBinding.ensureInitialized();
-    if (Platform.isIOS || Platform.isAndroid) {
-      if (!await Permission.storage.request().isGranted) {
-        return;
-      }
-    }
+    // if (Platform.isIOS || Platform.isAndroid) {
+    //   if (!await Permission.storage.request().isGranted) {
+    //     return;
+    //   }
+    // }
     // Ruquest 模块初始化
     Request();
     // 本地存储初始化

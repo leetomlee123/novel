@@ -9,7 +9,8 @@ import 'package:novel/utils/request.dart';
 class ListenApi {
   static String host = "https://ting55.com";
 
-  Future<List<ListenSearchModel>> search(String keyword) async {
+  Future<List<ListenSearchModel>?> search(String keyword) async {
+    if (keyword.isEmpty) return null;
     var res = await Request().get("$host/s/$keyword");
 
     List data = jsonDecode(res)['data'];
@@ -29,10 +30,10 @@ class ListenApi {
   }
 
   Future<String> chapterUrl(String chapterLink, int? bookId, int? idx) async {
-    var res11 = await Request().get(
-      "http://134.175.83.19:8012/listen/chapter/$bookId${idx! + 1}",
-    );
-    if (res11.toString().isNotEmpty) return res11;
+    // var res11 = await Request().get(
+    //   "http://134.175.83.19:8012/listen/chapter/$bookId${idx! + 1}",
+    // );
+    // if (res11.toString().isNotEmpty) return res11;
     var link = "$host$chapterLink";
     print(link);
     var res = await Request().get(link);
@@ -63,10 +64,10 @@ class ListenApi {
     if (url.isEmpty) {
       url = data['url'];
     }
-    if (url.isNotEmpty) {
-      Request().post("http://134.175.83.19:8012/listen/chapter",
-          params: {"key": "$bookId$cp", "url": url});
-    }
+    // if (url.isNotEmpty) {
+    //   Request().post("http://134.175.83.19:8012/listen/chapter",
+    //       params: {"key": "$bookId$cp", "url": url});
+    // }
     return url;
   }
   //   r = session.get(host_li, headers=headers).text

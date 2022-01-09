@@ -2,8 +2,10 @@ import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:novel/pages/listen/listen_model.dart';
 import 'package:novel/services/listen.dart';
 import 'package:sp_util/sp_util.dart';
@@ -16,19 +18,30 @@ class ListenController extends SuperController
   Rx<ListenSearchModel> model = ListenSearchModel().obs;
   RxString url = "".obs;
   AudioPlayer audioPlayer = AudioPlayer();
-  Rx<Duration> duration = Duration(seconds: 2).obs;
-  Rx<Duration> position = Duration(seconds: 1).obs;
+  Rx<Duration> duration = Duration(seconds: 0).obs;
+  Rx<Duration> position = Duration(seconds: 0).obs;
   Rx<PlayerState> playerState = PlayerState.STOPPED.obs;
   RxBool play = false.obs;
   RxBool moving = false.obs;
   RxInt idx = 0.obs;
+  RxDouble fast = (1.0).obs;
+  late FloatingSearchBarController? controller;
+  late ScrollController? scrollcontroller;
   @override
   void onInit() {
+    // SpUtil.remove("v");
     super.onInit();
+    controller = FloatingSearchBarController();
+
+    ever(idx, (_) {
+      scrollcontroller =
+          ScrollController(initialScrollOffset: (idx.value - 4) * 40);
+    });
+    ever(fast, (_) {
+      audioPlayer.setPlaybackRate(fast.value);
+    });
     init();
     audioPlayer.onDurationChanged.listen((Duration d) {
-      print('Max duration: $d');
-
       duration.value = d;
     });
 
@@ -41,18 +54,16 @@ class ListenController extends SuperController
       playerState.value = s;
       if (playerState.value == PlayerState.PLAYING) {
         play.value = true;
-        position.value = Duration(seconds: 0);
-        await audioPlayer
-            .seek(Duration(milliseconds: model.value.position ?? 0));
-        // if (Get.isBottomSheetOpen ?? false) Get.close(1);
-        print(Get.isBottomSheetOpen ?? false);
+        // position.value = Duration(seconds: 0);
+        // await audioPlayer
+        //     .seek(Duration(milliseconds: model.value.position ?? 0));
       }
     });
 
     audioPlayer.onPlayerCompletion.listen((event) {
-      position.value = duration.value;
+      // position.value = duration.value;
 
-      onComplete();
+      next();
     });
     audioPlayer.onPlayerError.listen((msg) {
       print('audioPlayer error : $msg');
@@ -67,11 +78,15 @@ class ListenController extends SuperController
     if (SpUtil.haveKey("v") ?? false) {
       model.value = SpUtil.getObj("v", (v) => ListenSearchModel.fromJson(v))!;
       idx.value = model.value.idx!;
-      position.value = Duration(microseconds: model.value.position ?? 0);
+      url.value = model.value.url!;
+      if (await getUrl(idx.value) == 1) {
+        position.value = Duration(milliseconds: model.value.position ?? 0);
 
-      await detail(model.value.id.toString());
-      await getUrl(idx.value);
+        await audioPlayer.seek(position.value);
+      }
       play.value = true;
+
+      detail(model.value.id.toString());
     }
   }
 
@@ -81,14 +96,22 @@ class ListenController extends SuperController
   @override
   void onClose() {
     audioPlayer.release();
+    saveState();
+  }
+
+  saveState() {
     model.value.idx = idx.value;
+    model.value.position = max(position.value.inMilliseconds - 1000, 0);
+    model.value.url = url.value;
     SpUtil.putObject("v", model.value);
   }
 
   search(String v) async {
+    if (v.isEmpty) return;
     searchs.clear();
-    searchs.value = await ListenApi().search(v);
+    searchs.value = (await ListenApi().search(v))!;
     play.value = false;
+    controller!.close();
   }
 
   clear() {
@@ -103,33 +126,41 @@ class ListenController extends SuperController
   getUrl(int i) async {
     idx.value = i;
     try {
-      url.value = await ListenApi()
-          .chapterUrl(chapters[i].link ?? "", model.value.id, idx.value);
-      if (url.value.isEmpty) return;
-
-      await playAudio();
-    } catch (E) {}
-  }
-
-  playAudio() async {
-    int result = await audioPlayer.play(url.value);
-    if (result == 1) {
-      print(result);
+      if (url.isEmpty) {
+        url.value = await ListenApi()
+            .chapterUrl(chapters[i].link ?? "", model.value.id, idx.value);
+        if (url.value.isEmpty) throw Exception("d");
+      }
+      print("audio url ${url.value}");
+      return await playAudio();
+    } catch (E) {
+      BotToast.showText(text: "播放失败,请重试!!!");
     }
   }
 
-  Future<void> onComplete() async {
-    await audioPlayer.release();
-    await next();
+  playAudio() async {
+    int result =
+        await audioPlayer.play("${url.value}?v=${DateUtil.getNowDateStr()}");
+    return result;
   }
 
   playToggle() async {
-    if (playerState.value == PlayerState.PLAYING) {
-      playerState.value = PlayerState.PAUSED;
-      await audioPlayer.pause();
-    } else if (playerState.value == PlayerState.PAUSED) {
-      playerState.value = PlayerState.PLAYING;
-      await audioPlayer.resume();
+    switch (playerState.value) {
+      case PlayerState.PLAYING:
+        playerState.value = PlayerState.PAUSED;
+        await audioPlayer.pause();
+        saveState();
+        break;
+      case PlayerState.PAUSED:
+        playerState.value = PlayerState.PLAYING;
+        await audioPlayer.resume();
+        saveState();
+
+        break;
+      case PlayerState.STOPPED:
+        await getUrl(idx.value);
+        break;
+      default:
     }
   }
 
@@ -137,23 +168,33 @@ class ListenController extends SuperController
     if (idx.value == 0) {
       return;
     }
-    idx.value = idx.value - 1;
-    await getUrl(idx.value);
+    audioPlayer.pause();
+
+    url.value = "";
+    int result = await getUrl(idx.value - 1);
+    if (result == 1) idx.value = idx.value - 1;
   }
 
   next() async {
     if (idx.value == chapters.length - 1) {
       return;
     }
-    idx.value = idx.value + 1;
-    await getUrl(idx.value);
+    audioPlayer.pause();
+    url.value = "";
+
+    int result = await getUrl(idx.value + 1);
+    if (result == 1) idx.value = idx.value + 1;
   }
 
   movePosition(double v) async {
+    if (playerState.value == PlayerState.STOPPED) return;
+
     position.value = Duration(seconds: v.toInt());
   }
 
   changeEnd(double value) async {
+    if (playerState.value == PlayerState.STOPPED) return;
+
     moving.value = false;
     var x = Duration(seconds: value.toInt());
     position.value = x;
@@ -161,10 +202,14 @@ class ListenController extends SuperController
   }
 
   changeStart() {
+    if (playerState.value == PlayerState.STOPPED) return;
+
     moving.value = true;
   }
 
   forward() async {
+    if (playerState.value == PlayerState.STOPPED) return;
+
     position.value = Duration(
         seconds: min(position.value.inSeconds + 10, duration.value.inSeconds));
     await audioPlayer.seek(position.value);
@@ -174,6 +219,7 @@ class ListenController extends SuperController
   }
 
   replay() async {
+    if (playerState.value == PlayerState.STOPPED) return;
     position.value = Duration(seconds: max(0, position.value.inSeconds - 10));
     await audioPlayer.seek(position.value);
   }
@@ -181,10 +227,9 @@ class ListenController extends SuperController
   @override
   void onInactive() {
     // TODO: implement onInactive
-    model.value.idx = idx.value;
-    model.value.position = position.value.inMilliseconds;
-    SpUtil.putObject("v", model.value);
     audioPlayer.pause();
+
+    saveState();
   }
 
   @override
@@ -201,5 +246,14 @@ class ListenController extends SuperController
   @override
   void onDetached() {
     // TODO: implement onDetached
+  }
+
+  moveCp(double v) {
+    idx.value = v.toInt();
+  }
+
+  changeCpEnd(double v) async {
+    idx.value = v.toInt();
+    await getUrl(idx.value);
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:dio_smart_retry/dio_smart_retry.dart';
@@ -62,6 +63,16 @@ class Request {
         Duration(seconds: 3), // wait 3 sec before third retry
       ],
     ));
+    // (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+    //     (client) {
+    //   // config the http client
+    //   client.findProxy = (uri) {
+    //     //proxy all request to localhost:8888
+    //     return 'PROXY 127.0.0.1:10809';
+    //   };
+    //   // you can also create a HttpClient to dio
+    //   // return HttpClient();
+    // };
     // 添加拦截器
     dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
       // 在请求被发送之前做一些预处理
@@ -196,6 +207,15 @@ class Request {
     var response = await dio.post(path,
         data: FormData.fromMap(params),
         options: requestOptions,
+        cancelToken: cancelToken);
+    return response.data;
+  }
+
+  Future<List<int>> getAsByte(
+    String path,
+  ) async {
+    var response = await dio.get(path,
+        options: Options(responseType: ResponseType.bytes),
         cancelToken: cancelToken);
     return response.data;
   }

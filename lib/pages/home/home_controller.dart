@@ -73,6 +73,7 @@ class HomeController extends GetxController {
 
   updateShelf() async {
     // bool hasUpdate = false;
+    if (!(Global.profile!.token!.isNotEmpty && shelf.isNotEmpty)) return;
     var books = await BookApi().shelf();
     if (shelf.isEmpty) {
       shelf.value = books;
