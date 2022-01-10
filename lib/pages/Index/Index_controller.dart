@@ -48,7 +48,7 @@ class IndexController extends GetxController with SingleGetTickerProviderMixin {
   void onInit() {
     navigationViews = <NavigationIconView>[
       NavigationIconView(iconData: Icons.book_sharp, title: "书架", vsync: this),
-      NavigationIconView(iconData: Icons.radio, title: "泠听", vsync: this),
+      NavigationIconView(iconData: Icons.graphic_eq_outlined, title: "聚听", vsync: this),
       NavigationIconView(iconData: Icons.person, title: "我", vsync: this),
     ];
 

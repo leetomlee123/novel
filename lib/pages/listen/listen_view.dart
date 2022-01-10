@@ -18,10 +18,13 @@ class ListenPage extends GetView<ListenController> {
       resizeToAvoidBottomInset: false,
       body: Stack(
         fit: StackFit.expand,
-        children: [_buildSearchBar(), Padding(
-          padding: const EdgeInsets.only(top: 40),
-          child: _buildPlayUi(),
-        )],
+        children: [
+          _buildSearchBar(),
+          Padding(
+            padding: const EdgeInsets.only(top: 40),
+            child: _buildPlayUi(),
+          )
+        ],
       ),
     );
   }
@@ -79,14 +82,13 @@ class ListenPage extends GetView<ListenController> {
                                       itemBuilder: (ctx, i) {
                                         Item item = controller.chapters[i];
                                         return ListTile(
-                                          title:
-                                              Text("第${item.title ?? ""}集"),
+                                          title: Text("第${item.title ?? ""}集"),
                                           trailing: Checkbox(
                                             value: controller.idx.value == i,
                                             onChanged: (bool? value) async {
                                               if (value ?? false) {
                                                 controller.idx.value = i;
-    
+
                                                 Get.back();
                                                 await controller.reset();
                                                 await controller.getUrl(i);
@@ -117,15 +119,14 @@ class ListenPage extends GetView<ListenController> {
                                     itemCount: 9,
                                     itemExtent: 40,
                                     itemBuilder: (ctx, i) {
+                                      var v = (.5 + (.25 * i));
                                       return ListTile(
-                                        title: Text("${.5 + (.25 * i)}x"),
+                                        title: Text("${v}x"),
                                         trailing: Checkbox(
-                                          value: controller.fast.value ==
-                                              (.5 * (i + 1)),
+                                          value: controller.fast.value == v,
                                           onChanged: (bool? value) {
                                             if (value ?? false) {
-                                              controller.fast.value =
-                                                  (.5 + (.25 * i));
+                                              controller.fast.value = v;
                                               Get.back();
                                             }
                                           },
@@ -142,19 +143,14 @@ class ListenPage extends GetView<ListenController> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // IconButton(onPressed: (){
-                        //     _showSheetWithoutList(context);
-                        // }, icon: Icon(Icons.menu)),
                         IconButton(
                             iconSize: 40,
                             onPressed: () => controller.replay(),
                             icon: Icon(Icons.replay_10_outlined)),
-    
                         IconButton(
                             iconSize: 40,
                             onPressed: () => controller.pre(),
                             icon: Icon(Icons.skip_previous_outlined)),
-    
                         AnimatedSwitcher(
                           transitionBuilder: (child, anim) {
                             return ScaleTransition(child: child, scale: anim);
@@ -162,12 +158,12 @@ class ListenPage extends GetView<ListenController> {
                           duration: Duration(milliseconds: 300),
                           child: IconButton(
                               key: ValueKey(controller.playerState.value),
-                              iconSize: 80,
+                              iconSize: 60,
                               onPressed: () => controller.playToggle(),
                               icon: Icon(controller.playerState.value ==
                                       PlayerState.PLAYING
-                                  ? Icons.stop
-                                  : Icons.play_arrow)),
+                                  ? Icons.pause
+                                  : Icons.play_arrow_outlined)),
                         ),
                         IconButton(
                             iconSize: 40,
@@ -183,8 +179,6 @@ class ListenPage extends GetView<ListenController> {
                 ),
               ),
             )
-         
-         
           : Padding(
               padding: const EdgeInsets.only(top: 40),
               child: _buildSearchList(),
