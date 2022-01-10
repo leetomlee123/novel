@@ -9,20 +9,37 @@ class VoiceSlider extends GetView<ListenController> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Slider(
-        onChangeStart: (value) => controller.changeStart(),
-        onChanged: (double value) => controller.movePosition(value),
-        onChangeEnd: (double value) => controller.changeEnd(value),
-        value: controller.position.value.inSeconds.toDouble(),
-        min: .0,
-        max: controller.duration.value.inSeconds.toDouble(),
-        divisions: (controller.duration.value.inSeconds <= 0
-            ? 1
-            : controller.duration.value.inSeconds),
-        label: DateUtil.formatDateMs(controller.position.value.inMilliseconds,
-            format: DateFormats.h_m_s),
-      ),
-    );
+    double v = controller.position.value.inSeconds.toDouble();
+    double max = controller.duration.value.inSeconds.toDouble();
+    return max >= v
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                DateUtil.formatDateMs(controller.position.value.inMilliseconds,
+                    format: DateFormats.h_m_s),
+              ),
+              Expanded(
+                child: Slider(
+                  onChangeStart: (value) => controller.changeStart(),
+                  onChanged: (double value) => controller.movePosition(value),
+                  onChangeEnd: (double value) => controller.changeEnd(value),
+                  value: v,
+                  min: .0,
+                  max: max,
+                  divisions: (controller.duration.value.inSeconds <= 0
+                      ? 1
+                      : controller.duration.value.inSeconds),
+                  label: DateUtil.formatDateMs(
+                      controller.position.value.inMilliseconds,
+                      format: DateFormats.h_m_s),
+                ),
+              ),
+              Text(DateUtil.formatDateMs(
+                  controller.duration.value.inMilliseconds,
+                  format: DateFormats.h_m_s)),
+            ],
+          )
+        : Container();
   }
 }

@@ -62,8 +62,11 @@ class ListenController extends SuperController
 
     audioPlayer.onPlayerCompletion.listen((event) {
       // position.value = duration.value;
-
-      next();
+      print("complete");
+      //有可能资源为空 是为报错
+      if (duration.value.inMilliseconds > 100) {
+        next();
+      }
     });
     audioPlayer.onPlayerError.listen((msg) {
       print('audioPlayer error : $msg');
@@ -139,6 +142,9 @@ class ListenController extends SuperController
   }
 
   playAudio() async {
+    // List<int> res =
+    //     await Request().getAsByte("${url.value}?v=${DateUtil.getNowDateStr()}");
+    // int result = await audioPlayer.playBytes(Uint8List.fromList(res));
     int result =
         await audioPlayer.play("${url.value}?v=${DateUtil.getNowDateStr()}");
     return result;
@@ -171,8 +177,9 @@ class ListenController extends SuperController
     audioPlayer.pause();
 
     url.value = "";
-    int result = await getUrl(idx.value - 1);
-    if (result == 1) idx.value = idx.value - 1;
+    var x = idx.value;
+    int result = await getUrl(x - 1);
+    if (result == 1) idx.value = x - 1;
   }
 
   next() async {
@@ -181,9 +188,10 @@ class ListenController extends SuperController
     }
     audioPlayer.pause();
     url.value = "";
-
-    int result = await getUrl(idx.value + 1);
-    if (result == 1) idx.value = idx.value + 1;
+    var x = idx.value;
+    int result = await getUrl(x + 1);
+    print(result);
+    if (result == 1) idx.value = x + 1;
   }
 
   movePosition(double v) async {

@@ -53,7 +53,6 @@ class ListenPage extends GetView<ListenController> {
                       child: Text(
                           "作者${controller.model.value.author}    |   播音${controller.model.value.transmit ?? ''}"),
                     ),
-
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
@@ -73,8 +72,7 @@ class ListenPage extends GetView<ListenController> {
                               if (controller.chapters.isNotEmpty) {
                                 Get.bottomSheet(Container(
                                   color: Colors.white,
-                                padding: const EdgeInsets.all(20),
-
+                                  padding: const EdgeInsets.all(20),
                                   child: ListView.builder(
                                       controller: controller.scrollcontroller,
                                       itemCount: controller.chapters.length,
@@ -118,14 +116,14 @@ class ListenPage extends GetView<ListenController> {
                                     itemExtent: 40,
                                     itemBuilder: (ctx, i) {
                                       return ListTile(
-                                        title: Text("${.5 * (i + 1)}x"),
+                                        title: Text("${.5 + (.25 * i)}x"),
                                         trailing: Checkbox(
                                           value: controller.fast.value ==
                                               (.5 * (i + 1)),
                                           onChanged: (bool? value) {
                                             if (value ?? false) {
                                               controller.fast.value =
-                                                  (.5 * (i + 1));
+                                                  (.5 + (.25 * i));
                                               Get.back();
                                             }
                                           },
@@ -138,22 +136,8 @@ class ListenPage extends GetView<ListenController> {
                         ],
                       ),
                     ),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          DateUtil.formatDateMs(
-                              controller.position.value.inMilliseconds,
-                              format: DateFormats.h_m_s),
-                        ),
-                        VoiceSlider(),
-                        Text(DateUtil.formatDateMs(
-                            controller.duration.value.inMilliseconds,
-                            format: DateFormats.h_m_s)),
-                      ],
-                    ),
-
+         
+                       VoiceSlider(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -194,7 +178,6 @@ class ListenPage extends GetView<ListenController> {
                             icon: Icon(Icons.forward_10_outlined)),
                       ],
                     ),
-       
                   ],
                 ),
               ),

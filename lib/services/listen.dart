@@ -70,17 +70,5 @@ class ListenApi {
     // }
     return url;
   }
-  //   r = session.get(host_li, headers=headers).text
-  // xt = etree.HTML(r).xpath("//meta[@name='_c']/@content")[0]
-  // l = etree.HTML(r).xpath("//meta[@name='_l']/@content")[0]
-  // headers['Referer'] = host_li
-  // headers['xt'] = xt
-  // headers['l'] = l
 
-  // get = session.post("https://ting55.com/nlinka", headers=headers, data={
-  // "bookId": bookId
-  // , "isPay": 0
-  // , "page": i + 1
-  // })
-  // print(get.text)
 }
