@@ -27,6 +27,7 @@ class ListenController extends SuperController
   RxDouble fast = (1.0).obs;
   late FloatingSearchBarController? controller;
   late ScrollController? scrollcontroller;
+  bool firstOpen = false;
   @override
   void onInit() {
     // SpUtil.remove("v");
@@ -81,12 +82,9 @@ class ListenController extends SuperController
     if (SpUtil.haveKey("v") ?? false) {
       model.value = SpUtil.getObj("v", (v) => ListenSearchModel.fromJson(v))!;
       idx.value = model.value.idx!;
-      url.value = model.value.url!;
-      if (await getUrl(idx.value) == 1) {
-        position.value = Duration(milliseconds: model.value.position ?? 0);
-
-        await audioPlayer.seek(position.value);
-      }
+      // if (await getUrl(idx.value) == 1) {
+      firstOpen = true;
+      // }
       play.value = true;
 
       detail(model.value.id.toString());
@@ -132,21 +130,44 @@ class ListenController extends SuperController
       if (url.isEmpty) {
         url.value = await ListenApi()
             .chapterUrl(chapters[i].link ?? "", model.value.id, idx.value);
-        if (url.value.isEmpty) throw Exception("d");
+        if (url.value.isEmpty) {
+          print("get source url failed");
+          throw Exception("e");
+        }
       }
       print("audio url ${url.value}");
       return await playAudio();
-    } catch (E) {
+    } catch (e) {
       BotToast.showText(text: "播放失败,请重试!!!");
+      print(e);
     }
+    return -1;
+  }
+
+  reset() async {
+    url.value="";
+    playerState.value = PlayerState.STOPPED;
+    duration.value = Duration(seconds: 1);
+    position.value = Duration(seconds: 0);
+    await audioPlayer.release();
   }
 
   playAudio() async {
+    if (audioPlayer.state == PlayerState.PLAYING) {
+      audioPlayer.stop();
+    }
+
     // List<int> res =
-    //     await Request().getAsByte("${url.value}?v=${DateUtil.getNowDateStr()}");
+    //     await Request().getAsByte("${url.value}");
     // int result = await audioPlayer.playBytes(Uint8List.fromList(res));
     int result =
-        await audioPlayer.play("${url.value}?v=${DateUtil.getNowDateStr()}");
+        await audioPlayer.play("${url.value}?v=${DateUtil.getNowDateMs()}");
+    if (firstOpen) {
+      position.value = Duration(milliseconds: model.value.position ?? 0);
+
+      await audioPlayer.seek(position.value);
+      firstOpen = false;
+    }
     return result;
   }
 

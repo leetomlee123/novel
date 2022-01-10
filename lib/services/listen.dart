@@ -60,6 +60,7 @@ class ListenApi {
         }),
         useToken: false);
     var data = jsonDecode(res1);
+    print("get data $data");
     String url = data['ourl'];
     if (url.isEmpty) {
       url = data['url'];
@@ -70,5 +71,4 @@ class ListenApi {
     // }
     return url;
   }
-
 }

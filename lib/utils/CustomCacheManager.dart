@@ -23,6 +23,8 @@ class CustomCacheManager {
       fileService: HttpFileService(),
     ),
   );
+  
+  
   static CacheManager instanceVoice = CacheManager(
     Config(
       voiceKey,
@@ -33,6 +35,8 @@ class CustomCacheManager {
       fileService: HttpFileService(),
     ),
   );
+  
+  
   static CacheManager instanceVideo = CacheManager(
     Config(
       voiceKey,

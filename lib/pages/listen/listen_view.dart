@@ -18,11 +18,10 @@ class ListenPage extends GetView<ListenController> {
       resizeToAvoidBottomInset: false,
       body: Stack(
         fit: StackFit.expand,
-        children: [
-          Padding(
-              padding: const EdgeInsets.only(top: 20), child: _buildPlayUi()),
-          _buildSearchBar()
-        ],
+        children: [_buildSearchBar(), Padding(
+          padding: const EdgeInsets.only(top: 40),
+          child: _buildPlayUi(),
+        )],
       ),
     );
   }
@@ -80,14 +79,17 @@ class ListenPage extends GetView<ListenController> {
                                       itemBuilder: (ctx, i) {
                                         Item item = controller.chapters[i];
                                         return ListTile(
-                                          title: Text("第${item.title ?? ""}集"),
+                                          title:
+                                              Text("第${item.title ?? ""}集"),
                                           trailing: Checkbox(
                                             value: controller.idx.value == i,
-                                            onChanged: (bool? value) {
+                                            onChanged: (bool? value) async {
                                               if (value ?? false) {
                                                 controller.idx.value = i;
+    
                                                 Get.back();
-                                                controller.getUrl(i);
+                                                await controller.reset();
+                                                await controller.getUrl(i);
                                               }
                                             },
                                           ),
@@ -136,8 +138,7 @@ class ListenPage extends GetView<ListenController> {
                         ],
                       ),
                     ),
-         
-                       VoiceSlider(),
+                    VoiceSlider(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -148,12 +149,12 @@ class ListenPage extends GetView<ListenController> {
                             iconSize: 40,
                             onPressed: () => controller.replay(),
                             icon: Icon(Icons.replay_10_outlined)),
-
+    
                         IconButton(
                             iconSize: 40,
                             onPressed: () => controller.pre(),
                             icon: Icon(Icons.skip_previous_outlined)),
-
+    
                         AnimatedSwitcher(
                           transitionBuilder: (child, anim) {
                             return ScaleTransition(child: child, scale: anim);
@@ -182,6 +183,8 @@ class ListenPage extends GetView<ListenController> {
                 ),
               ),
             )
+         
+         
           : Padding(
               padding: const EdgeInsets.only(top: 40),
               child: _buildSearchList(),
@@ -200,6 +203,7 @@ class ListenPage extends GetView<ListenController> {
           behavior: HitTestBehavior.opaque,
           onTap: () async {
             await controller.detail(model.id.toString());
+            await controller.reset();
             controller.model.value = model;
             controller.controller!.close();
             controller.idx.value = 0;
@@ -258,15 +262,18 @@ class ListenPage extends GetView<ListenController> {
       debounceDelay: const Duration(milliseconds: 500),
       onQueryChanged: (query) => controller.search(query),
       transition: CircularFloatingSearchBarTransition(),
+      automaticallyImplyBackButton: false,
+      leadingActions: [
+        FloatingSearchBarAction.hamburgerToBack(),
+      ],
       actions: [
-        // FloatingSearchBarAction(
-        //   showIfOpened: false,
-        //   child: CircularButton(
-        //     icon: const Icon(Icons.search),
-        //     onPressed: () {
-        //     },
-        //   ),
-        // ),
+        FloatingSearchBarAction(
+          showIfOpened: false,
+          child: CircularButton(
+            icon: const Icon(Icons.sensors),
+            onPressed: () {},
+          ),
+        ),
         FloatingSearchBarAction.searchToClear(
           showIfClosed: false,
         ),
