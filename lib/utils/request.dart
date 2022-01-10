@@ -220,6 +220,15 @@ class Request {
     return response.data;
   }
 
+  Future<List<int>> download(
+    String path,
+  ) async {
+    var response = await dio.download(path, "",
+        options: Options(responseType: ResponseType.bytes),
+        cancelToken: cancelToken);
+    return response.data;
+  }
+
   /*
    * error统一处理
    */

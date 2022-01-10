@@ -2,12 +2,12 @@ import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:novel/pages/listen/listen_model.dart';
 import 'package:novel/services/listen.dart';
+import 'package:novel/utils/CustomCacheManager.dart';
 import 'package:sp_util/sp_util.dart';
 
 class ListenController extends SuperController
@@ -17,7 +17,7 @@ class ListenController extends SuperController
   RxList<ListenSearchModel> searchs = RxList<ListenSearchModel>();
   Rx<ListenSearchModel> model = ListenSearchModel().obs;
   RxString url = "".obs;
-  AudioPlayer audioPlayer = AudioPlayer();
+  late AudioPlayer audioPlayer;
   Rx<Duration> duration = Duration(seconds: 0).obs;
   Rx<Duration> position = Duration(seconds: 0).obs;
   Rx<PlayerState> playerState = PlayerState.STOPPED.obs;
@@ -33,6 +33,7 @@ class ListenController extends SuperController
     // SpUtil.remove("v");
     super.onInit();
     controller = FloatingSearchBarController();
+    audioPlayer = AudioPlayer();
 
     ever(idx, (_) {
       scrollcontroller =
@@ -125,14 +126,23 @@ class ListenController extends SuperController
   }
 
   getUrl(int i) async {
-    idx.value = i;
     try {
       if (url.isEmpty) {
-        url.value = await ListenApi()
-            .chapterUrl(chapters[i].link ?? "", model.value.id, idx.value);
-        if (url.value.isEmpty) {
-          print("get source url failed");
-          throw Exception("e");
+        final cacheFile = await CustomCacheManager.instanceVoice
+            .getFileFromCache("${model.value.id}$i");
+
+        if (cacheFile != null && cacheFile.validTill.isAfter(DateTime.now())) {
+          url.value = cacheFile.file.path;
+        } else {
+          url.value = await ListenApi()
+              .chapterUrl(chapters[i].link ?? "", model.value.id, i);
+          if (url.value.isEmpty) {
+            print("get source url failed");
+            throw Exception("e");
+          }
+          final file = await CustomCacheManager.instanceVoice
+              .getSingleFile(url.value, key: "${model.value.id}$i");
+          url.value = file.path;
         }
       }
       print("audio url ${url.value}");
@@ -145,7 +155,7 @@ class ListenController extends SuperController
   }
 
   reset() async {
-    url.value="";
+    url.value = "";
     playerState.value = PlayerState.STOPPED;
     duration.value = Duration(seconds: 1);
     position.value = Duration(seconds: 0);
@@ -159,15 +169,15 @@ class ListenController extends SuperController
 
     // List<int> res =
     //     await Request().getAsByte("${url.value}");
-    // int result = await audioPlayer.playBytes(Uint8List.fromList(res));
-    int result =
-        await audioPlayer.play("${url.value}?v=${DateUtil.getNowDateMs()}");
-    if (firstOpen) {
-      position.value = Duration(milliseconds: model.value.position ?? 0);
 
-      await audioPlayer.seek(position.value);
-      firstOpen = false;
-    }
+    // int result = await audioPlayer.playBytes(Uint8List.fromList(res));
+    position.value = Duration(milliseconds: model.value.position ?? 0);
+
+    int result = await audioPlayer.play(url.value,
+        isLocal: true, stayAwake: true, position: position.value);
+    // int result =
+    //     await audioPlayer.play("${url.value}?v=${DateUtil.getNowDateMs()}");
+    preloadAsset();
     return result;
   }
 
@@ -191,6 +201,27 @@ class ListenController extends SuperController
     }
   }
 
+  preloadAsset() async {
+    int x = idx.value;
+    x += 1;
+    final cacheFile = await CustomCacheManager.instanceVoice
+        .getFileFromCache("${model.value.id}$x ");
+
+    if (cacheFile != null && cacheFile.validTill.isAfter(DateTime.now())) {
+      url.value = cacheFile.file.path;
+    } else {
+      url.value = await ListenApi()
+          .chapterUrl(chapters[x].link ?? "", model.value.id, idx.value);
+      if (url.value.isEmpty) {
+        print("get source url failed");
+        throw Exception("e");
+      }
+      await CustomCacheManager.instanceVoice
+          .getSingleFile(url.value, key: "${model.value.id}$x");
+      print("preload asset success");
+    }
+  }
+
   pre() async {
     if (idx.value == 0) {
       return;
@@ -198,9 +229,8 @@ class ListenController extends SuperController
     audioPlayer.pause();
 
     url.value = "";
-    var x = idx.value;
-    int result = await getUrl(x - 1);
-    if (result == 1) idx.value = x - 1;
+    int result = await getUrl(idx.value - 1);
+    if (result == 1) idx.value = idx.value - 1;
   }
 
   next() async {
@@ -209,10 +239,9 @@ class ListenController extends SuperController
     }
     audioPlayer.pause();
     url.value = "";
-    var x = idx.value;
-    int result = await getUrl(x + 1);
+    int result = await getUrl(idx.value + 1);
     print(result);
-    if (result == 1) idx.value = x + 1;
+    if (result == 1) idx.value = idx.value + 1;
   }
 
   movePosition(double v) async {
@@ -256,7 +285,7 @@ class ListenController extends SuperController
   @override
   void onInactive() {
     // TODO: implement onInactive
-    audioPlayer.pause();
+    // audioPlayer.pause();
 
     saveState();
   }
