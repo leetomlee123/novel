@@ -175,7 +175,9 @@ class ListenController extends SuperController
     //     await Request().getAsByte("${url.value}");
 
     // int result = await audioPlayer.playBytes(Uint8List.fromList(res));
-    position.value = Duration(milliseconds: model.value.position ?? 0);
+    if (firstOpen) {
+      position.value = Duration(milliseconds: model.value.position ?? 0);
+    }
 
     int result = await audioPlayer.play(url.value,
         isLocal: true, stayAwake: true, position: position.value);
@@ -230,9 +232,10 @@ class ListenController extends SuperController
     if (idx.value == 0) {
       return;
     }
-    audioPlayer.pause();
+    // audioPlayer.pause();
 
-    url.value = "";
+    // url.value = "";
+    await reset();
     int result = await getUrl(idx.value - 1);
     if (result == 1) idx.value = idx.value - 1;
   }
@@ -241,8 +244,9 @@ class ListenController extends SuperController
     if (idx.value == chapters.length - 1) {
       return;
     }
-    audioPlayer.pause();
-    url.value = "";
+    await reset();
+    // audioPlayer.pause();
+    // url.value = "";
     int result = await getUrl(idx.value + 1);
     print(result);
     if (result == 1) idx.value = idx.value + 1;
