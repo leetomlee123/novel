@@ -28,6 +28,8 @@ class ListenController extends SuperController
   late FloatingSearchBarController? controller;
   late ScrollController? scrollcontroller;
   bool firstOpen = false;
+  bool playFailed = false;
+
   @override
   void onInit() {
     // SpUtil.remove("v");
@@ -66,7 +68,7 @@ class ListenController extends SuperController
       // position.value = duration.value;
       print("complete");
       //有可能资源为空 是为报错
-      if (duration.value.inMilliseconds > 100) {
+      if (!playFailed) {
         next();
       }
     });
@@ -126,6 +128,7 @@ class ListenController extends SuperController
   }
 
   getUrl(int i) async {
+    playFailed = false;
     try {
       if (url.isEmpty) {
         final cacheFile = await CustomCacheManager.instanceVoice
@@ -150,6 +153,7 @@ class ListenController extends SuperController
     } catch (e) {
       BotToast.showText(text: "播放失败,请重试!!!");
       print(e);
+      playFailed = true;
     }
     return -1;
   }
@@ -298,7 +302,7 @@ class ListenController extends SuperController
   @override
   void onResumed() {
     // TODO: implement onResumed
-    audioPlayer.resume();
+    // audioPlayer.resume();
   }
 
   @override
