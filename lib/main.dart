@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,7 +8,7 @@ import 'package:novel/pages/Index/Index_view.dart';
 import 'package:novel/pages/Index/index_binding.dart';
 import 'package:novel/router/app_pages.dart';
 import 'package:novel/router/router_observer.dart';
-
+  late AudioHandler audioHandler;
 void main() => Global.init().then((e) => runApp(MyApp()));
 
 class MyApp extends StatelessWidget {

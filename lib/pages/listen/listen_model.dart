@@ -12,12 +12,14 @@ class ListenSearchModel {
   String? url;
   int? idx;
   int? position;
+  int? duration;
 
   ListenSearchModel(
       {this.id,
       this.title,
       this.idx,
       this.position,
+      this.duration,
       this.author,
       this.transmit,
       this.picture,
@@ -34,6 +36,7 @@ class ListenSearchModel {
     author = json['author'];
     idx = json['idx'];
     position = json['position'];
+    duration = json['duration'];
     transmit = json['transmit'];
     picture = json['picture'];
     addtime = json['addtime'];
@@ -59,8 +62,7 @@ class ListenSearchModel {
     data['transUrl'] = this.transUrl;
     data['url'] = this.url;
     data['position'] = this.position;
-
-    
+    data['duration'] = this.duration;
     return data;
   }
 }

@@ -1,7 +1,7 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:novel/components/common_img.dart';
 import 'package:novel/pages/listen/listen_model.dart';
@@ -31,7 +31,7 @@ class ListenPage extends GetView<ListenController> {
 
   Widget _buildPlayUi() {
     return Obx(
-      () => controller.play.value
+      () => controller.showPlay.value
           ? Center(
               child: Container(
                 padding:
@@ -86,12 +86,16 @@ class ListenPage extends GetView<ListenController> {
                                           trailing: Checkbox(
                                             value: controller.idx.value == i,
                                             onChanged: (bool? value) async {
-                                              if (value ?? false) {
-                                                controller.idx.value = i;
+                                              controller.idx.value = i;
 
-                                                Get.back();
-                                                await controller.reset();
-                                                await controller.getUrl(i);
+                                              Get.back();
+                                              await controller.reset();
+                                              await controller.getUrl(i);
+                                              if (controller
+                                                      .playerState.value !=
+                                                  ProcessingState.idle) {
+                                                await controller.audioPlayer
+                                                    .play();
                                               }
                                             },
                                           ),
@@ -151,20 +155,38 @@ class ListenPage extends GetView<ListenController> {
                             iconSize: 40,
                             onPressed: () => controller.pre(),
                             icon: Icon(Icons.skip_previous_outlined)),
+                        // Visibility(
+                        //   visible: (controller.playerState.value ==
+                        //           ProcessingState.ready ||
+                        //       controller.playerState.value ==
+                        //           ProcessingState.buffering),
+                        //   replacement: Text(
+                        //     'init',
+                        //     style: TextStyle(fontSize: 35),
+                        //   ),
+                        // TextButton(
+                        //   child: Text("init...."),
+                        //   onPressed: () {},
+                        //   style: ButtonStyle(
+                        //     textStyle: MaterialStateProperty.all(
+                        //         TextStyle(fontSize: 35, color: Colors.red)),
+                        //   ),
+                        // ),
+                        // child:
                         AnimatedSwitcher(
                           transitionBuilder: (child, anim) {
                             return ScaleTransition(child: child, scale: anim);
                           },
                           duration: Duration(milliseconds: 300),
                           child: IconButton(
-                              key: ValueKey(controller.playerState.value),
+                              key: ValueKey(controller.playing.value),
                               iconSize: 60,
                               onPressed: () => controller.playToggle(),
-                              icon: Icon(controller.playerState.value ==
-                                      PlayerState.PLAYING
+                              icon: Icon(controller.playing.value
                                   ? Icons.pause
                                   : Icons.play_arrow_outlined)),
                         ),
+                        // ),
                         IconButton(
                             iconSize: 40,
                             onPressed: () => controller.next(),
@@ -179,16 +201,14 @@ class ListenPage extends GetView<ListenController> {
                 ),
               ),
             )
-          : Padding(
-              padding: const EdgeInsets.only(top: 40),
-              child: _buildSearchList(),
-            ),
+          : Container(),
     );
   }
 
   Widget _buildSearchList() {
     return ListView.builder(
       shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
       itemBuilder: (ctx, i) {
         ListenSearchModel model = controller.searchs[i];
         String date =
@@ -200,10 +220,12 @@ class ListenPage extends GetView<ListenController> {
             await controller.reset();
             controller.model.value = model;
             controller.controller!.close();
-            controller.idx.value = 0;
-            controller.playerState.value = PlayerState.STOPPED;
+            controller.idx.value = i;
+            controller.playerState.value = ProcessingState.idle;
             controller.url.value = "";
-            controller.play.value = true;
+            controller.showPlay.value = true;
+            await controller.getUrl(i);
+            await controller.audioPlayer.play();
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -255,6 +277,12 @@ class ListenPage extends GetView<ListenController> {
       width: isPortrait ? 600 : 500,
       debounceDelay: const Duration(milliseconds: 500),
       onQueryChanged: (query) => controller.search(query),
+      onFocusChanged: (isFocus) {
+        controller.searchs.clear();
+        controller.showPlay.value = !isFocus;
+      },
+      // isScrollControlled: true,
+
       transition: CircularFloatingSearchBarTransition(),
       automaticallyImplyBackButton: false,
       leadingActions: [
@@ -273,45 +301,18 @@ class ListenPage extends GetView<ListenController> {
         ),
       ],
       builder: (context, transition) {
-        return Container();
-        // return Obx(() => controller.searchs.isEmpty
-        //     ? Container()
-        //     : ClipRRect(
-        //         borderRadius: BorderRadius.circular(8),
-        //         child: SingleChildScrollView(
-        //           child: Material(
-        //             color: Colors.white,
-        //             elevation: 4.0,
-        //             child: _buildSearchList(context),
-        //           ),
-        //         ),
-        //       ));
+        // return Container();
+        return Obx(() => controller.searchs.isEmpty
+            ? Container()
+            : ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Material(
+                  color: Colors.white,
+                  elevation: 4.0,
+                  child: _buildSearchList(),
+                ),
+              ));
       },
-    );
-  }
-
-  ThemeData appBarTheme(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
-    return theme.copyWith(
-      appBarTheme: AppBarTheme(
-        backgroundColor: colorScheme.brightness == Brightness.dark
-            ? Colors.grey[900]
-            : Colors.white,
-        iconTheme: theme.primaryIconTheme.copyWith(color: Colors.grey),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        hintStyle: theme.inputDecorationTheme.hintStyle,
-        border: InputBorder.none,
-      ),
-    );
-  }
-
-  Widget _buildBottomSheet() {
-    return Container(
-      child: Column(
-        children: [Obx(() => Text(controller.model.value.title ?? ""))],
-      ),
     );
   }
 }

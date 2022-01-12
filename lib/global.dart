@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:novel/common/screen.dart';
 import 'package:novel/common/values/values.dart';
 import 'package:novel/pages/login/login_model.dart';
@@ -41,6 +42,13 @@ class Global {
 
     //配置文件
     SystemApi().getConfigs();
+
+    //init audioservice
+    await JustAudioBackground.init(
+      androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+      androidNotificationChannelName: 'Audio playback',
+      androidNotificationOngoing: true,
+    );
 
     //检查更新
     // UpdateAppUtil.checkUpdate();

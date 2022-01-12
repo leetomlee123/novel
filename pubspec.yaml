@@ -69,8 +69,11 @@ dependencies:
   sp_util: ^2.0.3
   dio_cookie_manager: ^2.0.0
   dio_smart_retry: ^1.1.0
-  audioplayers: ^0.20.1
+
   material_floating_search_bar: ^0.3.6
+
+  just_audio: ^0.9.18
+  just_audio_background: ^0.0.1-beta.3
 
 
 dev_dependencies:

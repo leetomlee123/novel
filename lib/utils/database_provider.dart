@@ -12,10 +12,18 @@ class DataBaseProvider {
 
   static final String _dbShelf = "shelf";
   static final String _dbChapters = "chapter";
+  static final String _dbVoice = "voice";
 
   static final DataBaseProvider dbProvider = DataBaseProvider._();
   Database? _databaseShelf;
   Database? _databaseChapter;
+  Database? _databaseVoice;
+
+  Future<Database?> get databaseVoice async {
+    if (_databaseVoice != null) return _databaseVoice;
+    _databaseVoice = await getDatabaseInstanceVoice();
+    return _databaseVoice;
+  }
 
   Future<Database?> get databaseChapter async {
     if (_databaseChapter != null) return _databaseChapter;
@@ -27,6 +35,25 @@ class DataBaseProvider {
     if (_databaseShelf != null) return _databaseShelf;
     _databaseShelf = await getDatabaseInstanceShelf();
     return _databaseShelf;
+  }
+
+  getDatabaseInstanceVoice() async {
+    Directory directory = await getApplicationDocumentsDirectory();
+    String path = directory.path + "$_dbVoice.db";
+    return await openDatabase(path, version: 3,
+        onCreate: (Database db, int version) async {
+      await db.execute("CREATE TABLE IF NOT EXISTS $_dbVoice("
+          "id TEXT PRIMARY KEY ,"
+          "name TEXT,"
+          "author TEXT,"
+          "transmit TEXT,"
+          "key TEXT,"
+          "idx INTEGER,"
+          "duration INTEGER,"
+          "position INTEGER,"
+          "book_id TEXT,"
+          "has_content INTEGER)");
+    });
   }
 
   Future<Database> getDatabaseInstanceShelf() async {
@@ -158,7 +185,7 @@ class DataBaseProvider {
     List list = await dbClient!
         .query(_dbChapters, where: "id=?", whereArgs: [chapterId]);
 
-    return list[0]['content']??"";
+    return list[0]['content'] ?? "";
   }
 
   updateContent(String chapterId, String? chapterContent) async {

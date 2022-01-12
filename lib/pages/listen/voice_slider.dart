@@ -12,7 +12,10 @@ class VoiceSlider extends GetView<ListenController> {
   Widget build(BuildContext context) {
     // double v = controller.position.value.inSeconds.toDouble();
     // double max = controller.duration.value.inSeconds.toDouble();
-    return Obx(() => (controller.duration.value.inSeconds.toDouble()) >= (controller.position.value.inSeconds.toDouble())
+    return Obx(() => 
+    
+    (controller.duration.value.inSeconds.toDouble()) >=
+            (controller.position.value.inSeconds.toDouble())
         ? Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

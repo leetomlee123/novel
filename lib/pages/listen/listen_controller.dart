@@ -1,9 +1,11 @@
 import 'dart:math';
 
-import 'package:audioplayers/audioplayers.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:novel/pages/listen/listen_model.dart';
 import 'package:novel/services/listen.dart';
@@ -20,16 +22,19 @@ class ListenController extends SuperController
   late AudioPlayer audioPlayer;
   Rx<Duration> duration = Duration(seconds: 0).obs;
   Rx<Duration> position = Duration(seconds: 0).obs;
-  Rx<PlayerState> playerState = PlayerState.STOPPED.obs;
-  RxBool play = false.obs;
+  Rx<ProcessingState> playerState = ProcessingState.idle.obs;
+  RxBool showPlay = false.obs;
   RxBool moving = false.obs;
+  RxBool playing = false.obs;
   RxInt idx = 0.obs;
   RxDouble fast = (1.0).obs;
   late FloatingSearchBarController? controller;
   late ScrollController? scrollcontroller;
+
   bool firstOpen = false;
   bool playFailed = false;
-
+  bool preload = false;
+  late AudioHandler audioHandler;
   @override
   void onInit() {
     // SpUtil.remove("v");
@@ -42,43 +47,69 @@ class ListenController extends SuperController
           ScrollController(initialScrollOffset: (idx.value - 4) * 40);
     });
     ever(fast, (_) {
-      audioPlayer.setPlaybackRate(fast.value);
+      audioPlayer.setSpeed(fast.value);
     });
     init();
-    audioPlayer.onDurationChanged.listen((Duration d) {
-      duration.value = d;
-    });
+    initAudioService();
 
-    audioPlayer.onAudioPositionChanged.listen((Duration p) {
-      if (!moving.value) position.value = p;
-    });
+    audioPlayer.playerStateStream.listen((state) {
+      // if (state.playing) ... else ...
+      saveState();
 
-    audioPlayer.onPlayerStateChanged.listen((PlayerState s) async {
-      print('Current player state: $s');
-      playerState.value = s;
-      if (playerState.value == PlayerState.PLAYING) {
-        play.value = true;
-        // position.value = Duration(seconds: 0);
-        // await audioPlayer
-        //     .seek(Duration(milliseconds: model.value.position ?? 0));
+      playerState.value = state.processingState;
+      print(
+          "state >>>>>>${state.processingState}  playing >>>>${state.playing}");
+      // if (audioPlayer.playing) {
+      //   play.value = true;
+      //   // position.value = Duration(seconds: 0);
+      //   // await audioPlayer
+      //   //     .seek(Duration(milliseconds: model.value.position ?? 0));
+      // }
+      playing.value =
+          state.playing && state.processingState != ProcessingState.idle;
+
+      switch (state.processingState) {
+        case ProcessingState.idle:
+          break;
+        case ProcessingState.loading:
+          break;
+        case ProcessingState.buffering:
+          break;
+        case ProcessingState.ready:
+          duration.value = audioPlayer.duration!;
+          break;
+        case ProcessingState.completed:
+          if (!playFailed) {
+            next();
+          }
+          break;
       }
     });
 
-    audioPlayer.onPlayerCompletion.listen((event) {
-      // position.value = duration.value;
-      print("complete");
-      //有可能资源为空 是为报错
-      if (!playFailed) {
-        next();
+    audioPlayer.positionStream.listen((Duration p) {
+      if (!moving.value) {
+        if (audioPlayer.playing) {
+          position.value = p;
+        }
       }
     });
-    audioPlayer.onPlayerError.listen((msg) {
-      print('audioPlayer error : $msg');
-      playerState.value = PlayerState.STOPPED;
-      duration.value = Duration(seconds: 1);
-      position.value = Duration(seconds: 0);
-      BotToast.showText(text: "播放失败");
-    });
+
+    // audioPlayer.onPlayerCompletion.listen((event) {
+    //   // position.value = duration.value;
+    //   print("complete");
+    //   //有可能资源为空 是为报错
+    //   if (!playFailed) {
+    //     next();
+    //   }
+    // });
+
+    // audioPlayer.onPlayerError.listen((msg) {
+    //   print('audioPlayer error : $msg');
+    //   playerState.value = PlayerState.STOPPED;
+    //   duration.value = Duration(seconds: 1);
+    //   position.value = Duration(seconds: 0);
+    //   BotToast.showText(text: "播放失败");
+    // });
   }
 
   init() async {
@@ -87,10 +118,14 @@ class ListenController extends SuperController
       idx.value = model.value.idx!;
       // if (await getUrl(idx.value) == 1) {
       firstOpen = true;
+      showPlay.toggle();
+      position.value = Duration(milliseconds: model.value.position ?? 0);
+      duration.value = Duration(milliseconds: model.value.duration ?? 0);
       // }
-      play.value = true;
 
       detail(model.value.id.toString());
+
+      getUrl(idx.value);
     }
   }
 
@@ -99,14 +134,15 @@ class ListenController extends SuperController
 
   @override
   void onClose() {
-    audioPlayer.release();
     saveState();
+
+    audioPlayer.dispose();
   }
 
   saveState() {
     model.value.idx = idx.value;
     model.value.position = max(position.value.inMilliseconds - 1000, 0);
-    model.value.url = url.value;
+    model.value.duration = duration.value.inMilliseconds;
     SpUtil.putObject("v", model.value);
   }
 
@@ -114,8 +150,8 @@ class ListenController extends SuperController
     if (v.isEmpty) return;
     searchs.clear();
     searchs.value = (await ListenApi().search(v))!;
-    play.value = false;
-    controller!.close();
+    // showPlay.value = false;
+    // controller!.close();
   }
 
   clear() {
@@ -131,22 +167,21 @@ class ListenController extends SuperController
     playFailed = false;
     try {
       if (url.isEmpty) {
-        final cacheFile = await CustomCacheManager.instanceVoice
-            .getFileFromCache("${model.value.id}$i");
+        // final cacheFile = await CustomCacheManager.instanceVoice
+        //     .getFileFromCache("${model.value.id}$i");
 
-        if (cacheFile != null && cacheFile.validTill.isAfter(DateTime.now())) {
-          url.value = cacheFile.file.path;
-        } else {
-          url.value = await ListenApi()
-              .chapterUrl(chapters[i].link ?? "", model.value.id, i);
-          if (url.value.isEmpty) {
-            print("get source url failed");
-            throw Exception("e");
-          }
-          final file = await CustomCacheManager.instanceVoice
-              .getSingleFile(url.value, key: "${model.value.id}$i");
-          url.value = file.path;
-        }
+        // if (cacheFile != null && cacheFile.validTill.isAfter(DateTime.now())) {
+        //   url.value = cacheFile.file.path;
+        // } else {
+        url.value = await ListenApi()
+            .chapterUrl(chapters[i].link ?? "", model.value.id, i);
+        // url.value =
+        //     'http://wting.info/asdb/fiction/xuanhuan/fanrenxxz/3ct6womm1.mp3';
+
+        //   final file = await CustomCacheManager.instanceVoice
+        //       .getSingleFile(url.value, key: "${model.value.id}$i");
+        //   url.value = file.path;
+        // }
       }
       print("audio url ${url.value}");
       return await playAudio();
@@ -160,50 +195,84 @@ class ListenController extends SuperController
 
   reset() async {
     url.value = "";
-    playerState.value = PlayerState.STOPPED;
+    playerState.value = ProcessingState.idle;
+
     duration.value = Duration(seconds: 1);
     position.value = Duration(seconds: 0);
-    await audioPlayer.release();
   }
 
   playAudio() async {
-    if (audioPlayer.state == PlayerState.PLAYING) {
+    if (audioPlayer.playing) {
       audioPlayer.stop();
     }
 
-    // List<int> res =
-    //     await Request().getAsByte("${url.value}");
+    // if (firstOpen) {
+    //   position.value = Duration(milliseconds: model.value.position ?? 0);
+    // }
+    try {
+      await audioPlayer.setAudioSource(
+        AudioSource.uri(
+          Uri.parse(url.value),
+          tag: MediaItem(
+            id: '$idx',
+            album: model.value.title,
+            title: "${model.value.title}-第${model.value.idx}",
+            artUri: Uri.parse(
+              "https://img.ting55.com/${DateUtil.formatDateMs(model.value.addtime ?? 0, format: "yyyy/MM")}/${model.value.picture}!300",
+            ),
+          ),
+        ),
+      );
 
-    // int result = await audioPlayer.playBytes(Uint8List.fromList(res));
-    if (firstOpen) {
-      position.value = Duration(milliseconds: model.value.position ?? 0);
+      await audioPlayer.load();
+      await audioPlayer.seek(firstOpen ? position.value : Duration.zero);
+      // duration.value = (await audioPlayer.load())!;
+
+      // await audioPlayer.play();
+    } on PlayerException catch (e) {
+      // iOS/macOS: maps to NSError.code
+      // Android: maps to ExoPlayerException.type
+      // Web: maps to MediaError.code
+      // Linux/Windows: maps to PlayerErrorCode.index
+      print("Error code: ${e.code}");
+      // iOS/macOS: maps to NSError.localizedDescription
+      // Android: maps to ExoPlaybackException.getMessage()
+      // Web/Linux: a generic message
+      // Windows: MediaPlayerError.message
+      print("Error message: ${e.message}");
+      playerState.value = ProcessingState.idle;
+      playing.value = false;
+      BotToast.showText(text: "加载音频资源失败,请重试....");
+    } on PlayerInterruptedException catch (e) {
+      // This call was interrupted since another audio source was loaded or the
+      // player was stopped or disposed before this audio source could complete
+      // loading.
+      print("Connection aborted: ${e.message}");
+      await audioPlayer.pause();
+    } catch (e) {
+      // Fallback for all errors
+      print(e);
     }
 
-    int result = await audioPlayer.play(url.value,
-        isLocal: true, stayAwake: true, position: position.value);
     // int result =
     //     await audioPlayer.play("${url.value}?v=${DateUtil.getNowDateMs()}");
-    preloadAsset();
-    return result;
+    // preloadAsset();
+    firstOpen = !firstOpen;
+    return 1;
   }
 
   playToggle() async {
-    switch (playerState.value) {
-      case PlayerState.PLAYING:
-        playerState.value = PlayerState.PAUSED;
+    if (playerState.value == ProcessingState.ready) {
+      if (playing.value) {
         await audioPlayer.pause();
-        saveState();
-        break;
-      case PlayerState.PAUSED:
-        playerState.value = PlayerState.PLAYING;
-        await audioPlayer.resume();
-        saveState();
-
-        break;
-      case PlayerState.STOPPED:
-        await getUrl(idx.value);
-        break;
-      default:
+      } else {
+        await audioPlayer.play();
+      }
+    } else if (audioPlayer.processingState == ProcessingState.idle) {
+      await getUrl(idx.value);
+      await audioPlayer.play();
+    } else {
+      BotToast.showText(text: '加载资源中...');
     }
   }
 
@@ -237,7 +306,10 @@ class ListenController extends SuperController
     // url.value = "";
     await reset();
     int result = await getUrl(idx.value - 1);
-    if (result == 1) idx.value = idx.value - 1;
+    if (result == 1) {
+      idx.value = idx.value - 1;
+      await audioPlayer.play();
+    }
   }
 
   next() async {
@@ -249,17 +321,20 @@ class ListenController extends SuperController
     // url.value = "";
     int result = await getUrl(idx.value + 1);
     print(result);
-    if (result == 1) idx.value = idx.value + 1;
+    if (result == 1) {
+      idx.value = idx.value + 1;
+      await audioPlayer.play();
+    }
   }
 
   movePosition(double v) async {
-    if (playerState.value == PlayerState.STOPPED) return;
+    if (!audioPlayer.playing) return;
 
     position.value = Duration(seconds: v.toInt());
   }
 
   changeEnd(double value) async {
-    if (playerState.value == PlayerState.STOPPED) return;
+    if (playerState.value == ProcessingState.idle) return;
 
     moving.value = false;
     var x = Duration(seconds: value.toInt());
@@ -268,24 +343,21 @@ class ListenController extends SuperController
   }
 
   changeStart() {
-    if (playerState.value == PlayerState.STOPPED) return;
+    if (playerState.value == ProcessingState.idle) return;
 
     moving.value = true;
   }
 
   forward() async {
-    if (playerState.value == PlayerState.STOPPED) return;
+    if (playerState.value == ProcessingState.idle) return;
 
     position.value = Duration(
         seconds: min(position.value.inSeconds + 10, duration.value.inSeconds));
     await audioPlayer.seek(position.value);
-    if (playerState.value != PlayerState.PLAYING) {
-      await audioPlayer.resume();
-    }
   }
 
   replay() async {
-    if (playerState.value == PlayerState.STOPPED) return;
+    if (playerState.value == ProcessingState.idle) return;
     position.value = Duration(seconds: max(0, position.value.inSeconds - 10));
     await audioPlayer.seek(position.value);
   }
@@ -321,5 +393,15 @@ class ListenController extends SuperController
   changeCpEnd(double v) async {
     idx.value = v.toInt();
     await getUrl(idx.value);
+  }
+
+  Future<void> initAudioService() async {
+    // audioHandler = await AudioService.init(
+    //   builder: () => MyAudioHandler(audioPlayer),
+    //   config: AudioServiceConfig(
+    //     androidNotificationChannelId: 'com.mycompany.myapp.channel.audio',
+    //     androidNotificationChannelName: 'Music playback',
+    //   ),
+    // );
   }
 }
