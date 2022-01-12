@@ -333,8 +333,7 @@ class ListenController extends SuperController
 
     position!.value = Duration(
         seconds: min(
-            position?.value.inSeconds ?? 0 + 10, duration!.value.inSeconds));
-    print(position!.value.inSeconds);
+          (  position?.value.inSeconds ?? 0) + 10, duration!.value.inSeconds));
     await audioPlayer.seek(position!.value);
   }
 
