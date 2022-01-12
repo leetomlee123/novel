@@ -13,14 +13,14 @@ class VoiceSlider extends GetView<ListenController> {
     // double v = controller.position.value.inSeconds.toDouble();
     // double max = controller.duration.value.inSeconds.toDouble();
     return Obx(() => 
-    
-    (controller.duration.value.inSeconds.toDouble()) >=
-            (controller.position.value.inSeconds.toDouble())
-        ? Row(
+    // (controller.duration!.value.inSeconds.toDouble()) >=
+    //         (controller.position!.value.inSeconds.toDouble())
+    //     ? 
+        Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                DateUtil.formatDateMs(controller.position.value.inMilliseconds,
+                DateUtil.formatDateMs(controller.position!.value.inMilliseconds,
                     format: 'mm:ss'),
               ),
               Expanded(
@@ -28,22 +28,23 @@ class VoiceSlider extends GetView<ListenController> {
                   onChangeStart: (value) => controller.changeStart(),
                   onChanged: (double value) => controller.movePosition(value),
                   onChangeEnd: (double value) => controller.changeEnd(value),
-                  value: controller.position.value.inSeconds.toDouble(),
+                  value: controller.position!.value.inSeconds.toDouble(),
                   min: .0,
-                  max: controller.duration.value.inSeconds.toDouble(),
-                  divisions: (controller.duration.value.inSeconds <= 0
+                  max: controller.duration!.value.inSeconds.toDouble(),
+                  divisions: (controller.duration!.value.inSeconds <= 0
                       ? 1
-                      : controller.duration.value.inSeconds),
+                      : controller.duration!.value.inSeconds),
                   label: DateUtil.formatDateMs(
-                      controller.position.value.inMilliseconds,
+                      controller.position!.value.inMilliseconds,
                       format: DateFormats.h_m_s),
                 ),
               ),
               Text(DateUtil.formatDateMs(
-                  controller.duration.value.inMilliseconds,
+                  controller.duration!.value.inMilliseconds,
                   format: 'mm:ss')),
             ],
           )
-        : Container());
+        // : Container()
+        );
   }
 }

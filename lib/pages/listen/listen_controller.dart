@@ -20,8 +20,8 @@ class ListenController extends SuperController
   Rx<ListenSearchModel> model = ListenSearchModel().obs;
   RxString url = "".obs;
   late AudioPlayer audioPlayer;
-  Rx<Duration> duration = Duration(seconds: 0).obs;
-  Rx<Duration> position = Duration(seconds: 0).obs;
+  Rx<Duration>? duration = Duration(seconds: 0).obs;
+  Rx<Duration>? position = Duration(seconds: 0).obs;
   Rx<ProcessingState> playerState = ProcessingState.idle.obs;
   RxBool showPlay = false.obs;
   RxBool moving = false.obs;
@@ -32,7 +32,6 @@ class ListenController extends SuperController
   late ScrollController? scrollcontroller;
 
   bool firstOpen = false;
-  bool playFailed = false;
   bool preload = false;
   late AudioHandler audioHandler;
   @override
@@ -50,7 +49,6 @@ class ListenController extends SuperController
       audioPlayer.setSpeed(fast.value);
     });
     init();
-    initAudioService();
 
     audioPlayer.playerStateStream.listen((state) {
       // if (state.playing) ... else ...
@@ -76,12 +74,9 @@ class ListenController extends SuperController
         case ProcessingState.buffering:
           break;
         case ProcessingState.ready:
-          duration.value = audioPlayer.duration!;
           break;
         case ProcessingState.completed:
-          if (!playFailed) {
-            next();
-          }
+          next();
           break;
       }
     });
@@ -89,7 +84,7 @@ class ListenController extends SuperController
     audioPlayer.positionStream.listen((Duration p) {
       if (!moving.value) {
         if (audioPlayer.playing) {
-          position.value = p;
+          position!.value = p;
         }
       }
     });
@@ -119,11 +114,11 @@ class ListenController extends SuperController
       // if (await getUrl(idx.value) == 1) {
       firstOpen = true;
       showPlay.toggle();
-      position.value = Duration(milliseconds: model.value.position ?? 0);
-      duration.value = Duration(milliseconds: model.value.duration ?? 0);
+      position!.value = Duration(milliseconds: model.value.position ?? 0);
+      duration!.value = Duration(milliseconds: model.value.duration ?? 0);
       // }
 
-      detail(model.value.id.toString());
+      await detail(model.value.id.toString());
 
       getUrl(idx.value);
     }
@@ -141,8 +136,8 @@ class ListenController extends SuperController
 
   saveState() {
     model.value.idx = idx.value;
-    model.value.position = max(position.value.inMilliseconds - 1000, 0);
-    model.value.duration = duration.value.inMilliseconds;
+    model.value.position = max(position!.value.inMilliseconds - 1000, 0);
+    model.value.duration = duration!.value.inMilliseconds;
     SpUtil.putObject("v", model.value);
   }
 
@@ -164,31 +159,16 @@ class ListenController extends SuperController
   }
 
   getUrl(int i) async {
-    playFailed = false;
     try {
       if (url.isEmpty) {
-        // final cacheFile = await CustomCacheManager.instanceVoice
-        //     .getFileFromCache("${model.value.id}$i");
-
-        // if (cacheFile != null && cacheFile.validTill.isAfter(DateTime.now())) {
-        //   url.value = cacheFile.file.path;
-        // } else {
         url.value = await ListenApi()
             .chapterUrl(chapters[i].link ?? "", model.value.id, i);
-        // url.value =
-        //     'http://wting.info/asdb/fiction/xuanhuan/fanrenxxz/3ct6womm1.mp3';
-
-        //   final file = await CustomCacheManager.instanceVoice
-        //       .getSingleFile(url.value, key: "${model.value.id}$i");
-        //   url.value = file.path;
-        // }
       }
       print("audio url ${url.value}");
       return await playAudio();
     } catch (e) {
       BotToast.showText(text: "播放失败,请重试!!!");
       print(e);
-      playFailed = true;
     }
     return -1;
   }
@@ -197,8 +177,8 @@ class ListenController extends SuperController
     url.value = "";
     playerState.value = ProcessingState.idle;
 
-    duration.value = Duration(seconds: 1);
-    position.value = Duration(seconds: 0);
+    duration!.value = Duration(seconds: 1);
+    position!.value = Duration(seconds: 0);
   }
 
   playAudio() async {
@@ -224,8 +204,8 @@ class ListenController extends SuperController
         ),
       );
 
-      await audioPlayer.load();
-      await audioPlayer.seek(firstOpen ? position.value : Duration.zero);
+      duration!.value = (await audioPlayer.load())!;
+      await audioPlayer.seek(firstOpen ? position!.value : Duration.zero);
       // duration.value = (await audioPlayer.load())!;
 
       // await audioPlayer.play();
@@ -330,7 +310,7 @@ class ListenController extends SuperController
   movePosition(double v) async {
     if (!audioPlayer.playing) return;
 
-    position.value = Duration(seconds: v.toInt());
+    position!.value = Duration(seconds: v.toInt());
   }
 
   changeEnd(double value) async {
@@ -338,7 +318,7 @@ class ListenController extends SuperController
 
     moving.value = false;
     var x = Duration(seconds: value.toInt());
-    position.value = x;
+    position!.value = x;
     await audioPlayer.seek(x);
   }
 
@@ -351,15 +331,17 @@ class ListenController extends SuperController
   forward() async {
     if (playerState.value == ProcessingState.idle) return;
 
-    position.value = Duration(
-        seconds: min(position.value.inSeconds + 10, duration.value.inSeconds));
-    await audioPlayer.seek(position.value);
+    position!.value = Duration(
+        seconds: min(
+            position?.value.inSeconds ?? 0 + 10, duration!.value.inSeconds));
+    print(position!.value.inSeconds);
+    await audioPlayer.seek(position!.value);
   }
 
   replay() async {
     if (playerState.value == ProcessingState.idle) return;
-    position.value = Duration(seconds: max(0, position.value.inSeconds - 10));
-    await audioPlayer.seek(position.value);
+    position?.value = Duration(seconds: max(0, position!.value.inSeconds - 10));
+    await audioPlayer.seek(position!.value);
   }
 
   @override
@@ -384,24 +366,5 @@ class ListenController extends SuperController
   @override
   void onDetached() {
     // TODO: implement onDetached
-  }
-
-  moveCp(double v) {
-    idx.value = v.toInt();
-  }
-
-  changeCpEnd(double v) async {
-    idx.value = v.toInt();
-    await getUrl(idx.value);
-  }
-
-  Future<void> initAudioService() async {
-    // audioHandler = await AudioService.init(
-    //   builder: () => MyAudioHandler(audioPlayer),
-    //   config: AudioServiceConfig(
-    //     androidNotificationChannelId: 'com.mycompany.myapp.channel.audio',
-    //     androidNotificationChannelName: 'Music playback',
-    //   ),
-    // );
   }
 }
