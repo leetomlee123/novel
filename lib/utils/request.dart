@@ -65,10 +65,11 @@ class Request {
     ));
     // (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
     //     (client) {
+    //   print("dddd");
     //   // config the http client
     //   client.findProxy = (uri) {
     //     //proxy all request to localhost:8888
-    //     return 'PROXY 45.152.188.227:3128';
+    //     return 'PROXY 120.35.40.86:16790';
     //   };
     //   // you can also create a HttpClient to dio
     //   // return HttpClient();

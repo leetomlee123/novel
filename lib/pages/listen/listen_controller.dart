@@ -22,6 +22,7 @@ class ListenController extends SuperController
   late AudioPlayer audioPlayer;
   Rx<Duration>? duration = Duration(seconds: 0).obs;
   Rx<Duration>? position = Duration(seconds: 0).obs;
+  Rx<Duration>? cache = Duration(seconds: 0).obs;
   Rx<ProcessingState> playerState = ProcessingState.idle.obs;
   RxBool showPlay = false.obs;
   RxBool moving = false.obs;
@@ -41,7 +42,6 @@ class ListenController extends SuperController
     controller = FloatingSearchBarController();
     audioPlayer = AudioPlayer();
     scrollcontroller = ScrollController();
-    init();
 
     ever(idx, (_) {
       scrollcontroller = ScrollController(initialScrollOffset: idx.value * 40);
@@ -49,20 +49,14 @@ class ListenController extends SuperController
     ever(fast, (_) {
       audioPlayer.setSpeed(fast.value);
     });
+    init();
 
     audioPlayer.playerStateStream.listen((state) {
-      // if (state.playing) ... else ...
       saveState();
 
       playerState.value = state.processingState;
       print(
           "state >>>>>>${state.processingState}  playing >>>>${state.playing}");
-      // if (audioPlayer.playing) {
-      //   play.value = true;
-      //   // position.value = Duration(seconds: 0);
-      //   // await audioPlayer
-      //   //     .seek(Duration(milliseconds: model.value.position ?? 0));
-      // }
       playing.value =
           state.playing && state.processingState != ProcessingState.idle;
 
@@ -89,39 +83,20 @@ class ListenController extends SuperController
       }
     });
 
-    audioPlayer.bufferedPositionStream.listen((event) {});
-
-    // audioPlayer.onPlayerCompletion.listen((event) {
-    //   // position.value = duration.value;
-    //   print("complete");
-    //   //有可能资源为空 是为报错
-    //   if (!playFailed) {
-    //     next();
-    //   }
-    // });
-
-    // audioPlayer.onPlayerError.listen((msg) {
-    //   print('audioPlayer error : $msg');
-    //   playerState.value = PlayerState.STOPPED;
-    //   duration.value = Duration(seconds: 1);
-    //   position.value = Duration(seconds: 0);
-    //   BotToast.showText(text: "播放失败");
-    // });
+    audioPlayer.bufferedPositionStream.listen((event) {
+      cache!.value = event;
+    });
   }
 
   init() async {
     if (SpUtil.haveKey("v") ?? false) {
       model.value = SpUtil.getObj("v", (v) => ListenSearchModel.fromJson(v))!;
       idx.value = model.value.idx!;
-      // if (await getUrl(idx.value) == 1) {
       firstOpen = true;
       showPlay.toggle();
       position!.value = Duration(milliseconds: model.value.position ?? 0);
       duration!.value = Duration(milliseconds: model.value.duration ?? 0);
-      // }
-
       await detail(model.value.id.toString());
-
       getUrl(idx.value);
     }
   }
@@ -167,6 +142,10 @@ class ListenController extends SuperController
     url.value =
         await ListenApi().chapterUrl(chapters[i].link ?? "", model.value.id, i);
     print("audio url ${url.value}");
+    if (url.value.isEmpty) {
+      BotToast.showText(text: "获取资源链接失败,请重试...");
+      return;
+    }
     return await playAudio();
   }
 

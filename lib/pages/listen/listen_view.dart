@@ -80,19 +80,21 @@ class ListenPage extends GetView<ListenController> {
                             ),
                             onTap: () {
                               if (controller.chapters.isNotEmpty) {
-                                Get.bottomSheet(Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
+                                Get.bottomSheet(MaterialApp(
+                                  home: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
 
-                                      borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(20.0),
-                                          topRight: Radius.circular(20.0)),
-                                      //设置四周边框
-                                      border: Border.all(
-                                          width: 1, color: Colors.white),
-                                    ),
-                                    padding: const EdgeInsets.all(20),
-                                    child: _buildChapters()));
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(20.0),
+                                            topRight: Radius.circular(20.0)),
+                                        //设置四周边框
+                                        border: Border.all(
+                                            width: 1, color: Colors.white),
+                                      ),
+                                      padding: const EdgeInsets.all(20),
+                                      child: _buildChapters()),
+                                ));
                               }
                             },
                           ),
@@ -107,26 +109,31 @@ class ListenPage extends GetView<ListenController> {
                               ],
                             ),
                             onTap: () {
-                              Get.bottomSheet(Container(
-                                padding: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
+                              Get.bottomSheet(MaterialApp(
+                                home: Container(
+                                  padding: const EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
 
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(20.0),
-                                      topRight: Radius.circular(20.0)),
-                                  //设置四周边框
-                                  border:
-                                      Border.all(width: 1, color: Colors.white),
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(20.0),
+                                        topRight: Radius.circular(20.0)),
+                                    //设置四周边框
+                                    border: Border.all(
+                                        width: 1, color: Colors.white),
+                                  ),
+                                  child: _buildAdjustVolum(),
                                 ),
-                                child: _buildAdjustVolum(),
                               ));
                             },
                           )
                         ],
                       ),
                     ),
-                    VoiceSlider(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                      child: VoiceSlider(),
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
