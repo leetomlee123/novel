@@ -21,6 +21,13 @@ class BookApi {
     return data.map((e) => SearchBookModel.fromJson(e)).toList();
   }
 
+  Future<List<HotBookModel>> hotRank() async {
+    var res = await Request().get("/hot");
+    List data = res['data'] ?? [];
+
+    return data.map((e) => HotBookModel.fromJson(e)).toList();
+  }
+
   Future<BookDetailModel> detail(String bookId) async {
     var res = await Request().get("/book/detail/$bookId");
     var data = res['data'] ?? {};

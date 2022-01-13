@@ -9,6 +9,7 @@ class BookSearchController extends GetxController {
   int page = 0;
   RxBool isFinish = false.obs;
   RxList books = List<SearchBookModel>.empty().obs;
+  RxList<HotBookModel> hotRank = List<HotBookModel>.empty().obs;
   TextEditingController textEditingController = TextEditingController();
   RxList<String> history = List<String>.empty().obs;
 
@@ -20,10 +21,15 @@ class BookSearchController extends GetxController {
   void onInit() {
     super.onInit();
     getHistory();
+    getHotRank();
   }
 
   getHistory() {
     history.addAll(SpUtil.getStringList(ReadSetting.searchHistory)!);
+  }
+
+  getHotRank() async {
+    hotRank.value = await BookApi().hotRank();
   }
 
   historyItemSearch(String v) async {

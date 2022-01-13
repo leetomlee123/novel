@@ -187,6 +187,7 @@ class _SliderPainter extends CustomPainter {
     pt.color = colors.cursorColor;
     radius = min(size.height / 2, dragging ? 12 : 6);
     canvas.drawCircle(Offset(value, size.height / 2), radius, pt);
+
   }
 
   @override

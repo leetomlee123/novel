@@ -61,7 +61,10 @@ class ListenApi {
 
   Future<List<Item>> getChapters(String bookId) async {
     var res = await Request()
-        .get("$host/book/$bookId", options: Options(headers: {"": ""}));
+        .get("$host/book/$bookId", options: Options(headers: {
+          "User-Agent": random.nextInt(36)
+          
+          }));
     Document document = parse(res);
 
     List<Element> es = document.querySelectorAll(".f");

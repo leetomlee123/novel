@@ -50,3 +50,25 @@ class SearchBookModel {
     return data;
   }
 }
+
+class HotBookModel {
+  String? id;
+  String? name;
+  int? hot;
+
+  HotBookModel({this.id, this.name, this.hot});
+
+  HotBookModel.fromJson(Map<String, dynamic> json) {
+    id = json['Id'];
+    name = json['Name'];
+    hot = json['Hot'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['Id'] = this.id;
+    data['Name'] = this.name;
+    data['Hot'] = this.hot;
+    return data;
+  }
+}

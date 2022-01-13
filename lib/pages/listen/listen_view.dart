@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:novel/components/common_img.dart';
+import 'package:novel/pages/listen/adjust_speed.dart';
+import 'package:novel/pages/listen/listen_chapters.dart';
 import 'package:novel/pages/listen/listen_model.dart';
 import 'package:novel/pages/listen/voice_slider.dart';
 
@@ -39,7 +41,7 @@ class ListenPage extends GetView<ListenController> {
                 child: Column(
                   children: [
                     SizedBox(
-                      height: 100,
+                      height: 80,
                     ),
                     Center(
                       child: CommonImg(
@@ -80,21 +82,9 @@ class ListenPage extends GetView<ListenController> {
                             ),
                             onTap: () {
                               if (controller.chapters.isNotEmpty) {
-                                Get.bottomSheet(MaterialApp(
-                                  home: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(20.0),
-                                            topRight: Radius.circular(20.0)),
-                                        //设置四周边框
-                                        border: Border.all(
-                                            width: 1, color: Colors.white),
-                                      ),
-                                      padding: const EdgeInsets.all(20),
-                                      child: _buildChapters()),
-                                ));
+                                Get.bottomSheet(
+                                  ListenChapters(),
+                                );
                               }
                             },
                           ),
@@ -109,29 +99,15 @@ class ListenPage extends GetView<ListenController> {
                               ],
                             ),
                             onTap: () {
-                              Get.bottomSheet(MaterialApp(
-                                home: Container(
-                                  padding: const EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(20.0),
-                                        topRight: Radius.circular(20.0)),
-                                    //设置四周边框
-                                    border: Border.all(
-                                        width: 1, color: Colors.white),
-                                  ),
-                                  child: _buildAdjustVolum(),
-                                ),
-                              ));
+                              Get.bottomSheet(ListenAdjustSpeed());
                             },
                           )
                         ],
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
                       child: VoiceSlider(),
                     ),
                     Row(
@@ -145,24 +121,6 @@ class ListenPage extends GetView<ListenController> {
                             iconSize: 40,
                             onPressed: () => controller.pre(),
                             icon: Icon(Icons.skip_previous_outlined)),
-                        // Visibility(
-                        //   visible: (controller.playerState.value ==
-                        //           ProcessingState.ready ||
-                        //       controller.playerState.value ==
-                        //           ProcessingState.buffering),
-                        //   replacement: Text(
-                        //     'init',
-                        //     style: TextStyle(fontSize: 35),
-                        //   ),
-                        // TextButton(
-                        //   child: Text("init...."),
-                        //   onPressed: () {},
-                        //   style: ButtonStyle(
-                        //     textStyle: MaterialStateProperty.all(
-                        //         TextStyle(fontSize: 35, color: Colors.red)),
-                        //   ),
-                        // ),
-                        // child:
                         AnimatedSwitcher(
                           transitionBuilder: (child, anim) {
                             return ScaleTransition(child: child, scale: anim);
@@ -176,7 +134,6 @@ class ListenPage extends GetView<ListenController> {
                                   ? Icons.pause
                                   : Icons.play_arrow_outlined)),
                         ),
-                        // ),
                         IconButton(
                             iconSize: 40,
                             onPressed: () => controller.next(),
@@ -193,64 +150,6 @@ class ListenPage extends GetView<ListenController> {
             )
           : Container(),
     );
-  }
-
-  ListView _buildAdjustVolum() {
-    return ListView.builder(
-        itemCount: 9,
-        itemExtent: 40,
-        itemBuilder: (ctx, i) {
-          var v = (.5 + (.25 * i));
-          return ListTile(
-            onTap: () {
-              controller.fast.value = v;
-              Get.back();
-            },
-            title: Text("${v}x"),
-            trailing: Checkbox(
-              value: controller.fast.value == v,
-              onChanged: (bool? value) {
-                controller.fast.value = v;
-                Get.back();
-              },
-            ),
-          );
-        });
-  }
-
-  ListView _buildChapters() {
-    return ListView.builder(
-        controller: controller.scrollcontroller,
-        itemCount: controller.chapters.length,
-        shrinkWrap: true,
-        itemExtent: 40,
-        itemBuilder: (ctx, i) {
-          Item item = controller.chapters[i];
-          return ListTile(
-            onTap: () async {
-              controller.idx.value = i;
-              Get.back();
-              // await controller.reset();
-              await controller.getUrl(i);
-              if (controller.playerState.value != ProcessingState.idle) {
-                await controller.audioPlayer.play();
-              }
-            },
-            title: Text("${controller.model.value.title}第${item.title ?? ""}回"),
-            trailing: Checkbox(
-              value: controller.idx.value == i,
-              onChanged: (bool? value) async {
-                controller.idx.value = i;
-                Get.back();
-                // await controller.reset();
-                await controller.getUrl(i);
-                if (controller.playerState.value != ProcessingState.idle) {
-                  await controller.audioPlayer.play();
-                }
-              },
-            ),
-          );
-        });
   }
 
   Widget _buildSearchList() {
