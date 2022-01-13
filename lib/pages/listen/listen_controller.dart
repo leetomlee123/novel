@@ -44,8 +44,7 @@ class ListenController extends SuperController
     init();
 
     ever(idx, (_) {
-      scrollcontroller =
-          ScrollController(initialScrollOffset: idx.value  * 40);
+      scrollcontroller = ScrollController(initialScrollOffset: idx.value * 40);
     });
     ever(fast, (_) {
       audioPlayer.setSpeed(fast.value);
@@ -215,7 +214,7 @@ class ListenController extends SuperController
     // int result =
     //     await audioPlayer.play("${url.value}?v=${DateUtil.getNowDateMs()}");
     // preloadAsset();
-    firstOpen = !firstOpen;
+    firstOpen = false;
     return 1;
   }
 
