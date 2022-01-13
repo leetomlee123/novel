@@ -1,4 +1,3 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,6 +5,7 @@ import 'package:novel/common/screen.dart';
 import 'package:novel/common/values/setting.dart';
 import 'package:novel/components/common_img.dart';
 import 'package:novel/pages/book_chapters/chapter.pbserver.dart';
+import 'package:novel/pages/read_book/book_chapter_slider.dart';
 import 'package:novel/router/app_pages.dart';
 import 'package:novel/utils/database_provider.dart';
 
@@ -158,7 +158,20 @@ class ReadBookPage extends GetView<ReadBookController> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
         buildBottomItem('目录', Icons.menu),
-        TextButton(
+        AnimatedSwitcher(
+          transitionBuilder: (child, anim) {
+            return ScaleTransition(child: child, scale: anim);
+          },
+          duration: Duration(milliseconds: 300),
+          child: TextButton(
+            key: ValueKey(controller.darkModel.value),
+            onPressed: () {
+              controller.darkModel.value = !controller.darkModel.value;
+
+              controller.colorModelSwitch();
+            },
+            // icon: Icon(
+            //   controller.darkModel.value ? Icons.light_mode : Icons.dark_mode,
             child: Container(
               child: Column(
                 children: <Widget>[
@@ -173,11 +186,28 @@ class ReadBookPage extends GetView<ReadBookController> {
                 ],
               ),
             ),
-            onPressed: () {
-              controller.darkModel.value = !controller.darkModel.value;
+          ),
+        ),
+        // TextButton(
+        //     child: Container(
+        //       child: Column(
+        //         children: <Widget>[
+        //           Icon(
+        //             controller.darkModel.value
+        //                 ? Icons.light_mode
+        //                 : Icons.dark_mode,
+        //           ),
+        //           SizedBox(height: 5),
+        //           Text(controller.darkModel.value ? '日间' : '夜间',
+        //               style: TextStyle(fontSize: 12)),
+        //         ],
+        //       ),
+        //     ),
+        //     onPressed: () {
+        //       controller.darkModel.value = !controller.darkModel.value;
 
-              controller.colorModelSwitch();
-            }),
+        //       controller.colorModelSwitch();
+        //     }),
         buildBottomItem('缓存', Icons.cloud_download),
         buildBottomItem('设置', Icons.settings),
       ],
@@ -247,59 +277,6 @@ class ReadBookPage extends GetView<ReadBookController> {
     );
   }
 
-  Widget chapterSlide() {
-    return Container(
-        padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
-        child: Row(
-          children: <Widget>[
-            TextButton(
-                onPressed: () async {
-                  if ((controller.book.value.chapterIdx! - 1) < 0) {
-                    BotToast.showText(text: '已经是第一章');
-                    return;
-                  }
-                  controller.book.value.chapterIdx =
-                      controller.book.value.chapterIdx! - 1;
-                  await controller.initContent(
-                      controller.book.value.chapterIdx!, true);
-                },
-                child: Text('上一章')),
-            Expanded(
-              child: Slider(
-                value: controller.chapterIdx.value.toDouble(),
-                max: (controller.chapters.length - 1).toDouble(),
-                min: 0.0,
-                onChanged: (newValue) {
-                  int temp = newValue.round();
-                  controller.book.value.chapterIdx = temp;
-                  controller.chapterIdx.value = temp;
-                },
-                divisions: controller.chapters.length,
-                label: controller
-                    .chapters[controller.chapterIdx.value].chapterName,
-                onChangeEnd: (_) {
-                  controller.initContent(
-                      controller.book.value.chapterIdx!, true);
-                },
-              ),
-            ),
-            TextButton(
-                onPressed: () async {
-                  if ((controller.book.value.chapterIdx! + 1) >=
-                      controller.chapters.length) {
-                    BotToast.showText(text: "已经是最后一章");
-                    return;
-                  }
-                  controller.book.value.chapterIdx =
-                      controller.book.value.chapterIdx! + 1;
-                  await controller.initContent(
-                      controller.book.value.chapterIdx!, true);
-                },
-                child: Text('下一章')),
-          ],
-        ));
-  }
-
   Widget downloadWidget() {
     return Container(
       decoration: BoxDecoration(
@@ -319,7 +296,8 @@ class ReadBookPage extends GetView<ReadBookController> {
                       const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                   child: GestureDetector(
                     onTap: () {
-                      controller.download(controller.book.value.chapterIdx ?? 0);
+                      controller
+                          .download(controller.book.value.chapterIdx ?? 0);
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -347,7 +325,8 @@ class ReadBookPage extends GetView<ReadBookController> {
                       const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                   child: GestureDetector(
                     onTap: () {
-                      controller.download(controller.book.value.chapterIdx ?? 0);
+                      controller
+                          .download(controller.book.value.chapterIdx ?? 0);
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -739,7 +718,7 @@ class ReadBookPage extends GetView<ReadBookController> {
       case OperateType.DOWNLOAD:
         return downloadWidget();
       default:
-        return chapterSlide();
+        return BookSliderChapter();
     }
   }
 

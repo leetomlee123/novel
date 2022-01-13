@@ -52,8 +52,16 @@ class ListenPage extends GetView<ListenController> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                          "作者${controller.model.value.author}    |   播音${controller.model.value.transmit ?? ''}"),
+                      child:
+                          // Text.rich(TextSpan(children: [
+                          //   TextSpan(text: "作者${controller.model.value.author}-",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20)),
+                          //   TextSpan(
+                          //       text: "播音${controller.model.value.transmit ?? ''}",
+                          //       style: TextStyle(color: Colors.grey,fontWeight: FontWeight.w100,fontSize: 18)),
+                          //   // WidgetSpan(child: Icon(Icons.home))
+                          // ]))
+                          Text(
+                              "作者${controller.model.value.author}    |   播音${controller.model.value.transmit ?? ''}"),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -73,19 +81,18 @@ class ListenPage extends GetView<ListenController> {
                             onTap: () {
                               if (controller.chapters.isNotEmpty) {
                                 Get.bottomSheet(Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(20.0),
-                                        topRight: Radius.circular(20.0)),
-                                    //设置四周边框
-                                    border: Border.all(
-                                        width: 1, color: Colors.white),
-                                  ),
-                                  padding: const EdgeInsets.all(20),
-                                  child: _buildChapters()
-                                ));
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(20.0),
+                                          topRight: Radius.circular(20.0)),
+                                      //设置四周边框
+                                      border: Border.all(
+                                          width: 1, color: Colors.white),
+                                    ),
+                                    padding: const EdgeInsets.all(20),
+                                    child: _buildChapters()));
                               }
                             },
                           ),
@@ -102,16 +109,16 @@ class ListenPage extends GetView<ListenController> {
                             onTap: () {
                               Get.bottomSheet(Container(
                                 padding: const EdgeInsets.all(20),
-                                     decoration: BoxDecoration(
-                                    color: Colors.white,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
 
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(20.0),
-                                        topRight: Radius.circular(20.0)),
-                                    //设置四周边框
-                                    border: Border.all(
-                                        width: 1, color: Colors.white),
-                                  ),
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(20.0),
+                                      topRight: Radius.circular(20.0)),
+                                  //设置四周边框
+                                  border:
+                                      Border.all(width: 1, color: Colors.white),
+                                ),
                                 child: _buildAdjustVolum(),
                               ));
                             },
@@ -188,16 +195,16 @@ class ListenPage extends GetView<ListenController> {
         itemBuilder: (ctx, i) {
           var v = (.5 + (.25 * i));
           return ListTile(
-            onTap: (){
-           controller.fast.value = v;
-                  Get.back();
+            onTap: () {
+              controller.fast.value = v;
+              Get.back();
             },
             title: Text("${v}x"),
             trailing: Checkbox(
               value: controller.fast.value == v,
               onChanged: (bool? value) {
-                  controller.fast.value = v;
-                  Get.back();
+                controller.fast.value = v;
+                Get.back();
               },
             ),
           );
@@ -205,7 +212,6 @@ class ListenPage extends GetView<ListenController> {
   }
 
   ListView _buildChapters() {
-
     return ListView.builder(
         controller: controller.scrollcontroller,
         itemCount: controller.chapters.length,

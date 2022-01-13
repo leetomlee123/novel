@@ -89,6 +89,8 @@ class ListenController extends SuperController
       }
     });
 
+    audioPlayer.bufferedPositionStream.listen((event) {});
+
     // audioPlayer.onPlayerCompletion.listen((event) {
     //   // position.value = duration.value;
     //   print("complete");
@@ -135,10 +137,13 @@ class ListenController extends SuperController
   }
 
   saveState() {
-    model.value.idx = idx.value;
-    model.value.position = max(position!.value.inMilliseconds - 1000, 0);
-    model.value.duration = duration!.value.inMilliseconds;
-    SpUtil.putObject("v", model.value);
+    if ((model.value.url ?? "").isNotEmpty) {
+      model.value.idx = idx.value;
+      model.value.position = max(position!.value.inMilliseconds - 1000, 0);
+      model.value.duration = duration!.value.inMilliseconds;
+      SpUtil.putObject("v", model.value);
+      print("save");
+    }
   }
 
   search(String v) async {
@@ -225,11 +230,11 @@ class ListenController extends SuperController
       } else {
         await audioPlayer.play();
       }
-    } else if (audioPlayer.processingState == ProcessingState.idle) {
-      await getUrl(idx.value);
-      await audioPlayer.play();
     } else {
       BotToast.showText(text: '加载资源中...');
+
+      await getUrl(idx.value);
+      await audioPlayer.play();
     }
   }
 
