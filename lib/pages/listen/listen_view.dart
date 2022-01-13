@@ -75,7 +75,7 @@ class ListenPage extends GetView<ListenController> {
                                 Get.bottomSheet(Container(
                                   decoration: BoxDecoration(
                                     color: Colors.white,
-
+                                
                                     borderRadius: BorderRadius.only(
                                         topLeft: Radius.circular(20.0),
                                         topRight: Radius.circular(20.0)),
@@ -84,7 +84,7 @@ class ListenPage extends GetView<ListenController> {
                                         width: 1, color: Colors.white),
                                   ),
                                   padding: const EdgeInsets.all(20),
-                                  child: _buildChapters(),
+                                  child: _buildChapters()
                                 ));
                               }
                             },
@@ -209,6 +209,7 @@ class ListenPage extends GetView<ListenController> {
     return ListView.builder(
         controller: controller.scrollcontroller,
         itemCount: controller.chapters.length,
+        shrinkWrap: true,
         itemExtent: 40,
         itemBuilder: (ctx, i) {
           Item item = controller.chapters[i];
