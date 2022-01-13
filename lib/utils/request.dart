@@ -68,7 +68,7 @@ class Request {
     //   // config the http client
     //   client.findProxy = (uri) {
     //     //proxy all request to localhost:8888
-    //     return 'PROXY 127.0.0.1:10809';
+    //     return 'PROXY 45.152.188.227:3128';
     //   };
     //   // you can also create a HttpClient to dio
     //   // return HttpClient();

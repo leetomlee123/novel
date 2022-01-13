@@ -73,34 +73,18 @@ class ListenPage extends GetView<ListenController> {
                             onTap: () {
                               if (controller.chapters.isNotEmpty) {
                                 Get.bottomSheet(Container(
-                                  color: Colors.white,
-                                  padding: const EdgeInsets.all(20),
-                                  child: ListView.builder(
-                                      controller: controller.scrollcontroller,
-                                      itemCount: controller.chapters.length,
-                                      itemExtent: 40,
-                                      itemBuilder: (ctx, i) {
-                                        Item item = controller.chapters[i];
-                                        return ListTile(
-                                          title: Text("第${item.title ?? ""}集"),
-                                          trailing: Checkbox(
-                                            value: controller.idx.value == i,
-                                            onChanged: (bool? value) async {
-                                              controller.idx.value = i;
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
 
-                                              Get.back();
-                                              await controller.reset();
-                                              await controller.getUrl(i);
-                                              if (controller
-                                                      .playerState.value !=
-                                                  ProcessingState.idle) {
-                                                await controller.audioPlayer
-                                                    .play();
-                                              }
-                                            },
-                                          ),
-                                        );
-                                      }),
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(20.0),
+                                        topRight: Radius.circular(20.0)),
+                                    //设置四周边框
+                                    border: Border.all(
+                                        width: 1, color: Colors.white),
+                                  ),
+                                  padding: const EdgeInsets.all(20),
+                                  child: _buildChapters(),
                                 ));
                               }
                             },
@@ -118,25 +102,17 @@ class ListenPage extends GetView<ListenController> {
                             onTap: () {
                               Get.bottomSheet(Container(
                                 padding: const EdgeInsets.all(20),
-                                color: Colors.white,
-                                child: ListView.builder(
-                                    itemCount: 9,
-                                    itemExtent: 40,
-                                    itemBuilder: (ctx, i) {
-                                      var v = (.5 + (.25 * i));
-                                      return ListTile(
-                                        title: Text("${v}x"),
-                                        trailing: Checkbox(
-                                          value: controller.fast.value == v,
-                                          onChanged: (bool? value) {
-                                            if (value ?? false) {
-                                              controller.fast.value = v;
-                                              Get.back();
-                                            }
-                                          },
-                                        ),
-                                      );
-                                    }),
+                                     decoration: BoxDecoration(
+                                    color: Colors.white,
+
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(20.0),
+                                        topRight: Radius.circular(20.0)),
+                                    //设置四周边框
+                                    border: Border.all(
+                                        width: 1, color: Colors.white),
+                                  ),
+                                child: _buildAdjustVolum(),
                               ));
                             },
                           )
@@ -205,6 +181,64 @@ class ListenPage extends GetView<ListenController> {
     );
   }
 
+  ListView _buildAdjustVolum() {
+    return ListView.builder(
+        itemCount: 9,
+        itemExtent: 40,
+        itemBuilder: (ctx, i) {
+          var v = (.5 + (.25 * i));
+          return ListTile(
+            onTap: (){
+           controller.fast.value = v;
+                  Get.back();
+            },
+            title: Text("${v}x"),
+            trailing: Checkbox(
+              value: controller.fast.value == v,
+              onChanged: (bool? value) {
+                  controller.fast.value = v;
+                  Get.back();
+              },
+            ),
+          );
+        });
+  }
+
+  ListView _buildChapters() {
+
+    return ListView.builder(
+        controller: controller.scrollcontroller,
+        itemCount: controller.chapters.length,
+        itemExtent: 40,
+        itemBuilder: (ctx, i) {
+          Item item = controller.chapters[i];
+          return ListTile(
+            onTap: () async {
+              controller.idx.value = i;
+              Get.back();
+              // await controller.reset();
+              await controller.getUrl(i);
+              if (controller.playerState.value != ProcessingState.idle) {
+                await controller.audioPlayer.play();
+              }
+            },
+            title: Text("${controller.model.value.title}第${item.title ?? ""}回"),
+            trailing: Checkbox(
+              value: controller.idx.value == i,
+              onChanged: (bool? value) async {
+                controller.idx.value = i;
+                Get.back();
+                // await controller.reset();
+                await controller.getUrl(i);
+                if (controller.playerState.value != ProcessingState.idle) {
+                  await controller.audioPlayer.play();
+                }
+              },
+            ),
+          );
+        });
+  }
+
   Widget _buildSearchList() {
     return ListView.builder(
       shrinkWrap: true,
@@ -217,12 +251,10 @@ class ListenPage extends GetView<ListenController> {
           behavior: HitTestBehavior.opaque,
           onTap: () async {
             await controller.detail(model.id.toString());
-            await controller.reset();
             controller.model.value = model;
             controller.controller!.close();
-            controller.idx.value = i;
+            controller.idx.value = 0;
             controller.playerState.value = ProcessingState.idle;
-            controller.url.value = "";
             controller.showPlay.value = true;
             await controller.getUrl(i);
             await controller.audioPlayer.play();

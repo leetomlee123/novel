@@ -33,22 +33,23 @@ class ListenController extends SuperController
 
   bool firstOpen = false;
   bool preload = false;
-  late AudioHandler audioHandler;
   @override
   void onInit() {
     // SpUtil.remove("v");
     super.onInit();
+
     controller = FloatingSearchBarController();
     audioPlayer = AudioPlayer();
+    scrollcontroller = ScrollController();
+    init();
 
     ever(idx, (_) {
       scrollcontroller =
-          ScrollController(initialScrollOffset: (idx.value - 4) * 40);
+          ScrollController(initialScrollOffset: idx.value  * 40);
     });
     ever(fast, (_) {
       audioPlayer.setSpeed(fast.value);
     });
-    init();
 
     audioPlayer.playerStateStream.listen((state) {
       // if (state.playing) ... else ...
@@ -159,36 +160,16 @@ class ListenController extends SuperController
   }
 
   getUrl(int i) async {
-    try {
-      if (url.isEmpty) {
-        url.value = await ListenApi()
-            .chapterUrl(chapters[i].link ?? "", model.value.id, i);
-      }
-      print("audio url ${url.value}");
-      return await playAudio();
-    } catch (e) {
-      BotToast.showText(text: "播放失败,请重试!!!");
-      print(e);
-    }
-    return -1;
-  }
-
-  reset() async {
-    url.value = "";
-    playerState.value = ProcessingState.idle;
-
-    duration!.value = Duration(seconds: 1);
-    position!.value = Duration(seconds: 0);
+    url.value =
+        await ListenApi().chapterUrl(chapters[i].link ?? "", model.value.id, i);
+    print("audio url ${url.value}");
+    return await playAudio();
   }
 
   playAudio() async {
     if (audioPlayer.playing) {
       audioPlayer.stop();
     }
-
-    // if (firstOpen) {
-    //   position.value = Duration(milliseconds: model.value.position ?? 0);
-    // }
     try {
       await audioPlayer.setAudioSource(
         AudioSource.uri(
@@ -196,7 +177,7 @@ class ListenController extends SuperController
           tag: MediaItem(
             id: '$idx',
             album: model.value.title,
-            title: "${model.value.title}-第${model.value.idx}",
+            title: "${model.value.title}-第${model.value.idx}回",
             artUri: Uri.parse(
               "https://img.ting55.com/${DateUtil.formatDateMs(model.value.addtime ?? 0, format: "yyyy/MM")}/${model.value.picture}!300",
             ),
@@ -206,9 +187,6 @@ class ListenController extends SuperController
 
       duration!.value = (await audioPlayer.load())!;
       await audioPlayer.seek(firstOpen ? position!.value : Duration.zero);
-      // duration.value = (await audioPlayer.load())!;
-
-      // await audioPlayer.play();
     } on PlayerException catch (e) {
       // iOS/macOS: maps to NSError.code
       // Android: maps to ExoPlayerException.type
@@ -284,7 +262,6 @@ class ListenController extends SuperController
     // audioPlayer.pause();
 
     // url.value = "";
-    await reset();
     int result = await getUrl(idx.value - 1);
     if (result == 1) {
       idx.value = idx.value - 1;
@@ -296,7 +273,7 @@ class ListenController extends SuperController
     if (idx.value == chapters.length - 1) {
       return;
     }
-    await reset();
+    // await reset();
     // audioPlayer.pause();
     // url.value = "";
     int result = await getUrl(idx.value + 1);
@@ -333,7 +310,7 @@ class ListenController extends SuperController
 
     position!.value = Duration(
         seconds: min(
-          (  position?.value.inSeconds ?? 0) + 10, duration!.value.inSeconds));
+            (position?.value.inSeconds ?? 0) + 10, duration!.value.inSeconds));
     await audioPlayer.seek(position!.value);
   }
 
