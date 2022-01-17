@@ -22,4 +22,16 @@ class SystemApi {
 
     return AppInfo.fromJson(res['data']);
   }
+
+  Future<String> getProxy({int retry = 5}) async {
+    var res = await Request().get('http://134.175.83.19:5010/get/');
+    if (res['https']) {
+      return res['proxy'];
+    }
+    if (retry > 0) {
+      return getProxy(retry: retry - 1);
+    } else {
+      return "";
+    }
+  }
 }

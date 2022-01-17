@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:novel/pages/listen/listen_model.dart';
+import 'package:novel/services/system.dart';
 import 'package:novel/utils/request.dart';
 
 class ListenApi {
@@ -60,11 +61,8 @@ class ListenApi {
   }
 
   Future<List<Item>> getChapters(String bookId) async {
-    var res = await Request()
-        .get("$host/book/$bookId", options: Options(headers: {
-          "User-Agent": random.nextInt(36)
-          
-          }));
+    var res = await Request().get("$host/book/$bookId",
+        options: Options(headers: {"User-Agent": random.nextInt(36)}));
     Document document = parse(res);
 
     List<Element> es = document.querySelectorAll(".f");
@@ -74,14 +72,17 @@ class ListenApi {
         .toList();
   }
 
-  Future<String> chapterUrl(String chapterLink, int? bookId, int? idx) async {
+  Future<String> chapterUrl(int? bookId, int? idx) async {
     // var res11 = await Request().get(
     //   "http://134.175.83.19:8012/listen/chapter/$bookId${idx! + 1}",
     // );
     // if (res11.toString().isNotEmpty) return res11;
-    var link = "$host$chapterLink";
+
+    var link = "$host/book/$bookId-${idx! + 1}";
     print(link);
-    var res = await Request().get(link);
+    String proxy = await SystemApi().getProxy();
+    print(proxy);
+    var res = await Request().get(link, proxy: proxy);
     Document document = parse(res);
 
     Element? e1 = document.querySelector("meta[name='_c']");

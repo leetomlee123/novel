@@ -12,14 +12,11 @@ class ListenAdjustSpeed extends GetView<ListenController> {
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.all(20),
-        // decoration: BoxDecoration(
-        //   borderRadius: BorderRadius.only(
-        //       topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
-        //   //设置四周边框
-        //   border: Border.all(
-        //     width: 1,
-        //   ),
-        // ),
+        decoration: BoxDecoration(
+          color: Colors.white10,
+          borderRadius: BorderRadius.all(Radius.circular(20.0)),
+          //设置四周边框
+        ),
         child: ListView.builder(
             itemCount: 9,
             itemExtent: 40,

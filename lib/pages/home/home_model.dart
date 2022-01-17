@@ -1,8 +1,9 @@
 import 'package:common_utils/common_utils.dart';
+import 'package:equatable/equatable.dart';
 
 class HomeModel {}
 
-class Book {
+class Book extends Equatable {
   String? id;
   String? cacheChapterContent;
   String? name;
@@ -107,4 +108,23 @@ class Book {
     json['last_chapter'] = lastChapter;
     return json;
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        cacheChapterContent,
+        name,
+        cName,
+        rate,
+        author,
+        uTime,
+        desc,
+        bookStatus,
+        newChapter,
+        chapterIdx,
+        pageIdx,
+        sortTime,
+        img,
+        lastChapter
+      ];
 }

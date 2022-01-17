@@ -110,12 +110,25 @@ class Request {
   }
 
   /// restful get 操作
-  Future get(String path, {dynamic params, Options? options}) async {
+  Future get(String path,
+      {dynamic params, Options? options, String? proxy = ""}) async {
     Options requestOptions = options ?? Options();
 
     Map<String, dynamic> _authorization = getAuthorizationHeader();
     if (_authorization.isNotEmpty) {
       requestOptions = requestOptions.copyWith(headers: _authorization);
+    }
+    if (proxy!.isNotEmpty) {
+      (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+          (client) {
+        // config the http client
+        client.findProxy = (uri) {
+          //proxy all request to localhost:8888
+          return 'PROXY $proxy';
+        };
+        // you can also create a HttpClient to dio
+        // return HttpClient();
+      };
     }
     var response = await dio.get(path,
         queryParameters: params,
@@ -125,8 +138,12 @@ class Request {
   }
 
   /// restful post 操作
-  Future post(String path,
-      {dynamic params, Options? options, bool? useToken = true}) async {
+  Future post(
+    String path, {
+    dynamic params,
+    Options? options,
+    bool? useToken = true,
+  }) async {
     Options requestOptions = options ?? Options();
 
     Map<String, dynamic> _authorization = getAuthorizationHeader();

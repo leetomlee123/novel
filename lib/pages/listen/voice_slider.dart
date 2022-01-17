@@ -28,21 +28,21 @@ class VoiceSlider extends GetView<ListenController> {
               onChangeStart: (value) => controller.changeStart(),
               onChanged: (double value) => controller.movePosition(value),
               onChangeEnd: (double value) => controller.changeEnd(value),
-              value: controller.position!.value.inSeconds.toDouble(),
+              value: controller.model.value.position!.inSeconds.toDouble(),
               min: .0,
-              max: controller.duration!.value.inSeconds.toDouble(),
+              max: controller.model.value.duration!.inSeconds.toDouble(),
             ),
           ),
           SizedBox(height: 5,),
           Row(
             children: [
               Text(
-                DateUtil.formatDateMs(controller.position!.value.inMilliseconds,
+                DateUtil.formatDateMs(controller.model.value.position!.inMilliseconds,
                     format: 'mm:ss'),
               ),
               Spacer(),
               Text(DateUtil.formatDateMs(
-                  controller.duration!.value.inMilliseconds,
+                  controller.model.value.duration!.inMilliseconds,
                   format: 'mm:ss')),
             ],
           ),

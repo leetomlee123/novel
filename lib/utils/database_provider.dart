@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:common_utils/common_utils.dart';
 import 'package:novel/pages/book_chapters/chapter.pb.dart';
 import 'package:novel/pages/home/home_model.dart';
+import 'package:novel/pages/listen/listen_model.dart';
 import 'package:novel/utils/chapter_parse.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -43,16 +44,18 @@ class DataBaseProvider {
     return await openDatabase(path, version: 3,
         onCreate: (Database db, int version) async {
       await db.execute("CREATE TABLE IF NOT EXISTS $_dbVoice("
-          "id TEXT PRIMARY KEY ,"
-          "name TEXT,"
+          "id INTEGER PRIMARY KEY ,"
+          "title TEXT,"
           "author TEXT,"
           "transmit TEXT,"
-          "key TEXT,"
+          "url TEXT,"
           "idx INTEGER,"
+          "count INTEGER,"
           "duration INTEGER,"
           "position INTEGER,"
-          "book_id TEXT,"
-          "has_content INTEGER)");
+          "lasttime INTEGER,"
+          "picture TEXT,"
+          "addtime INTEGER)");
     });
   }
 
@@ -216,5 +219,39 @@ class DataBaseProvider {
   clearChapters() async {
     var dbClient = await databaseChapter;
     await dbClient!.delete(_dbChapters);
+  }
+
+  addVoice(ListenSearchModel listenSearchModel) async {
+    var client = await databaseVoice;
+
+    int result = await client!.update(_dbVoice, listenSearchModel.toMap(),
+        where: "id=?", whereArgs: [listenSearchModel.id]);
+    if (result < 1) {
+      await client.insert(
+        _dbVoice,
+        listenSearchModel.toMap(),
+      );
+    }
+  }
+
+  Future<List<ListenSearchModel>> voices() async {
+    var client = await databaseVoice;
+    List result = await client!.query(
+      _dbVoice,
+      orderBy: "lasttime desc",
+    );
+    return result.map((e) => ListenSearchModel.fromJson(e)).toList();
+  }
+
+  Future<ListenSearchModel?> voiceById(int? id) async {
+    var client = await databaseVoice;
+    List result = await client!.query(_dbVoice, where: "id=?", whereArgs: [id]);
+    if (result.isEmpty) return null;
+    return result.map((e) => ListenSearchModel.fromJson(e)).first;
+  }
+
+  clear() async {
+    var client = await databaseVoice;
+    client!.delete(_dbVoice);
   }
 }

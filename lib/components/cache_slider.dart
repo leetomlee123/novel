@@ -95,10 +95,10 @@ class _CacheSliderState extends State<CacheSlider> {
 /// Colors for the FijkSlider
 class CacheSliderColors {
   const CacheSliderColors({
-    this.playedColor = const Color.fromRGBO(0, 197, 205, 0.6),
-    this.bufferedColor = const Color.fromRGBO(0 ,229, 238, 0.4),
-    this.cursorColor = const Color.fromRGBO(0, 197, 205, 0.8),
-    this.baselineColor = const Color.fromRGBO(200, 200, 200, 0.5),
+    this.playedColor = const Color.fromRGBO(28,134,238,1),
+    this.bufferedColor = const Color.fromRGBO(28,134,238,.7),
+    this.cursorColor = const Color.fromRGBO(28,134,238,1),
+    this.baselineColor = const Color.fromRGBO(122,122,122,.6),
   });
 
   final Color playedColor;
