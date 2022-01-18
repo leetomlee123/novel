@@ -27,4 +27,7 @@ abstract class AppRoutes {
 
   // setproxy
   static const Proxy = '/proxy';
+
+  //ad
+  static const Ad = '/ad';
 }

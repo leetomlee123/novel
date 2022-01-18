@@ -7,6 +7,7 @@ import 'package:novel/common/screen.dart';
 import 'package:novel/common/values/values.dart';
 import 'package:novel/pages/login/login_model.dart';
 import 'package:novel/services/system.dart';
+import 'package:novel/utils/update_app.dart';
 import 'package:novel/utils/utils.dart';
 // import 'package:permission_handler/permission_handler.dart';
 import 'package:sp_util/sp_util.dart';
@@ -49,9 +50,10 @@ class Global {
       androidNotificationChannelName: 'Audio playback',
       androidNotificationOngoing: true,
     );
-
+    //广告初始化
+    // MobileAds.instance.initialize();
     //检查更新
-    // UpdateAppUtil.checkUpdate();
+    UpdateAppUtil.checkUpdate();
 
     //阅读器配置文件
     // LocalStorage().remove(ReadSetting.settingKey);

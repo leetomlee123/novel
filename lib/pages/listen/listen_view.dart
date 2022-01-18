@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:novel/components/common_img.dart';
+import 'package:novel/pages/ad/ad_view.dart';
 import 'package:novel/pages/listen/adjust_speed.dart';
 import 'package:novel/pages/listen/listen_model.dart';
 import 'package:novel/pages/listen/voice_slider.dart';
@@ -44,6 +45,7 @@ class ListenPage extends GetView<ListenController> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
+                      AdPage(),
                       SizedBox(
                         height: 20,
                       ),

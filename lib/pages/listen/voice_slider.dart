@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_view.dart';
-import 'package:novel/components/cache_slider.dart';
 import 'package:novel/pages/listen/listen_controller.dart';
 
 class VoiceSlider extends GetView<ListenController> {
@@ -29,15 +28,22 @@ class VoiceSlider extends GetView<ListenController> {
               onChanged: (double value) => controller.movePosition(value),
               onChangeEnd: (double value) => controller.changeEnd(value),
               value: controller.model.value.position!.inSeconds.toDouble(),
+              label: DateUtil.formatDateMs(
+                  controller.model.value.position!.inMilliseconds,
+                  format: 'mm:ss'),
               min: .0,
+              divisions: controller.model.value.duration!.inSeconds,
               max: controller.model.value.duration!.inSeconds.toDouble(),
             ),
           ),
-          SizedBox(height: 5,),
+          SizedBox(
+            height: 5,
+          ),
           Row(
             children: [
               Text(
-                DateUtil.formatDateMs(controller.model.value.position!.inMilliseconds,
+                DateUtil.formatDateMs(
+                    controller.model.value.position!.inMilliseconds,
                     format: 'mm:ss'),
               ),
               Spacer(),

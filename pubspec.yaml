@@ -49,7 +49,7 @@ dependencies:
 
 
   shared_preferences: ^2.0.6
-
+  # google_mobile_ads: ^1.0.1
   # permission_handler: ^8.3.0
   equatable: ^2.0.3
   extended_image: ^6.0.0

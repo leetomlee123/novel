@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import 'package:novel/pages/Index/Index_view.dart';
+import 'package:novel/pages/ad/ad_binding.dart';
+import 'package:novel/pages/ad/ad_view.dart';
 import 'package:novel/pages/book_detail/book_detail_binding.dart';
 import 'package:novel/pages/book_detail/book_detail_view.dart';
 import 'package:novel/pages/book_menu/book_menu_binding.dart';
@@ -29,7 +31,6 @@ part 'app_routes.dart';
 
 class AppPages {
   static const INITIAL = AppRoutes.Index;
-
 
   static final routes = [
     GetPage(
@@ -86,10 +87,15 @@ class AppPages {
       page: () => FontSetPage(),
       binding: FontSetBinding(),
     ),
-        GetPage(
+    GetPage(
       name: AppRoutes.listen,
       page: () => ListenPage(),
       binding: ListenBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.Ad,
+      page: () => AdPage(),
+      binding: AdBinding(),
     ),
   ];
 
