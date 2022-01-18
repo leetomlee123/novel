@@ -96,7 +96,7 @@ class _CacheSliderState extends State<CacheSlider> {
 class CacheSliderColors {
   const CacheSliderColors({
     this.playedColor = const Color.fromRGBO(28,134,238,1),
-    this.bufferedColor = const Color.fromRGBO(28,134,238,.7),
+    this.bufferedColor = const Color.fromRGBO(28,34,38,.7),
     this.cursorColor = const Color.fromRGBO(28,134,238,1),
     this.baselineColor = const Color.fromRGBO(122,122,122,.6),
   });

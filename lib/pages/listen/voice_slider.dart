@@ -23,8 +23,8 @@ class VoiceSlider extends GetView<ListenController> {
           SizedBox(
             height: 40,
             width: Get.width,
-            child: CacheSlider(
-              cacheValue: controller.cache!.value.inSeconds.toDouble(),
+            child: Slider(
+              // cacheValue: controller.cache!.value.inSeconds.toDouble(),
               onChangeStart: (value) => controller.changeStart(),
               onChanged: (double value) => controller.movePosition(value),
               onChangeEnd: (double value) => controller.changeEnd(value),

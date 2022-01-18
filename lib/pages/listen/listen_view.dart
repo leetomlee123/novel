@@ -5,11 +5,11 @@ import 'package:just_audio/just_audio.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:novel/components/common_img.dart';
 import 'package:novel/pages/listen/adjust_speed.dart';
-import 'package:novel/pages/listen/listen_chapters.dart';
 import 'package:novel/pages/listen/listen_model.dart';
 import 'package:novel/pages/listen/voice_slider.dart';
 import 'package:novel/utils/database_provider.dart';
 
+import 'listen_chapters.dart';
 import 'listen_controller.dart';
 
 class ListenPage extends GetView<ListenController> {
@@ -18,6 +18,7 @@ class ListenPage extends GetView<ListenController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // backgroundColor: controller.bgColor.value,
       resizeToAvoidBottomInset: false,
       body: Stack(
         fit: StackFit.expand,
@@ -33,6 +34,8 @@ class ListenPage extends GetView<ListenController> {
   }
 
   Widget _buildPlayUi() {
+    final modalColor = Get.isDarkMode ? Colors.black54 : Colors.white;
+
     return Obx(
       () => controller.showPlay.value
           ? Center(
@@ -42,7 +45,7 @@ class ListenPage extends GetView<ListenController> {
                   child: Column(
                     children: [
                       SizedBox(
-                        height: 80,
+                        height: 20,
                       ),
                       Center(
                         child: CommonImg(
@@ -55,16 +58,8 @@ class ListenPage extends GetView<ListenController> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(10.0),
-                        child:
-                            // Text.rich(TextSpan(children: [
-                            //   TextSpan(text: "作者${controller.model.value.author}-",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20)),
-                            //   TextSpan(
-                            //       text: "播音${controller.model.value.transmit ?? ''}",
-                            //       style: TextStyle(color: Colors.grey,fontWeight: FontWeight.w100,fontSize: 18)),
-                            //   // WidgetSpan(child: Icon(Icons.home))
-                            // ]))
-                            Text(
-                                "作者${controller.model.value.author}    |   播音${controller.model.value.transmit ?? ''}"),
+                        child: Text(
+                            "作者${controller.model.value.author}    |   播音${controller.model.value.transmit ?? ''}"),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -83,11 +78,37 @@ class ListenPage extends GetView<ListenController> {
                               ),
                               onTap: () {
                                 if (controller.chapters.isNotEmpty) {
-                                  Get.bottomSheet(
-                                    ListenChapters(),
-                                    barrierColor: Colors.transparent,
-                                    elevation: 2,
-                                  );
+                                  // Get.bottomSheet(
+                                  //   ListenChapters(),
+                                  //   // barrierColor: Colors.transparent,
+                                  //   elevation: 2,
+                                  // );
+
+                                  showModalBottomSheet(
+                                      context: Get.context!,
+                                      builder: (ctx) {
+                                        return Stack(
+                                          children: <Widget>[
+                                            Container(
+                                              height: 25,
+                                              width: double.infinity,
+                                              color: modalColor,
+                                            ),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                  color: modalColor,
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(25),
+                                                    topRight:
+                                                        Radius.circular(25),
+                                                  )),
+                                            ),
+                                            ListenChapters()
+                                          ],
+                                        );
+                                      });
                                 }
                               },
                             ),
@@ -105,10 +126,33 @@ class ListenPage extends GetView<ListenController> {
                                 ],
                               ),
                               onTap: () {
-                                Get.bottomSheet(ListenAdjustSpeed(),
-                                    barrierColor: Colors.transparent,
-                                    elevation: 2,
-                                    backgroundColor: Colors.transparent);
+                                // Get.bottomSheet(ListenAdjustSpeed(),
+                                //     barrierColor: Colors.transparent,
+                                //     elevation: 2,
+                                //     backgroundColor: Colors.transparent);
+
+                                showModalBottomSheet(
+                                    context: Get.context!,
+                                    builder: (ctx) {
+                                      return Stack(
+                                        children: <Widget>[
+                                          Container(
+                                            height: 30.0,
+                                            width: double.infinity,
+                                            color: Colors.black54,
+                                          ),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                color: modalColor,
+                                                borderRadius: BorderRadius.only(
+                                                  topLeft: Radius.circular(25),
+                                                  topRight: Radius.circular(25),
+                                                )),
+                                          ),
+                                          ListenAdjustSpeed()
+                                        ],
+                                      );
+                                    });
                               },
                             )
                           ],
@@ -177,15 +221,16 @@ class ListenPage extends GetView<ListenController> {
             controller.audioPlayer.stop();
             controller.saveState();
             controller.detail(model.id.toString());
-
             ListenSearchModel? v =
                 await DataBaseProvider.dbProvider.voiceById(model.id);
             if (v != null) model = v;
             controller.model.value = model;
             controller.controller!.close();
             controller.idx.value = controller.model.value.idx ?? 0;
+            // controller.getBackgroundColor();
             controller.playerState.value = ProcessingState.idle;
             controller.showPlay.value = true;
+
             await controller.getUrl(i);
 
             await controller.audioPlayer.play();

@@ -82,7 +82,8 @@ class ListenApi {
     print(link);
     String proxy = await SystemApi().getProxy();
     print(proxy);
-    var res = await Request().get(link, proxy: proxy);
+    // var res = await Request().get(link, proxy: proxy);
+    var res = await Request().get(link,  );
     Document document = parse(res);
 
     Element? e1 = document.querySelector("meta[name='_c']");

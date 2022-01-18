@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:common_utils/common_utils.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
@@ -11,6 +12,7 @@ import 'package:novel/pages/listen/listen_model.dart';
 import 'package:novel/services/listen.dart';
 import 'package:novel/utils/CustomCacheManager.dart';
 import 'package:novel/utils/database_provider.dart';
+import 'package:palette_generator/palette_generator.dart';
 
 class ListenController extends SuperController
     with GetSingleTickerProviderStateMixin {
@@ -27,6 +29,7 @@ class ListenController extends SuperController
   RxBool moving = false.obs;
   RxBool playing = false.obs;
   RxBool useProxy = false.obs;
+  final bgColor = Colors.transparent.obs;
   RxInt idx = 0.obs;
   RxDouble fast = (1.0).obs;
   late FloatingSearchBarController? controller;
@@ -49,6 +52,7 @@ class ListenController extends SuperController
       scrollcontroller = ScrollController(initialScrollOffset: idx.value * 40);
       model.value.idx = idx.value;
     });
+
     ever(fast, (_) {
       audioPlayer.setSpeed(fast.value);
     });
@@ -93,6 +97,17 @@ class ListenController extends SuperController
     });
   }
 
+  getBackgroundColor() async {
+    print("start get backgroud color");
+    PaletteGenerator paletteGenerator =
+        await PaletteGenerator.fromImageProvider(
+      ExtendedNetworkImageProvider(
+        "https://img.ting55.com/${DateUtil.formatDateMs(model.value.addtime ?? 0, format: "yyyy/MM")}/${model.value.picture}!300",
+      ),
+    );
+    bgColor.value = paletteGenerator.dominantColor!.color;
+  }
+
   initHitory() async {
     // await DataBaseProvider.dbProvider.clear();
     history = await DataBaseProvider.dbProvider.voices();
@@ -107,6 +122,8 @@ class ListenController extends SuperController
       getUrl(idx.value);
 
       detail(model.value.id.toString());
+
+      // getBackgroundColor();
     }
   }
 
@@ -126,7 +143,7 @@ class ListenController extends SuperController
     if ((model.value.url ?? "").isNotEmpty) {
       model.value.idx = idx.value;
       model.update((val) {
-        val!.count = searchs!.length;
+        val!.count = chapters.length;
         val.idx = idx.value;
       });
       await DataBaseProvider.dbProvider.addVoice(model.value);
@@ -180,9 +197,9 @@ class ListenController extends SuperController
           ),
         ),
       );
-
+      var duration = (await audioPlayer.load())!;
       model.update((val) async {
-        val!.duration = (await audioPlayer.load())!;
+        val!.duration = duration;
       });
       print(model.value.position!.inMilliseconds);
       await audioPlayer.seek(model.value.position);

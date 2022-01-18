@@ -13,29 +13,47 @@ class ListenChapters extends GetView<ListenController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey,
-          borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
-          //设置四周边框
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
-        child: Column(
-          children: [
-            TabBar(
-                controller: controller.tabController,
-                tabs: controller.tabs
-                    .map(
-                      (e) => Text(e),
-                    )
-                    .toList()),
-            Expanded(
-              child: _body(),
-            ),
-          ],
-        ),
+    final modalColor = !Get.isDarkMode ? Colors.black : Colors.white;
+
+    return Container(
+      // decoration: BoxDecoration(
+      //   borderRadius: const BorderRadius.only(
+      //       topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
+      //   //设置四周边框
+      // ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              // _buildClose(),
+              // Spacer(),
+              // Text(
+              //   '播放列表',
+              //   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              // ),
+              // Spacer(),
+            ],
+          ),
+          TabBar(
+              controller: controller.tabController,
+              labelPadding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+              // indicatorColor: Colors.red,
+              labelColor: modalColor,
+              labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              automaticIndicatorColorAdjustment: true,
+              indicatorSize: TabBarIndicatorSize.label,
+              tabs: controller.tabs
+                  .map(
+                    (e) => Text(e),
+                  )
+                  .toList()),
+          Expanded(
+            child: _body(),
+          ),
+        ],
       ),
     );
   }
@@ -50,33 +68,32 @@ class ListenChapters extends GetView<ListenController> {
           Item item = controller.chapters[i];
           return ListTile(
             onTap: () async {
-              controller.idx.value = i;
-              controller.audioPlayer.stop();
-              controller.cache!.value = Duration.zero;
-              controller.model.update((val) {
-                val!.position = Duration.zero;
-              });
-              Get.back();
-
-              await controller.getUrl(i);
-              if (controller.playerState.value != ProcessingState.idle) {
-                await controller.audioPlayer.play();
-              }
+              await playChapter(i);
             },
             title: Text("${controller.model.value.title}第${item.title ?? ""}回"),
             trailing: Checkbox(
               value: controller.idx.value == i,
               onChanged: (bool? value) async {
-                controller.idx.value = i;
-                Get.back();
-                await controller.getUrl(i);
-                if (controller.playerState.value != ProcessingState.idle) {
-                  await controller.audioPlayer.play();
-                }
+                await playChapter(i);
               },
             ),
           );
         });
+  }
+
+  Future<void> playChapter(int i) async {
+    controller.idx.value = i;
+    controller.audioPlayer.stop();
+    controller.cache!.value = Duration.zero;
+    controller.model.update((val) {
+      val!.position = Duration.zero;
+    });
+    Get.back();
+
+    await controller.getUrl(i);
+    if (controller.playerState.value != ProcessingState.idle) {
+      await controller.audioPlayer.play();
+    }
   }
 
   Widget _body() {
@@ -85,7 +102,14 @@ class ListenChapters extends GetView<ListenController> {
         children: [_buildChapter(), _buildHistory()]);
   }
 
+  _buildClose() {
+    return IconButton(
+        onPressed: () => Get.back(), icon: Icon(Icons.close_outlined));
+  }
+
   _buildHistory() {
+    final modalColor = !Get.isDarkMode ? Colors.black : Colors.white;
+
     controller.initHitory();
     return ListView.separated(
       itemBuilder: (ctx, i) {
@@ -93,25 +117,60 @@ class ListenChapters extends GetView<ListenController> {
         String date =
             DateUtil.formatDateMs(item.addtime ?? 0, format: "yyyy/MM");
         return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
             child: ListTile(
               leading: CommonImg(
                 "https://img.ting55.com/$date/${item.picture}!300",
-                width: 60,
-                aspect: .8,
+                width: 100,
+                aspect: 1,
               ),
+              contentPadding: const EdgeInsets.all(5),
               title: Text(
                 item.title ?? "",
               ),
-              subtitle: Text("${item.title}-第${controller.idx.value + 1}回"),
-              trailing: Text(
-                  '已听%${((controller.idx.value + 1) / (controller.chapters.length) * 100).toStringAsFixed(1)}'),
+              subtitle: Text("${item.title}-第${item.idx! + 1}回"),
+              trailing: RichText(
+                text: TextSpan(children: [
+                  TextSpan(
+                    text: '已听',
+                    style: TextStyle(color: modalColor, fontSize: 16),
+                  ),
+                  TextSpan(
+                    text:
+                        '${((item.idx! + 1) / (item.count!) * 100).toStringAsFixed(1)}%',
+                    style: TextStyle(color: modalColor, fontSize: 13),
+                  ),
+                ]),
+              ),
+              // trailing: Text(
+              //     '已听${((item.idx! + 1) / (item.count!) * 100).toStringAsFixed(1)}%'),
+
+              onTap: () async {
+                controller.audioPlayer.stop();
+                controller.saveState();
+                controller.detail(item.id.toString());
+
+                controller.model.value = item;
+                Get.back();
+                controller.idx.value = controller.model.value.idx ?? 0;
+                // controller.getBackgroundColor();
+                controller.playerState.value = ProcessingState.idle;
+                controller.showPlay.value = true;
+
+                await controller.getUrl(i);
+
+                await controller.audioPlayer.play();
+              },
             ));
       },
       itemCount: controller.history.length,
       cacheExtent: 40,
       separatorBuilder: (BuildContext context, int index) {
-        return Divider();
+        return Divider(
+          color: Colors.black45,
+          indent: 10,
+          endIndent: 10,
+        );
       },
     );
   }
