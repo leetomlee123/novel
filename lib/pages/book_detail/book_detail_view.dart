@@ -134,6 +134,12 @@ class BookDetailPage extends GetView<BookDetailController> {
         indent: 12,
       ),
       _sameAuthorBooks(),
+      const SizedBox(
+        height: 200,
+      ),
+      const Center(
+        child: Text('no more data'),
+      )
     ]));
   }
 

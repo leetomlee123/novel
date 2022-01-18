@@ -34,7 +34,7 @@ class ListenPage extends GetView<ListenController> {
   }
 
   Widget _buildPlayUi() {
-    final modalColor = Get.isDarkMode ? Colors.black54 : Colors.white;
+    final modalColor = Get.isDarkMode ? Colors.black87 : Colors.white;
 
     return Obx(
       () => controller.showPlay.value
@@ -78,37 +78,36 @@ class ListenPage extends GetView<ListenController> {
                               ),
                               onTap: () {
                                 if (controller.chapters.isNotEmpty) {
-                                  // Get.bottomSheet(
-                                  //   ListenChapters(),
-                                  //   // barrierColor: Colors.transparent,
-                                  //   elevation: 2,
-                                  // );
+                                  Get.bottomSheet(ListenChapters(),
+                                      // barrierColor: Colors.transparent,
+                                      elevation: 2,
+                                      backgroundColor: modalColor);
 
-                                  showModalBottomSheet(
-                                      context: Get.context!,
-                                      builder: (ctx) {
-                                        return Stack(
-                                          children: <Widget>[
-                                            Container(
-                                              height: 25,
-                                              width: double.infinity,
-                                              color: modalColor,
-                                            ),
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                  color: modalColor,
-                                                  borderRadius:
-                                                      BorderRadius.only(
-                                                    topLeft:
-                                                        Radius.circular(25),
-                                                    topRight:
-                                                        Radius.circular(25),
-                                                  )),
-                                            ),
-                                            ListenChapters()
-                                          ],
-                                        );
-                                      });
+                                  // showModalBottomSheet(
+                                  //     context: Get.context!,
+                                  //     builder: (ctx) {
+                                  //       return Stack(
+                                  //         children: <Widget>[
+                                  //           Container(
+                                  //             height: 25,
+                                  //             width: double.infinity,
+                                  //             color: modalColor,
+                                  //           ),
+                                  //           Container(
+                                  //             decoration: BoxDecoration(
+                                  //                 color: modalColor,
+                                  //                 borderRadius:
+                                  //                     BorderRadius.only(
+                                  //                   topLeft:
+                                  //                       Radius.circular(25),
+                                  //                   topRight:
+                                  //                       Radius.circular(25),
+                                  //                 )),
+                                  //           ),
+
+                                  //         ],
+                                  //       );
+                                  //     });
                                 }
                               },
                             ),
@@ -126,33 +125,31 @@ class ListenPage extends GetView<ListenController> {
                                 ],
                               ),
                               onTap: () {
-                                // Get.bottomSheet(ListenAdjustSpeed(),
-                                //     barrierColor: Colors.transparent,
-                                //     elevation: 2,
-                                //     backgroundColor: Colors.transparent);
+                                Get.bottomSheet(ListenAdjustSpeed(),
+                                    elevation: 2, backgroundColor: modalColor);
 
-                                showModalBottomSheet(
-                                    context: Get.context!,
-                                    builder: (ctx) {
-                                      return Stack(
-                                        children: <Widget>[
-                                          Container(
-                                            height: 30.0,
-                                            width: double.infinity,
-                                            color: Colors.black54,
-                                          ),
-                                          Container(
-                                            decoration: BoxDecoration(
-                                                color: modalColor,
-                                                borderRadius: BorderRadius.only(
-                                                  topLeft: Radius.circular(25),
-                                                  topRight: Radius.circular(25),
-                                                )),
-                                          ),
-                                          ListenAdjustSpeed()
-                                        ],
-                                      );
-                                    });
+                                // showModalBottomSheet(
+                                //     context: Get.context!,
+                                //     builder: (ctx) {
+                                //       return Stack(
+                                //         children: <Widget>[
+                                //           Container(
+                                //             height: 30.0,
+                                //             width: double.infinity,
+                                //             color: Colors.black54,
+                                //           ),
+                                //           Container(
+                                //             decoration: BoxDecoration(
+                                //                 color: modalColor,
+                                //                 borderRadius: BorderRadius.only(
+                                //                   topLeft: Radius.circular(25),
+                                //                   topRight: Radius.circular(25),
+                                //                 )),
+                                //           ),
+                                //           ListenAdjustSpeed()
+                                //         ],
+                                //       );
+                                //     });
                               },
                             )
                           ],

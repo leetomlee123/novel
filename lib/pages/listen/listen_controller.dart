@@ -188,7 +188,7 @@ class ListenController extends SuperController
         AudioSource.uri(
           Uri.parse(url),
           tag: MediaItem(
-            id: '$idx',
+            id: '1',
             album: model.value.title,
             title: "${model.value.title}-第${idx.value}回",
             artUri: Uri.parse(

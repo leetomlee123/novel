@@ -18,7 +18,7 @@ class ListenChapters extends GetView<ListenController> {
     return Container(
       // decoration: BoxDecoration(
       //   borderRadius: const BorderRadius.only(
-      //       topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
+      //       topLeft: Radius.circular(25.0), topRight: Radius.circular(25.0)),
       //   //设置四周边框
       // ),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
@@ -40,7 +40,6 @@ class ListenChapters extends GetView<ListenController> {
               controller: controller.tabController,
               labelPadding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-              // indicatorColor: Colors.red,
               labelColor: modalColor,
               labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               automaticIndicatorColorAdjustment: true,
