@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:common_utils/common_utils.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
@@ -12,7 +11,6 @@ import 'package:novel/pages/listen/listen_model.dart';
 import 'package:novel/services/listen.dart';
 import 'package:novel/utils/CustomCacheManager.dart';
 import 'package:novel/utils/database_provider.dart';
-import 'package:palette_generator/palette_generator.dart';
 
 class ListenController extends SuperController
     with GetSingleTickerProviderStateMixin {
@@ -62,7 +60,7 @@ class ListenController extends SuperController
       saveState();
 
       playerState.value = state.processingState;
-      print(
+      Get.log(
           "state >>>>>>${state.processingState}  playing >>>>${state.playing}");
       playing.value =
           state.playing && state.processingState != ProcessingState.idle;
@@ -84,7 +82,10 @@ class ListenController extends SuperController
 
     audioPlayer.positionStream.listen((Duration p) {
       if (!moving.value) {
-        if (audioPlayer.playing) {
+        if (audioPlayer.playing &&
+            playerState.value != ProcessingState.completed) {
+          // Get.log(playerState.value.name);
+
           model.update((val) {
             val!.position = p;
           });
@@ -98,14 +99,14 @@ class ListenController extends SuperController
   }
 
   getBackgroundColor() async {
-    print("start get backgroud color");
-    PaletteGenerator paletteGenerator =
-        await PaletteGenerator.fromImageProvider(
-      ExtendedNetworkImageProvider(
-        "https://img.ting55.com/${DateUtil.formatDateMs(model.value.addtime ?? 0, format: "yyyy/MM")}/${model.value.picture}!300",
-      ),
-    );
-    bgColor.value = paletteGenerator.dominantColor!.color;
+    // print("start get backgroud color");
+    // PaletteGenerator paletteGenerator =
+    //     await PaletteGenerator.fromImageProvider(
+    //   ExtendedNetworkImageProvider(
+    //     "https://img.ting55.com/${DateUtil.formatDateMs(model.value.addtime ?? 0, format: "yyyy/MM")}/${model.value.picture}!300",
+    //   ),
+    // );
+    // bgColor.value = paletteGenerator.dominantColor!.color;
   }
 
   initHitory() async {
@@ -171,6 +172,8 @@ class ListenController extends SuperController
 
   getUrl(int i) async {
     url = await ListenApi().chapterUrl(model.value.id, i);
+    // url =
+    //     'https://pp.ting55.com/202201191133/97c2f104b9c6423247a85f9105aa328a/2015/12/3705/5.mp3';
     print("audio url $url");
     if (url.isEmpty) {
       BotToast.showText(text: "获取资源链接失败,请重试...");
@@ -201,7 +204,7 @@ class ListenController extends SuperController
       model.update((val) async {
         val!.duration = duration;
       });
-      print(model.value.position!.inMilliseconds);
+
       await audioPlayer.seek(model.value.position);
     } on PlayerException catch (e) {
       // iOS/macOS: maps to NSError.code
@@ -227,10 +230,6 @@ class ListenController extends SuperController
       // Fallback for all errors
       print(e);
     }
-
-    // int result =
-    //     await audioPlayer.play("${url.value}?v=${DateUtil.getNowDateMs()}");
-    // preloadAsset();
     return 1;
   }
 
@@ -273,6 +272,8 @@ class ListenController extends SuperController
     if (idx.value == 0) {
       return;
     }
+    await audioPlayer.pause();
+
     cache!.value = Duration.zero;
 
     model.update((val) {
@@ -289,6 +290,8 @@ class ListenController extends SuperController
     if (idx.value == chapters.length - 1) {
       return;
     }
+    await audioPlayer.pause();
+
     cache!.value = Duration.zero;
     model.update((val) {
       val!.position = Duration.zero;

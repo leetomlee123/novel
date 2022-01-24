@@ -44,15 +44,14 @@ class ListenPage extends GetView<ListenController> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: SingleChildScrollView(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       AdPage(),
                       SizedBox(
                         height: 20,
                       ),
-                      Center(
-                        child: CommonImg(
-                          "https://img.ting55.com/${DateUtil.formatDateMs(controller.model.value.addtime ?? 0, format: "yyyy/MM")}/${controller.model.value.picture}!300",
-                        ),
+                      CommonImg(
+                        "https://img.ting55.com/${DateUtil.formatDateMs(controller.model.value.addtime ?? 0, format: "yyyy/MM")}/${controller.model.value.picture}!300",
                       ),
                       Padding(
                         padding: const EdgeInsets.all(10.0),
@@ -230,9 +229,9 @@ class ListenPage extends GetView<ListenController> {
             controller.playerState.value = ProcessingState.idle;
             controller.showPlay.value = true;
 
-            await controller.getUrl(i);
+            // await controller.getUrl(i);
 
-            await controller.audioPlayer.play();
+            // await controller.audioPlayer.play();
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),

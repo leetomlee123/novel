@@ -5,7 +5,6 @@ import 'package:dio/dio.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:novel/pages/listen/listen_model.dart';
-import 'package:novel/services/system.dart';
 import 'package:novel/utils/request.dart';
 
 class ListenApi {
@@ -80,10 +79,12 @@ class ListenApi {
 
     var link = "$host/book/$bookId-${idx! + 1}";
     print(link);
-    String proxy = await SystemApi().getProxy();
-    print(proxy);
-    // var res = await Request().get(link, proxy: proxy);
-    var res = await Request().get(link,  );
+    // String proxy = await SystemApi().getProxy();
+    // print(proxy);
+    var res = await Request().get(link,
+        // proxy: proxy,
+        options: Options(headers: {"User-Agent": ua[random.nextInt(36)]}));
+    // var res = await Request().get(link,  );
     Document document = parse(res);
 
     Element? e1 = document.querySelector("meta[name='_c']");
@@ -101,7 +102,7 @@ class ListenApi {
           "Origin": host,
           "xt": xt,
           "l": l,
-          "User-Agent": random.nextInt(36)
+          "User-Agent": ua[random.nextInt(36)]
         }),
         useToken: false);
     var data = jsonDecode(res1);

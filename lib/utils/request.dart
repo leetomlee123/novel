@@ -137,6 +137,16 @@ class Request {
     return response.data;
   }
 
+  Future getCommon(String path,
+      {dynamic params, Options? options, String? proxy = ""}) async {
+    Options requestOptions = options ?? Options();
+    var response = await dio.get(path,
+        queryParameters: params,
+        options: requestOptions,
+        cancelToken: cancelToken);
+    return response.data;
+  }
+
   /// restful post 操作
   Future post(
     String path, {

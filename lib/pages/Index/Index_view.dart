@@ -8,10 +8,16 @@ class IndexPage extends GetView<IndexController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Scaffold(
-          body: controller.pageList![controller.index.value],
-          bottomNavigationBar:
-              controller.showBottom.value ? _buildnavigationBar() : null,
+    return Obx(() => WillPopScope(
+          onWillPop: () {
+            Get.log("index page can`t pop");
+            return Future.value(false);
+          },
+          child: Scaffold(
+            body: controller.pageList![controller.index.value],
+            bottomNavigationBar:
+                controller.showBottom.value ? _buildnavigationBar() : null,
+          ),
         ));
   }
 
