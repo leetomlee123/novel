@@ -27,6 +27,7 @@ class ListenController extends SuperController
   RxBool moving = false.obs;
   RxBool playing = false.obs;
   RxBool useProxy = false.obs;
+  RxBool syncPosition = false.obs;
   final bgColor = Colors.transparent.obs;
   RxInt idx = 0.obs;
   RxDouble fast = (1.0).obs;
@@ -75,6 +76,7 @@ class ListenController extends SuperController
         case ProcessingState.ready:
           break;
         case ProcessingState.completed:
+          syncPosition.value = false;
           next();
           break;
       }
@@ -173,7 +175,7 @@ class ListenController extends SuperController
   getUrl(int i) async {
     url = await ListenApi().chapterUrl(model.value.id, i);
     // url =
-    //     'https://pp.ting55.com/202201191133/97c2f104b9c6423247a85f9105aa328a/2015/12/3705/5.mp3';
+    //     'https://pp.ting55.com/202201261454/cf07754102fc5c1a60aee3f712f6358d/2015/12/3705/4.mp3';
     print("audio url $url");
     if (url.isEmpty) {
       BotToast.showText(text: "获取资源链接失败,请重试...");
@@ -193,7 +195,7 @@ class ListenController extends SuperController
           tag: MediaItem(
             id: '1',
             album: model.value.title,
-            title: "${model.value.title}-第${idx.value}回",
+            title: "${model.value.title}-第${idx.value + 1}回",
             artUri: Uri.parse(
               "https://img.ting55.com/${DateUtil.formatDateMs(model.value.addtime ?? 0, format: "yyyy/MM")}/${model.value.picture}!300",
             ),
@@ -207,27 +209,16 @@ class ListenController extends SuperController
 
       await audioPlayer.seek(model.value.position);
     } on PlayerException catch (e) {
-      // iOS/macOS: maps to NSError.code
-      // Android: maps to ExoPlayerException.type
-      // Web: maps to MediaError.code
-      // Linux/Windows: maps to PlayerErrorCode.index
       print("Error code: ${e.code}");
-      // iOS/macOS: maps to NSError.localizedDescription
-      // Android: maps to ExoPlaybackException.getMessage()
-      // Web/Linux: a generic message
-      // Windows: MediaPlayerError.message
+
       print("Error message: ${e.message}");
       playerState.value = ProcessingState.idle;
       playing.value = false;
       BotToast.showText(text: "加载音频资源失败,请重试....");
     } on PlayerInterruptedException catch (e) {
-      // This call was interrupted since another audio source was loaded or the
-      // player was stopped or disposed before this audio source could complete
-      // loading.
       print("Connection aborted: ${e.message}");
       await audioPlayer.pause();
     } catch (e) {
-      // Fallback for all errors
       print(e);
     }
     return 1;
@@ -272,10 +263,9 @@ class ListenController extends SuperController
     if (idx.value == 0) {
       return;
     }
-    await audioPlayer.pause();
 
     cache!.value = Duration.zero;
-
+    await Future.delayed(Duration(seconds: 1));
     model.update((val) {
       val!.position = Duration.zero;
     });
@@ -287,10 +277,11 @@ class ListenController extends SuperController
   }
 
   next() async {
+    Get.log('next');
     if (idx.value == chapters.length - 1) {
       return;
     }
-    await audioPlayer.pause();
+    await Future.delayed(Duration(seconds: 1));
 
     cache!.value = Duration.zero;
     model.update((val) {

@@ -1,4 +1,6 @@
 import 'package:common_utils/common_utils.dart';
+import 'package:extended_image/extended_image.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:novel/common/values/setting.dart';
@@ -6,6 +8,7 @@ import 'package:novel/pages/book_detail/book_detail_model.dart';
 import 'package:novel/pages/home/home_controller.dart';
 import 'package:novel/pages/home/home_model.dart';
 import 'package:novel/services/book.dart';
+
 
 class BookDetailController extends GetxController with StateMixin {
   Rx<BookDetailModel> bookDetailModel = BookDetailModel().obs;
@@ -20,6 +23,8 @@ class BookDetailController extends GetxController with StateMixin {
 
     super.onInit();
   }
+
+
 
   getDetail(String bookId) async {
     ok.value = false;

@@ -1,130 +1,131 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:novel/common/values/setting.dart';
 import 'package:novel/components/components.dart';
 import 'package:novel/pages/Index/Index_controller.dart';
+import 'package:novel/utils/update_app.dart';
 
 class AppMenuPage extends GetView<IndexController> {
   const AppMenuPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _buildHeader(context),
-
-              // getItem(
-              //   ImageIcon(AssetImage("images/info.png")),
-              //   '公告',
-              //   () {
-              //     // Navigator.of(context).push(MaterialPageRoute(
-              //     //     builder: (BuildContext context) => InfoPage()));
-              //   },
-              // ),
-              // getItem(
-              //   ImageIcon(AssetImage("images/re.png")),
-              //   '免责声明',
-              //   () {
-              //     showDialog(
-              //         context: context,
-              //         builder: (context) => AlertDialog(
-              //               title: Text(
-              //                 '免责声明',
-              //               ),
-              //               content: SingleChildScrollView(
-              //                 child: Text(ReadSetting.lawWarn
-              //                     // ReadSetting.lawWarn,""
-              //                     ),
-              //               ),
-              //               actions: <Widget>[
-              //                 TextButton(
-              //                   child: Text(
-              //                     "确定",
-              //                   ),
-              //                   onPressed: () {
-              //                     Navigator.of(context).pop();
-              //                   },
-              //                 ),
-              //               ],
-              //             ));
-              //   },
-              // ),
-              // getItem(
-              //   ImageIcon(AssetImage("images/skin.png")),
-              //   '主题',
-              //   () {
-              //     // Navigator.of(context).push(MaterialPageRoute(
-              //     //     builder: (BuildContext context) => Skin()));
-              //   },
-              // ),
-              // getItem(
-              //   ImageIcon(AssetImage("images/fe.png")),
-              //   '意见反馈',
-              //   () {
-              //     // locator<TelAndSmsService>()
-              //     //     .sendEmail('leetomlee123@gmail.com');
-              //   },
-              // ),
-              // getItem(
-              //   ImageIcon(AssetImage("images/github.png")),
-              //   '开源地址',
-              //   () {
-              //     // launch('https://github.com/leetomlee123/book');
-              //   },
-              // ),
-              // getItem(
-              //   ImageIcon(AssetImage("images/upgrade.png")),
-              //   '应用更新',
-              //   () async {
-              //     UpdateAppUtil.checkUpdate();
-              //   },
-              // ),
-              // getItem(
-              //   ImageIcon(AssetImage("images/ab.png")),
-              //   '关于',
-              //   () {
-              //     showDialog(
-              //         context: context,
-              //         builder: (context) => AlertDialog(
-              //               title: Text(('清阅揽胜')),
-              //               content: Text(
-              //                 ReadSetting.poet,
-              //                 style: TextStyle(fontSize: 15, height: 2.1),
-              //               ),
-              //               actions: <Widget>[
-              //                 TextButton(
-              //                   child: new Text(
-              //                     "确定",
-              //                   ),
-              //                   onPressed: () {
-              //                     Navigator.of(context).pop();
-              //                   },
-              //                 ),
-              //               ],
-              //             ));
-              //   },
-              // ),
-              // Obx(
-              //   () => Offstage(
-              //       offstage: controller.userProfileModel.value!.token!.isEmpty,
-              //       child: OutlinedButton(
-              //         style: ButtonStyle(
-              //             minimumSize:
-              //                 MaterialStateProperty.all(Size(330, 45))),
-              //         onPressed: () => controller.dropAccountOut(),
-              //         child: Text("退出登录"),
-              //       )),
-              // ),
-            ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          _buildHeader(),
+          getItem(
+            ImageIcon(AssetImage("images/info.png")),
+            '公告',
+            () {
+              // Navigator.of(context).push(MaterialPageRoute(
+              //     builder: (BuildContext context) => InfoPage()));
+            },
           ),
-        ),
+          getItem(
+            ImageIcon(AssetImage("images/re.png")),
+            '免责声明',
+            () {
+              showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                        title: Text(
+                          '免责声明',
+                        ),
+                        content: SingleChildScrollView(
+                          child: Text(ReadSetting.lawWarn
+                              // ReadSetting.lawWarn,""
+                              ),
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text(
+                              "确定",
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ));
+            },
+          ),
+          getItem(
+            ImageIcon(AssetImage("images/fe.png")),
+            '意见反馈',
+            () {
+              // locator<TelAndSmsService>()
+              //     .sendEmail('leetomlee123@gmail.com');
+            },
+          ),
+          getItem(
+            ImageIcon(AssetImage("images/upgrade.png")),
+            '应用更新',
+            () async {
+              UpdateAppUtil.checkUpdate();
+            },
+          ),
+          getItem(
+            ImageIcon(AssetImage("images/github.png")),
+            '开源地址',
+            () {
+              // launch('https://github.com/leetomlee123/book');
+            },
+          ),
+          getItem(
+            ImageIcon(AssetImage("images/ab.png")),
+            '关于',
+            () {
+              showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                        title: Text(('清阅揽胜')),
+                        content: Text(
+                          ReadSetting.poet,
+                          style: TextStyle(fontSize: 15, height: 2.1),
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            child: new Text(
+                              "确定",
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ));
+            },
+          ),
+          const SizedBox(
+            height: 50,
+          ),
+          Obx(
+            () => Offstage(
+                offstage: controller.userProfileModel.value!.token!.isEmpty,
+                child: OutlinedButton(
+                  style: ButtonStyle(
+                      minimumSize: MaterialStateProperty.all(Size(330, 45))),
+                  onPressed: () => controller.dropAccountOut(),
+                  child: Text("退出登录"),
+                )),
+          ),
+        ],
       ),
     );
+    // return Stack(
+    //   children: [
+    //     _buildHeader(),
+    //     // Container(
+    //     //   margin: const EdgeInsets.only(top: 280),
+    //     //   decoration: BoxDecoration(
+    //     //       borderRadius: BorderRadius.horizontal(
+    //     //           left: Radius.circular(20.0), right: Radius.circular(20.0)),
+    //     //       color: Colors.yellowAccent),
+    //     // )
+    //   ],
+    // );
   }
 
   _buildAppBar() {
@@ -159,6 +160,7 @@ class AppMenuPage extends GetView<IndexController> {
                       SizedBox(height: 1),
                       Text(
                         controller.darkModel.value ? '日间' : '夜间',
+                        style: TextStyle(color: Colors.white),
                       ),
                     ],
                   ),
@@ -172,13 +174,20 @@ class AppMenuPage extends GetView<IndexController> {
   }
 
   Widget getItem(imageIcon, text, fun) {
-    return ListTile(
-      onTap: fun,
-      leading: imageIcon,
-      title: Text(text),
-      trailing: Icon(
-        Icons.arrow_forward_ios_sharp,
-        size: 17,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      child: ListTile(
+        onTap: fun,
+        leading: imageIcon,
+        style: ListTileStyle.drawer,
+        title: Text(
+          text,
+          style: TextStyle(fontSize: 18),
+        ),
+        trailing: Icon(
+          Icons.arrow_forward_ios_outlined,
+          size: 17,
+        ),
       ),
     );
   }
@@ -193,54 +202,81 @@ class AppMenuPage extends GetView<IndexController> {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
-    return Obx(() => Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          // decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8)),color: Colors.white),
-          height: 200,
-          child: Visibility(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+  Widget _buildHeader() {
+    return Obx(() => Theme(
+          data: ThemeData(
+              iconTheme: IconThemeData(color: Colors.white),
+              textTheme: TextTheme(bodyText1: TextStyle(color: Colors.white))),
+          child: Container(
+            // padding: const EdgeInsets.symmetric(horizontal: 20),
+            // decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(8)),color: Colors.white),
+            height: 300,
+            // width: Get.width,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: ExtendedNetworkImageProvider(
+                        "https://img1.baidu.com/it/u=1319713773,2074606622&fm=253&fmt=auto&app=138&f=JPG?w=889&h=500"),
+                    fit: BoxFit.cover)),
+            child: Column(
               children: [
-                _headImg(),
-                SizedBox(
-                  width: 5,
+                _buildAppBar(),
+                const SizedBox(
+                  height: 60,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      controller.userProfileModel.value!.username ?? "",
-                      style: TextStyle(fontSize: 20),
+                Visibility(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        width: 50,
+                      ),
+                      _headImg(),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            controller.userProfileModel.value!.username ?? "",
+                            style: TextStyle(fontSize: 20, color: Colors.white),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            controller.userProfileModel.value!.email ?? "",
+                            style:
+                                TextStyle(fontSize: 16, color: Colors.white70),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                  visible: controller.userProfileModel.value!.token!.isNotEmpty,
+                  replacement: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        _headImg(),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          "登陆/注册",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Colors.white),
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      controller.userProfileModel.value!.email ?? "",
-                    ),
-                  ],
-                )
+                    onTap: () => controller.toLogin(),
+                  ),
+                ),
               ],
-            ),
-            visible: controller.userProfileModel.value!.token!.isNotEmpty,
-            replacement: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  _headImg(),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    "登陆/注册",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-                ],
-              ),
-              onTap: () => controller.toLogin(),
             ),
           ),
         ));

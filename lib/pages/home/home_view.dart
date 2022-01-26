@@ -5,6 +5,7 @@ import 'package:novel/components/common_img.dart';
 import 'package:novel/pages/home/home_controller.dart';
 import 'package:novel/pages/home/home_model.dart';
 import 'package:novel/router/app_pages.dart';
+// import 'package:vibrate/vibrate.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
 class HomePage extends GetView<HomeController> {
@@ -24,7 +25,7 @@ class HomePage extends GetView<HomeController> {
             appBar: _buildHead(context),
             body: Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                 child: controller.shelf.isNotEmpty
                     ? controller.coverLayout.value
                         ? _buildListModel()
@@ -252,7 +253,14 @@ class HomePage extends GetView<HomeController> {
   Widget tapAction(Widget child, int i) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onLongPress: () {
+      onLongPress: () async {
+        // Check if the device can vibrate
+        // bool canVibrate = await Vibrate.canVibrate;
+        // print(canVibrate);
+// Vibrate
+// Vibration duration is a constant 500ms because
+// it cannot be set to a specific duration on iOS.
+        // Vibrate.vibrate();
         controller.manageShelf.value = true;
       },
       child: child,

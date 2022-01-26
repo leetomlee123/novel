@@ -6,11 +6,11 @@ import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:novel/components/common_img.dart';
 import 'package:novel/pages/ad/ad_view.dart';
 import 'package:novel/pages/listen/adjust_speed.dart';
+import 'package:novel/pages/listen/listen_chapters.dart';
 import 'package:novel/pages/listen/listen_model.dart';
 import 'package:novel/pages/listen/voice_slider.dart';
 import 'package:novel/utils/database_provider.dart';
 
-import 'listen_chapters.dart';
 import 'listen_controller.dart';
 
 class ListenPage extends GetView<ListenController> {
@@ -80,8 +80,13 @@ class ListenPage extends GetView<ListenController> {
                               onTap: () {
                                 if (controller.chapters.isNotEmpty) {
                                   Get.bottomSheet(ListenChapters(),
-                                      // barrierColor: Colors.transparent,
                                       elevation: 2,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(20.0),
+                                          topRight: Radius.circular(20.0),
+                                        ),
+                                      ),
                                       backgroundColor: modalColor);
 
                                   // showModalBottomSheet(
@@ -126,7 +131,12 @@ class ListenPage extends GetView<ListenController> {
                                 ],
                               ),
                               onTap: () {
-                                Get.bottomSheet(ListenAdjustSpeed(),
+                                Get.bottomSheet(ListenAdjustSpeed(),              shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(20.0),
+                                          topRight: Radius.circular(20.0),
+                                        ),
+                                      ),
                                     elevation: 2, backgroundColor: modalColor);
 
                                 // showModalBottomSheet(

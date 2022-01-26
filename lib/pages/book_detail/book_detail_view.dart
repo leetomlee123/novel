@@ -16,17 +16,17 @@ class BookDetailPage extends GetView<BookDetailController> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Obx(
-      () => controller.ok.value
-          ? Stack(
-              children: [
-                CustomScrollView(
-                  slivers: [_buildSliverAppBar(), _buildSliverBody()],
-                ),
-                _buildBottom()
-              ],
-            )
-          : LoadingDialog(),
-    ));
+          () => controller.ok.value
+              ? Stack(
+                  children: [
+                    CustomScrollView(
+                      slivers: [_buildSliverAppBar(), _buildSliverBody()],
+                    ),
+                    _buildBottom()
+                  ],
+                )
+              : LoadingDialog(),
+        ));
   }
 
   Widget _buildSliverAppBar() {

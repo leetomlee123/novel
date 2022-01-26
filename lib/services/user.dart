@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:novel/pages/find_password/find_password_model.dart';
 import 'package:novel/pages/login/login_model.dart';
 import 'package:novel/pages/register/register_model.dart';
@@ -10,6 +11,8 @@ class UserAPI {
       "name": userProfileModel!.username,
       "password": userProfileModel.pwd
     });
+    BotToast.showText(text: res['msg']);
+
     return UserProfileModel.fromJson(res['data']);
   }
 
