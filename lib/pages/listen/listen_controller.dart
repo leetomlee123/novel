@@ -281,7 +281,8 @@ class ListenController extends SuperController
     if (idx.value == chapters.length - 1) {
       return;
     }
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(
+        Duration(seconds: 1), () => BotToast.showText(text: '播放下一集'));
 
     cache!.value = Duration.zero;
     model.update((val) {
@@ -295,7 +296,7 @@ class ListenController extends SuperController
   }
 
   movePosition(double v) async {
-    if (!audioPlayer.playing) return;
+    // if (!audioPlayer.playing) return;
 
     model.update((val) {
       val!.position = Duration(seconds: v.toInt());

@@ -55,7 +55,7 @@ dependencies:
   extended_image: ^6.0.0
   readmore: ^2.1.0
   extended_nested_scroll_view: ^5.0.0
-  waterfall_flow: ^3.0.1
+  waterfall_flow: ^3.0.2
   sqflite: ^2.0.0+4
   path_provider: ^2.0.7
   url_launcher: ^6.0.2

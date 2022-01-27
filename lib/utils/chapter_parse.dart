@@ -89,6 +89,7 @@ class ChapterParseUtil {
 
   static List<ParseContentConfig>? _configs;
   Future<List<ParseContentConfig>?> get configs async {
+  Set<String>? keys=  SpUtil.getKeys();
     if (_configs == null) {
       _configs =
           SpUtil.getObjList("rules", (v) => ParseContentConfig.fromJson(v))!

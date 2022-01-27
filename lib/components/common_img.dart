@@ -38,7 +38,7 @@ class CommonImg extends StatelessWidget {
     //   ),
     // );
     return Container(
-      child: ExtendedImage.network(url, fit: this.fit,
+      child: ExtendedImage.network(url, fit: this.fit, cache: true,
           loadStateChanged: (ExtendedImageState state) {
         switch (state.extendedImageLoadState) {
           case LoadState.loading:

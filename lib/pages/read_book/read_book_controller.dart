@@ -2,7 +2,6 @@ import 'dart:ui' as ui;
 
 import 'package:battery_plus/battery_plus.dart';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_statusbar_manager/flutter_statusbar_manager.dart';
@@ -102,6 +101,10 @@ class ReadBookController extends SuperController
     }
     initReadConfig();
     initData();
+
+    ever(chapterIdx, (_) {
+      book.value.chapterIdx = chapterIdx.value;
+    });
 
     FlutterStatusbarManager.setFullscreen(true);
   }
@@ -217,28 +220,12 @@ class ReadBookController extends SuperController
     return readPage;
   }
 
+
   //下载章节内容
   download(int idx) async {
-    book.value.cacheChapterContent = "1";
-    DataBaseProvider.dbProvider.updBook(book.value);
-
-    List<DownChapter> cps = List.empty(growable: true);
-    for (var i = idx; i < chapters.length; i++) {
-      if (chapters[i].hasContent != "2") {
-        cps.add(DownChapter(
-          idx: i,
-          chapterId: chapters[i].chapterId,
-        ));
-        if (cps.length % downCommitLen == 0) {
-          cps = await compute(downChapter, cps);
-          cps.forEach((element) {
-            chapters[element.idx ?? 0].hasContent = "2";
-          });
-          DataBaseProvider.dbProvider.downContent(cps);
-          cps.clear();
-        }
-      }
-    }
+    BotToast.showText(text: '开始下载...');
+    showMenu.toggle();
+    idxController!.cacheChapters(book.value, chapters, idx);
   }
 
   saveState() {

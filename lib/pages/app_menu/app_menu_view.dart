@@ -99,7 +99,7 @@ class AppMenuPage extends GetView<IndexController> {
             },
           ),
           const SizedBox(
-            height: 50,
+            height: 200,
           ),
           Obx(
             () => Offstage(
@@ -215,7 +215,10 @@ class AppMenuPage extends GetView<IndexController> {
             decoration: BoxDecoration(
                 image: DecorationImage(
                     image: ExtendedNetworkImageProvider(
-                        "https://img1.baidu.com/it/u=1319713773,2074606622&fm=253&fmt=auto&app=138&f=JPG?w=889&h=500"),
+                        controller.darkModel.value
+                            ? 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fnimg.ws.126.net%2F%3Furl%3Dhttp%253A%252F%252Fdingyue.ws.126.net%252F2021%252F0611%252F4069030cj00qujl4t001ic000hs00quc.jpg%26thumbnail%3D650x2147483647%26quality%3D80%26type%3Djpg&refer=http%3A%2F%2Fnimg.ws.126.net&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1645844294&t=3fa3649ce54f0c420f6ce67486e2a068'
+                            : "https://img1.baidu.com/it/u=1319713773,2074606622&fm=253&fmt=auto&app=138&f=JPG?w=889&h=500",
+                        cache: true),
                     fit: BoxFit.cover)),
             child: Column(
               children: [

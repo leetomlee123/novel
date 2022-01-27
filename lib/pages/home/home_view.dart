@@ -5,6 +5,7 @@ import 'package:novel/components/common_img.dart';
 import 'package:novel/pages/home/home_controller.dart';
 import 'package:novel/pages/home/home_model.dart';
 import 'package:novel/router/app_pages.dart';
+
 // import 'package:vibrate/vibrate.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
@@ -25,7 +26,7 @@ class HomePage extends GetView<HomeController> {
             appBar: _buildHead(context),
             body: Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                 child: controller.shelf.isNotEmpty
                     ? controller.coverLayout.value
                         ? _buildListModel()
@@ -135,7 +136,7 @@ class HomePage extends GetView<HomeController> {
         gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
           crossAxisSpacing: 40.0,
-          mainAxisSpacing: 40.0,
+          mainAxisSpacing: 20.0,
         ),
         itemBuilder: (itemBuilder, i) {
           var data = controller.shelf[i];
@@ -160,13 +161,13 @@ class HomePage extends GetView<HomeController> {
         });
   }
 
-  Widget _buildBookCover(Book book, int i) {
+  Widget _buildBookCover(Book book, int i, {double aspect = .73}) {
     return Stack(
       alignment: AlignmentDirectional.topEnd,
       children: <Widget>[
         CommonImg(
           book.img ?? "",
-          aspect: .73,
+          aspect: aspect,
           fit: BoxFit.fitWidth,
         ),
         Offstage(
@@ -197,6 +198,70 @@ class HomePage extends GetView<HomeController> {
   }
 
   Widget _buildListModel() {
+    return ListView.separated(
+      itemBuilder: (c, i) {
+        Book book = controller.shelf[i];
+        return tapAction(
+            Row(
+              children: [
+                _buildBookCover(book, i, aspect: .8),
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                    child: Container(
+                      height: 100,
+                      child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                      Text(
+                        book.name ?? "",
+                        style: TextStyle(
+                            fontSize: 18.0, fontWeight: FontWeight.bold),
+                        maxLines: 1,
+                      ),
+                      // const SizedBox(
+                      //   height: 15,
+                      // ),
+                      Text(
+                        book.author ?? "",
+                        style: TextStyle(
+                          fontSize: 12.0,
+                        ),
+                        maxLines: 1,
+                      ),
+                      // const SizedBox(
+                      //   height: 10,
+                      // ),
+                      Text(
+                        book.lastChapter ?? "",
+                        style: TextStyle(fontSize: 12),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                      // const SizedBox(
+                      //   height: 10,
+                      // ),
+                      Text(
+                        book.uTime ?? "",
+                        style: TextStyle(color: Colors.grey, fontSize: 11),
+                        maxLines: 1,
+                      ),
+                  ],
+                ),
+                    ))
+              ],
+            ),
+            i);
+      },
+      separatorBuilder: (c, i) {
+        return Divider();
+      },
+      itemCount: controller.shelf.length,
+      padding: const EdgeInsets.only(bottom: 20),
+    );
+
     return ListView.builder(
       itemBuilder: (c, i) {
         Book book = controller.shelf[i];
