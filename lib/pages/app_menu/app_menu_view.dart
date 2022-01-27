@@ -176,18 +176,22 @@ class AppMenuPage extends GetView<IndexController> {
   Widget getItem(imageIcon, text, fun) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      child: ListTile(
-        onTap: fun,
-        leading: imageIcon,
-        style: ListTileStyle.drawer,
-        title: Text(
-          text,
-          style: TextStyle(fontSize: 18),
-        ),
-        trailing: Icon(
-          Icons.arrow_forward_ios_outlined,
-          size: 17,
-        ),
+      child: Column(
+        children: [
+          ListTile(
+            onTap: fun,
+            leading: imageIcon,
+            style: ListTileStyle.drawer,
+            title: Text(
+              text,
+              style: TextStyle(fontSize: 18),
+            ),
+            trailing: Icon(
+              Icons.arrow_forward_ios_outlined,
+              size: 17,
+            ),
+          ),Divider(height: 5,)
+        ],
       ),
     );
   }
