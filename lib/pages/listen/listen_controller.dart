@@ -181,13 +181,9 @@ class ListenController extends SuperController
       BotToast.showText(text: "获取资源链接失败,请重试...");
       return;
     }
-    return await playAudio();
-  }
-
-  playAudio() async {
-    if (audioPlayer.playing) {
-      audioPlayer.stop();
-    }
+    // if (audioPlayer.playing) {
+    //   audioPlayer.stop();
+    // }
     try {
       await audioPlayer.setAudioSource(
         AudioSource.uri(

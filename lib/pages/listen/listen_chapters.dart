@@ -14,47 +14,56 @@ class ListenChapters extends GetView<ListenController> {
   @override
   Widget build(BuildContext context) {
     final modalColor = !Get.isDarkMode ? Colors.black : Colors.white;
-
-    return Container(
-      // decoration: BoxDecoration(
-      //   borderRadius: const BorderRadius.only(
-      //       topLeft: Radius.circular(25.0), topRight: Radius.circular(25.0)),
-      //   //设置四周边框
-      // ),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return SliderTheme(
+        data: SliderThemeData(
+            activeTrackColor: Colors.pink.withOpacity(0.8),
+            inactiveTrackColor: Colors.grey,
+            thumbColor: Colors.deepPurple,
+            overlayColor: Colors.deepPurple.withOpacity(0.3),
+            valueIndicatorColor: Colors.deepPurple.withOpacity(0.6),
+            valueIndicatorShape: PaddleSliderValueIndicatorShape(),
+            valueIndicatorTextStyle: TextStyle(fontSize: 14.0)),
+        child: Container(
+          // decoration: BoxDecoration(
+          //   borderRadius: const BorderRadius.only(
+          //       topLeft: Radius.circular(25.0), topRight: Radius.circular(25.0)),
+          //   //设置四周边框
+          // ),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // _buildClose(),
-              // Spacer(),
-              // Text(
-              //   '播放列表',
-              //   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              // ),
-              // Spacer(),
+              Row(
+                children: [
+                  // _buildClose(),
+                  // Spacer(),
+                  // Text(
+                  //   '播放列表',
+                  //   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  // ),
+                  // Spacer(),
+                ],
+              ),
+              TabBar(
+                  controller: controller.tabController,
+                  labelPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  labelColor: modalColor,
+                  labelStyle:
+                      TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  automaticIndicatorColorAdjustment: true,
+                  indicatorSize: TabBarIndicatorSize.label,
+                  tabs: controller.tabs
+                      .map(
+                        (e) => Text(e),
+                      )
+                      .toList()),
+              Expanded(
+                child: _body(),
+              ),
             ],
           ),
-          TabBar(
-              controller: controller.tabController,
-              labelPadding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-              labelColor: modalColor,
-              labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              automaticIndicatorColorAdjustment: true,
-              indicatorSize: TabBarIndicatorSize.label,
-              tabs: controller.tabs
-                  .map(
-                    (e) => Text(e),
-                  )
-                  .toList()),
-          Expanded(
-            child: _body(),
-          ),
-        ],
-      ),
-    );
+        ));
   }
 
   ListView _buildChapter() {

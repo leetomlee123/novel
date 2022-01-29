@@ -239,7 +239,7 @@ class ListenPage extends GetView<ListenController> {
             controller.playerState.value = ProcessingState.idle;
             controller.showPlay.value = true;
 
-            // await controller.getUrl(i);
+            await controller.getUrl(i);
 
             // await controller.audioPlayer.play();
           },
