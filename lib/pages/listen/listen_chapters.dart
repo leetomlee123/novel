@@ -10,7 +10,6 @@ import 'package:novel/pages/listen/listen_model.dart';
 
 class ListenChapters extends GetView<ListenController> {
   const ListenChapters({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     final modalColor = !Get.isDarkMode ? Colors.black : Colors.white;
