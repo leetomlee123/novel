@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'tingshu',
+      title: 'novel',
       home: ListenPage(),
       initialBinding: ListenBinding(),
       initialRoute: AppPages.INITIAL,
