@@ -1,7 +1,6 @@
 import 'package:common_utils/common_utils.dart';
-import 'package:equatable/equatable.dart';
 
-class ListenSearchModel extends Equatable {
+class ListenSearchModel  {
   int? id;
   String? title;
   String? author;

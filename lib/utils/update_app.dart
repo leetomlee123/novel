@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter_xupdate/flutter_xupdate.dart';
-import 'package:novel/services/system.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+
+import '../services/system.dart';
 
 class UpdateAppUtil {
   ///初始化

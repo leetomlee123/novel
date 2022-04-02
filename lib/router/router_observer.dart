@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get_core/get_core.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:novel/common/values/setting.dart';
-import 'package:novel/pages/Index/Index_controller.dart';
 
 class RouterObserver extends NavigatorObserver {
   @override

@@ -100,12 +100,6 @@ class Request {
   /// 读取token
   Map<String, dynamic> getAuthorizationHeader() {
     var headers = {"": ""};
-    String? token = Global.profile?.token;
-    if (token != null) {
-      headers = {
-        'auth': '$token',
-      };
-    }
     return headers;
   }
 

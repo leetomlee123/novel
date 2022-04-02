@@ -6,7 +6,6 @@ import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:novel/pages/listen/listen_model.dart';
 import 'package:novel/services/listen.dart';
 import 'package:novel/utils/CustomCacheManager.dart';
@@ -27,11 +26,11 @@ class ListenController extends SuperController
   RxBool moving = false.obs;
   RxBool playing = false.obs;
   RxBool useProxy = false.obs;
+  RxBool getLink = false.obs;
   RxBool syncPosition = false.obs;
   final bgColor = Colors.transparent.obs;
   RxInt idx = 0.obs;
   RxDouble fast = (1.0).obs;
-  late FloatingSearchBarController? controller;
   late ScrollController? scrollcontroller;
 
   late TabController tabController;
@@ -42,7 +41,6 @@ class ListenController extends SuperController
   void onInit() {
     super.onInit();
 
-    controller = FloatingSearchBarController();
     audioPlayer = AudioPlayer();
     scrollcontroller = ScrollController();
     tabController =
@@ -54,6 +52,12 @@ class ListenController extends SuperController
 
     ever(fast, (_) {
       audioPlayer.setSpeed(fast.value);
+    });
+
+    ever(showPlay, (_) {
+      Get.focusScope!.unfocus();
+      searchs!.clear();
+      textEditingController.clear();
     });
     init();
 
@@ -138,7 +142,7 @@ class ListenController extends SuperController
     saveState();
 
     audioPlayer.dispose();
-    controller!.dispose();
+    textEditingController.dispose();
     tabController.dispose();
   }
 
@@ -173,7 +177,13 @@ class ListenController extends SuperController
   }
 
   getUrl(int i) async {
-    url = await ListenApi().chapterUrl(model.value.id, i);
+    getLink.value = true;
+    try{
+    url = await ListenApi().chapterUrl(model.value.id, i);}catch(e){
+
+    }
+    getLink.value = false;
+
     // url =
     //     'https://pp.ting55.com/202201261454/cf07754102fc5c1a60aee3f712f6358d/2015/12/3705/4.mp3';
     print("audio url $url");
