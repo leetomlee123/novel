@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:novel/components/components.dart';
 import 'package:novel/utils/utils.dart';
 
 class ProxyPage extends StatelessWidget {
@@ -13,8 +12,7 @@ class ProxyPage extends StatelessWidget {
   final TextEditingController _controllerPort = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return BaseScaffold(
-      title: "代理设置",
+    return Scaffold(
       body: Center(
         child: Column(
           children: <Widget>[

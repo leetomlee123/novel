@@ -22,7 +22,7 @@ class ListenController extends SuperController
   late AudioPlayer audioPlayer;
   Rx<Duration>? cache = Duration(seconds: 0).obs;
   Rx<ProcessingState> playerState = ProcessingState.idle.obs;
-  RxBool showPlay = false.obs;
+  RxBool showPlay = true.obs;
   RxBool moving = false.obs;
   RxBool playing = false.obs;
   RxBool useProxy = false.obs;
@@ -59,6 +59,8 @@ class ListenController extends SuperController
       searchs!.clear();
       textEditingController.clear();
     });
+
+
     init();
 
     audioPlayer.playerStateStream.listen((state) {
@@ -125,7 +127,6 @@ class ListenController extends SuperController
     if (history.isNotEmpty) {
       model.value = history.first;
       idx.value = model.value.idx!;
-      showPlay.toggle();
       getUrl(idx.value);
 
       detail(model.value.id.toString());

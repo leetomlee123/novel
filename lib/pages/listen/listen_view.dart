@@ -38,7 +38,10 @@ class ListenPage extends GetView<ListenController> {
             visible: !controller.showPlay.value,
             replacement: Offstage(
               offstage: !controller.getLink.value,
-              child: const Text('获取资源中...',style: TextStyle(fontSize: 13),),
+              child: const Text(
+                '获取资源中...',
+                style: TextStyle(fontSize: 13),
+              ),
             ),
           ))),
       actions: [
@@ -64,6 +67,9 @@ class ListenPage extends GetView<ListenController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  const SizedBox(
+                    height: 20,
+                  ),
                   CommonImg(
                     "https://img.ting55.com/${DateUtil.formatDateMs(controller.model.value.addtime ?? 0, format: "yyyy/MM")}/${controller.model.value.picture}!300",
                   ),
