@@ -1,4 +1,3 @@
-import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:novel/components/common_img.dart';
@@ -52,17 +51,14 @@ class ListenPage extends GetView<ListenController> {
                 const SizedBox(
                   height: 20,
                 ),
-                CommonImg(
-                  "https://img.ting55.com/${DateUtil.formatDateMs(controller.model.value.addtime ?? 0, format: "yyyy/MM")}/${controller.model.value.picture}!300",
-                ),
+                CommonImg(controller.model.value.cover ?? ""),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Text("第${controller.idx.value + 1}集"),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: Text(
-                      "作者${controller.model.value.author}    |   播音${controller.model.value.transmit ?? ''}"),
+                  child: Text(controller.model.value.bookMeta ?? ""),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -214,7 +210,4 @@ class ListenPage extends GetView<ListenController> {
           ),
         ));
   }
-
-
-
 }

@@ -5,8 +5,8 @@ import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:dio_smart_retry/dio_smart_retry.dart';
+import 'package:gbk_codec/gbk_codec.dart';
 import 'package:novel/config.dart';
-import 'package:novel/global.dart';
 
 /*
   * http 操作类
@@ -42,15 +42,15 @@ class Request {
       headers: {
         "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36 Edg/96.0.1054.62",
-        "referer": "https://ting55.com/"
+        // "referer": "https://ting55.com/"
       },
       contentType: 'application/json; charset=utf-8',
       responseType: ResponseType.json,
     );
 
     dio = new Dio(options);
-    cookieJar = CookieJar();
-    dio.interceptors.add(CookieManager(cookieJar));
+    // cookieJar = CookieJar();
+    // dio.interceptors.add(CookieManager(cookieJar));
 
     dio.interceptors.add(RetryInterceptor(
       dio: dio,
@@ -126,7 +126,7 @@ class Request {
     }
     var response = await dio.get(path,
         queryParameters: params,
-        options: requestOptions,
+        options: Options(responseDecoder: gbkDecoder),
         cancelToken: cancelToken);
     return response.data;
   }
@@ -229,6 +229,23 @@ class Request {
     var response = await dio.post(path,
         data: FormData.fromMap(params),
         options: requestOptions,
+        cancelToken: cancelToken);
+    return response.data;
+  }
+
+  String gbkDecoder(List<int> responseBytes, RequestOptions options,
+      ResponseBody responseBody) {
+    return gbk_bytes.decode(responseBytes);
+  }
+
+  Future postForm1(String path,
+      {dynamic params, Options? options, bool? useToken = true}) async {
+    Options requestOptions = options ?? Options();
+    dio.options.contentType = Headers.formUrlEncodedContentType;
+
+    var response = await dio.post(path,
+        data: params,
+        options: Options(responseDecoder: gbkDecoder),
         cancelToken: cancelToken);
     return response.data;
   }

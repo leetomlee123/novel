@@ -1,4 +1,3 @@
-import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:novel/pages/listen/listen_controller.dart';
@@ -48,38 +47,42 @@ class SearchPage extends GetView<ListenController> {
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         itemBuilder: (ctx, i) {
-          ListenSearchModel model = controller.searchs![i];
-          String date =
-              DateUtil.formatDateMs(model.addtime ?? 0, format: "yyyy/MM");
+          Search model = controller.searchs![i];
+
           return GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () => controller.toPlay(i),
             child: Container(
-              height: 120,
+              height: 130,
               padding: const EdgeInsets.symmetric(
                 vertical: 10,
               ),
               child: Row(
                 children: [
                   CommonImg(
-                    "https://img.ting55.com/$date/${model.picture}!300",
+                    model.cover ?? "",
                     fit: BoxFit.fitWidth,
                     width: 80,
                   ),
                   SizedBox(
                     width: 20,
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text(
-                        "${model.title ?? ""}",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text("著:${model.author ?? ""}"),
-                      Text("音:${model.transmit ?? ""}"),
-                    ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Text(
+                          "${model.title ?? ""}",
+                          style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(model.desc ?? "",maxLines: 3,),
+                        Text(model.bookMeta ?? "",
+                        style: TextStyle(color: Colors.black54),maxLines: 1,),
+                      ],
+                    ),
                   )
                 ],
               ),

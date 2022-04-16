@@ -1,4 +1,3 @@
-import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
@@ -121,13 +120,12 @@ class ListenChapters extends GetView<ListenController> {
     return ListView.separated(
       itemBuilder: (ctx, i) {
         final item = controller.history[i];
-        String date =
-            DateUtil.formatDateMs(item.addtime ?? 0, format: "yyyy/MM");
+
         return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
             child: ListTile(
               leading: CommonImg(
-                "https://img.ting55.com/$date/${item.picture}!300",
+                item.cover ?? "",
                 width: 100,
                 aspect: 1,
               ),
@@ -155,7 +153,7 @@ class ListenChapters extends GetView<ListenController> {
               onTap: () async {
                 controller.audioPlayer.stop();
                 controller.saveState();
-                controller.detail(item.id.toString());
+                await controller.detail(item.id.toString());
 
                 controller.model.value = item;
                 Get.back();

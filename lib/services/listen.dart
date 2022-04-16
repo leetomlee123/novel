@@ -47,74 +47,86 @@ class ListenApi {
     "Mozilla/5.0 (Linux; U; Android 4.1.1; zh-cn; M031 Build/JRO03H) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30",
   ];
 
-  static String host = "http://m.tingshubao.com/";
+  static String host = "http://m.tingshubao.com";
 
   static var random = new Random();
 
-  Future<List<ListenSearchModel>?> search(String keyword) async {
+  Future<List<Search>?> search(String keyword) async {
     if (keyword.isEmpty) return null;
-    var res = await Request().get("$host/s/$keyword");
+    var res = await Request()
+        .postForm1("$host/search.asp", params: {"searchword": keyword});
 
-    List data = jsonDecode(res)['data'];
-    return data.map((e) => ListenSearchModel.fromJson(e)).toList();
+    Document document = parse(res);
+
+    List<Element> es = document.querySelectorAll(".book-li");
+    var result = es
+        .map(
+          (e) => Search(
+            id: e
+                .querySelector("a")!
+                .attributes['href']
+                .toString()
+                .split("/")[2]
+                .split(".")[0],
+            cover: 'http://m.tingshubao.com' +
+                e
+                    .getElementsByClassName("book-cover")[0]
+                    .attributes['data-original']
+                    .toString(),
+            title: e
+                .getElementsByClassName("book-cover")[0]
+                .attributes['alt']
+                .toString(),
+            desc: e.getElementsByClassName('book-desc')[0].text,
+            bookMeta: e.getElementsByClassName('book-meta')[0].text,
+          ),
+        )
+        .toList();
+    return result;
   }
 
   Future<List<Item>> getChapters(String bookId) async {
-    var res = await Request().get("$host/book/$bookId",
+    var res = await Request().get("$host/book/$bookId.html",
         options: Options(headers: {"User-Agent": random.nextInt(36)}));
     Document document = parse(res);
 
-    List<Element> es = document.querySelectorAll(".f");
+    List<Element> es = document.querySelectorAll("#playlist>ul>li>a");
     return es
         .map((e) =>
             Item(link: e.attributes['href'].toString(), title: e.innerHtml))
         .toList();
   }
 
-  Future<String> chapterUrl(int? bookId, int? idx) async {
-    // var res11 = await Request().get(
-    //   "http://134.175.83.19:8012/listen/chapter/$bookId${idx! + 1}",
-    // );
-    // if (res11.toString().isNotEmpty) return res11;
-
-    var link = "$host/book/$bookId-${idx! + 1}";
+  Future<String> chapterUrl(String? chapterLink) async {
+    var link = "$host$chapterLink";
     print(link);
-    // String proxy = await SystemApi().getProxy();
-    // print(proxy);
     var res = await Request().get(link,
-        // proxy: proxy,
         options: Options(headers: {"User-Agent": ua[random.nextInt(36)]}));
-    // var res = await Request().get(link,  );
     Document document = parse(res);
-
-    Element? e1 = document.querySelector("meta[name='_c']");
-    String xt = e1!.attributes['content'].toString();
-    Element? e2 = document.querySelector("meta[name='_l']");
-    String l = e2!.attributes['content'].toString();
-    Element? e3 = document.querySelector("meta[name='_cp']");
-    String cp = e3!.attributes['content'].toString();
-    var res1 = await Request().post("$host/nlinka",
-        params: {"bookId": bookId, "isPay": 0, "page": cp},
-        options: Options(headers: {
-          "Referer": link,
-          'Host': 'ting55.com',
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-          "Origin": host,
-          "xt": xt,
-          "l": l,
-          "User-Agent": ua[random.nextInt(36)]
-        }),
-        useToken: false);
-    var data = jsonDecode(res1);
-    print("get data $data");
-    String url = data['ourl'];
-    if (url.isEmpty) {
-      url = data['url'];
+    Element e = document.querySelectorAll("head>script").last;
+    var text = e.text;
+    var target = text.split(";")[0];
+    var s = target.split("(")[2].split(")")[0];
+    s = s.substring(2, s.length - 1);
+    var charList = s.split('*');
+    int len = charList.length;
+    var str = '';
+    for (int i = 0; i < len; i++) {
+      try {
+        str += String.fromCharCode(int.parse(charList[i]));
+      } catch (e) {
+        print(e);
+      }
     }
-    // if (url.isNotEmpty) {
-    //   Request().post("http://134.175.83.19:8012/listen/chapter",
-    //       params: {"key": "$bookId$cp", "url": url});
-    // }
-    return url;
+    var keys = str.split("&");
+    if (keys[2] == 'tudou') {
+      return str;
+    } else {
+      var re = await Request()
+          .get("http://43.129.176.64/player/key.php?url=" + keys[0]);
+      print(re);
+      var url = jsonDecode(re)['url'];
+      return url;
+    }
   }
 }

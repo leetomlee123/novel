@@ -22,25 +22,23 @@ class DataBaseProvider {
   getDatabaseInstanceVoice() async {
     Directory directory = await getApplicationDocumentsDirectory();
     String path = directory.path + "$_dbVoice.db";
-    return await openDatabase(path, version: 3,
+    return await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
       await db.execute("CREATE TABLE IF NOT EXISTS $_dbVoice("
           "id INTEGER PRIMARY KEY ,"
           "title TEXT,"
-          "author TEXT,"
-          "transmit TEXT,"
           "url TEXT,"
+          "bookMeta TEXT,"
+          "lasttime INTEGER,"
           "idx INTEGER,"
           "count INTEGER,"
           "duration INTEGER,"
           "position INTEGER,"
-          "lasttime INTEGER,"
-          "picture TEXT,"
-          "addtime INTEGER)");
+          "cover TEXT)");
     });
   }
 
-  addVoice(ListenSearchModel listenSearchModel) async {
+  addVoice(Search listenSearchModel) async {
     var client = await databaseVoice;
 
     int result = await client!.update(_dbVoice, listenSearchModel.toMap(),
@@ -53,20 +51,20 @@ class DataBaseProvider {
     }
   }
 
-  Future<List<ListenSearchModel>> voices() async {
+  Future<List<Search>> voices() async {
     var client = await databaseVoice;
     List result = await client!.query(
       _dbVoice,
       orderBy: "lasttime desc",
     );
-    return result.map((e) => ListenSearchModel.fromJson(e)).toList();
+    return result.map((e) => Search.fromJson(e)).toList();
   }
 
-  Future<ListenSearchModel?> voiceById(int? id) async {
+  Future<Search?> voiceById(int? id) async {
     var client = await databaseVoice;
     List result = await client!.query(_dbVoice, where: "id=?", whereArgs: [id]);
     if (result.isEmpty) return null;
-    return result.map((e) => ListenSearchModel.fromJson(e)).first;
+    return result.map((e) => Search.fromJson(e)).first;
   }
 
   clear() async {

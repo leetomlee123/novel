@@ -2,24 +2,22 @@ import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:novel/pages/listen/listen_model.dart';
 import 'package:novel/router/app_pages.dart';
 import 'package:novel/services/listen.dart';
-import 'package:novel/utils/CustomCacheManager.dart';
 import 'package:novel/utils/database_provider.dart';
 
 class ListenController extends SuperController
     with GetSingleTickerProviderStateMixin {
   TextEditingController textEditingController = TextEditingController();
 
-  RxList<Item> chapters = RxList<Item>();
-  RxList<ListenSearchModel>? searchs = RxList<ListenSearchModel>();
-  List<ListenSearchModel> history = List.empty(growable: true);
-  Rx<ListenSearchModel> model = ListenSearchModel().obs;
+  List<Item> chapters = List.empty(growable: true);
+  RxList<Search>? searchs = RxList<Search>();
+  List<Search> history = List.empty(growable: true);
+  Rx<Search> model = Search().obs;
   String url = "";
   late AudioPlayer audioPlayer;
   Rx<Duration>? cache = Duration(seconds: 0).obs;
@@ -142,7 +140,7 @@ class ListenController extends SuperController
   }
 
   saveState() async {
-    if ((model.value.url ?? "").isNotEmpty) {
+    if ((model.value.id ?? "").isNotEmpty) {
       model.value.idx = idx.value;
       model.update((val) {
         val!.count = chapters.length;
@@ -158,8 +156,7 @@ class ListenController extends SuperController
   }
 
   detail(String id) async {
-    chapters.value = await ListenApi().getChapters(id);
-
+    chapters = await ListenApi().getChapters(id);
     model.update((val) {
       val!.count = searchs!.length;
     });
@@ -180,8 +177,8 @@ class ListenController extends SuperController
     //
     var pickSearch = searchs![i];
     await detail(pickSearch.id.toString());
-    ListenSearchModel? v =
-        await DataBaseProvider.dbProvider.voiceById(pickSearch.id);
+    Search? v = await DataBaseProvider.dbProvider
+        .voiceById(int.parse(pickSearch.id.toString()));
 
     if (v != null) pickSearch = v;
     model.value = pickSearch;
@@ -199,8 +196,10 @@ class ListenController extends SuperController
   getUrl(int i) async {
     getLink.value = true;
     try {
-      url = await ListenApi().chapterUrl(model.value.id, i);
-    } catch (e) {}
+      url = await ListenApi().chapterUrl(chapters[i].link);
+    } catch (e) {
+      print(e);
+    }
     getLink.value = false;
 
     // url =
@@ -210,6 +209,7 @@ class ListenController extends SuperController
       BotToast.showText(text: "获取资源链接失败,请重试...");
       return;
     }
+    model.value.url = url;
     // if (audioPlayer.playing) {
     //   audioPlayer.stop();
     // }
@@ -221,9 +221,7 @@ class ListenController extends SuperController
             id: '1',
             album: model.value.title,
             title: "${model.value.title}-第${idx.value + 1}回",
-            artUri: Uri.parse(
-              "https://img.ting55.com/${DateUtil.formatDateMs(model.value.addtime ?? 0, format: "yyyy/MM")}/${model.value.picture}!300",
-            ),
+            artUri: Uri.parse(model.value.cover ?? ""),
           ),
         ),
       );
@@ -261,26 +259,6 @@ class ListenController extends SuperController
 
       await getUrl(idx.value);
       await audioPlayer.play();
-    }
-  }
-
-  preloadAsset() async {
-    int x = idx.value;
-    x += 1;
-    final cacheFile = await CustomCacheManager.instanceVoice
-        .getFileFromCache("${model.value.id}$x ");
-
-    if (cacheFile != null && cacheFile.validTill.isAfter(DateTime.now())) {
-      url = cacheFile.file.path;
-    } else {
-      url = await ListenApi().chapterUrl(model.value.id, idx.value);
-      if (url.isEmpty) {
-        print("get source url failed");
-        throw Exception("e");
-      }
-      await CustomCacheManager.instanceVoice
-          .getSingleFile(url, key: "${model.value.id}$x");
-      print("preload asset success");
     }
   }
 
