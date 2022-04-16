@@ -162,7 +162,6 @@ class ListenChapters extends GetView<ListenController> {
                 controller.idx.value = controller.model.value.idx ?? 0;
                 // controller.getBackgroundColor();
                 controller.playerState.value = ProcessingState.idle;
-                controller.showPlay.value = true;
 
                 await controller.getUrl(i);
 

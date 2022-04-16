@@ -21,6 +21,7 @@ abstract class AppRoutes {
   static const MoviePlayer = '/player';
   //listen
   static const listen = '/listen';
+  static const search = '/search';
 
   // notfound
   static const NotFound = '/notfound';

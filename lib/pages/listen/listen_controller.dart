@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:novel/pages/listen/listen_model.dart';
+import 'package:novel/router/app_pages.dart';
 import 'package:novel/services/listen.dart';
 import 'package:novel/utils/CustomCacheManager.dart';
 import 'package:novel/utils/database_provider.dart';
@@ -14,6 +15,7 @@ import 'package:novel/utils/database_provider.dart';
 class ListenController extends SuperController
     with GetSingleTickerProviderStateMixin {
   TextEditingController textEditingController = TextEditingController();
+
   RxList<Item> chapters = RxList<Item>();
   RxList<ListenSearchModel>? searchs = RxList<ListenSearchModel>();
   List<ListenSearchModel> history = List.empty(growable: true);
@@ -22,7 +24,6 @@ class ListenController extends SuperController
   late AudioPlayer audioPlayer;
   Rx<Duration>? cache = Duration(seconds: 0).obs;
   Rx<ProcessingState> playerState = ProcessingState.idle.obs;
-  RxBool showPlay = true.obs;
   RxBool moving = false.obs;
   RxBool playing = false.obs;
   RxBool useProxy = false.obs;
@@ -53,13 +54,6 @@ class ListenController extends SuperController
     ever(fast, (_) {
       audioPlayer.setSpeed(fast.value);
     });
-
-    ever(showPlay, (_) {
-      Get.focusScope!.unfocus();
-      searchs!.clear();
-      textEditingController.clear();
-    });
-
 
     init();
 
@@ -158,15 +152,9 @@ class ListenController extends SuperController
     }
   }
 
-  search(String v) async {
-    if (v.isEmpty) return;
-    searchs!.clear();
-    searchs!.value = (await ListenApi().search(v))!;
-  }
-
   clear() {
     searchs!.clear();
-    textEditingController.text = "";
+    textEditingController.clear();
   }
 
   detail(String id) async {
@@ -177,12 +165,42 @@ class ListenController extends SuperController
     });
   }
 
+//搜索
+  search(String v) async {
+    if (v.isEmpty) return;
+    searchs!.clear();
+    searchs!.value = (await ListenApi().search(v))!;
+  }
+
+  //跳转
+  toPlay(int i) async {
+    Get.toNamed(AppRoutes.listen);
+    await audioPlayer.stop();
+    saveState();
+    //
+    var pickSearch = searchs![i];
+    await detail(pickSearch.id.toString());
+    ListenSearchModel? v =
+        await DataBaseProvider.dbProvider.voiceById(pickSearch.id);
+
+    if (v != null) pickSearch = v;
+    model.value = pickSearch;
+
+    idx.value = model.value.idx ?? 0;
+    // controller.getBackgroundColor();
+    playerState.value = ProcessingState.idle;
+
+    clear();
+    await getUrl(i);
+
+    // await audioPlayer.play();
+  }
+
   getUrl(int i) async {
     getLink.value = true;
-    try{
-    url = await ListenApi().chapterUrl(model.value.id, i);}catch(e){
-
-    }
+    try {
+      url = await ListenApi().chapterUrl(model.value.id, i);
+    } catch (e) {}
     getLink.value = false;
 
     // url =

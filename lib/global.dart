@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:novel/common/screen.dart';
 import 'package:novel/common/values/values.dart';
-import 'package:novel/utils/update_app.dart';
 import 'package:novel/utils/utils.dart';
 // import 'package:permission_handler/permission_handler.dart';
 import 'package:sp_util/sp_util.dart';
@@ -41,7 +40,6 @@ class Global {
     Request();
     // 本地存储初始化
     await SpUtil.getInstance();
-
 
     //init audioservice
     await JustAudioBackground.init(

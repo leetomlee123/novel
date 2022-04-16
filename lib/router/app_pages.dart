@@ -4,19 +4,25 @@ import 'package:novel/pages/listen/listen_view.dart';
 import 'package:novel/pages/notfound/notfound_view.dart';
 import 'package:novel/pages/proxy/proxy_view.dart';
 
+import '../pages/search/search_binding.dart';
+import '../pages/search/search_view.dart';
+
 part 'app_routes.dart';
 
 class AppPages {
   static const INITIAL = AppRoutes.listen;
 
   static final routes = [
- 
     GetPage(
       name: AppRoutes.listen,
       page: () => ListenPage(),
       binding: ListenBinding(),
     ),
-
+    GetPage(
+      name: AppRoutes.search,
+      page: () => SearchPage(),
+      binding: SearchBinding(),
+    ),
   ];
 
   static final unknownRoute = GetPage(

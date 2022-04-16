@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:novel/pages/listen/listen_controller.dart';
 
 class ListenAdjustSpeed extends GetView<ListenController> {
