@@ -47,7 +47,7 @@ class ListenApi {
     "Mozilla/5.0 (Linux; U; Android 4.1.1; zh-cn; M031 Build/JRO03H) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30",
   ];
 
-  static String host = "https://ting55.com";
+  static String host = "http://m.tingshubao.com/";
 
   static var random = new Random();
 
