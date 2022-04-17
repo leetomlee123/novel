@@ -57,7 +57,7 @@ class ListenApi {
 
     var res = await Request().postForm1("$host/search.asp",
         params:
-            "searchword=${Uri.encodeQueryComponent(keyword, encoding: gbk)}");
+            "searchword=${Uri.encodeQueryComponent('凡人', encoding: gbk)}");
     Document document = parse(res);
 
     List<Element> es = document.querySelectorAll(".book-li");
@@ -111,7 +111,7 @@ class ListenApi {
     var str = '';
     for (int i = 0; i < len; i++) {
       try {
-        str += String.fromCharCode(int.parse(charList[i]));
+        str += String.fromCharCode(int.parse(charList[i])&0xffff);
       } catch (e) {
         print(e);
       }
@@ -129,7 +129,12 @@ class ListenApi {
           .get("http://43.129.176.64/player/key.php?url=" + keys[0]);
       print(re);
       var url = jsonDecode(re)['url'];
-      return url;
+      print(url);
+      return Uri.encodeFull(url);
     }
   }
 }
+
+
+// https://t3344t.tingchina.com/yousheng/玄幻奇幻/凡人修仙传之仙界篇_大灰狼/第001_狐女.mp3?key=714a82ef7a048ec3fb0158857b1c2f00_694472778
+// https://t3344t.tingchina.com/yousheng/玄幻奇幻/凡人修仙传之仙界篇_大灰狼/第001集_狐女.mp3?key=714a82ef7a048ec3fb0158857b1c2f00_694472778
