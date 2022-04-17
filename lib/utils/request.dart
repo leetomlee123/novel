@@ -251,7 +251,6 @@ class Request {
         data: params,
         options: Options(responseDecoder: gbkDecoder),
         cancelToken: cancelToken);
-    print(response.data);
     return response.data;
   }
 

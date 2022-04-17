@@ -153,14 +153,17 @@ class ListenChapters extends GetView<ListenController> {
                 Get.back();
 
                 controller.audioPlayer.stop();
+
                 await controller.saveState();
+
+                // controller.getBackgroundColor();
 
                 controller.model.value = item;
                 controller.idx.value = controller.model.value.idx ?? 0;
                 // controller.getBackgroundColor();
                 controller.playerState.value = ProcessingState.idle;
 
-                await controller.getUrl(i);
+                await controller.getUrl(controller.idx.value);
 
                 await controller.audioPlayer.play();
                 controller.detail(item.id.toString());

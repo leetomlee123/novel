@@ -17,8 +17,29 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'novel',
+           theme: ThemeData(
+        iconTheme: IconThemeData(color: Colors.blue),
+        textTheme: TextTheme(
+          headline1: TextStyle(
+              fontSize: 36.0, fontWeight: FontWeight.bold, color: Colors.white),
+          headline2: TextStyle(
+              fontSize: 32.0, fontWeight: FontWeight.w400, color: Colors.white),
+          headline3: TextStyle(
+              fontSize: 28.0, fontWeight: FontWeight.w400, color: Colors.white),
+          headline4: TextStyle(
+              fontSize: 24.0, fontWeight: FontWeight.w400, color: Colors.white),
+          headline6: TextStyle(
+              fontSize: 14.0, fontWeight: FontWeight.w200, color: Colors.white),
+          bodyText1: TextStyle(
+            fontSize: 20.0,
+            fontWeight: FontWeight.w200,
+          ),
+        ),
+        fontFamily: 'Georgia',
+      ),
       home: ListenPage(),
       initialBinding: ListenBinding(),
+     
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
       unknownRoute: AppPages.unknownRoute,

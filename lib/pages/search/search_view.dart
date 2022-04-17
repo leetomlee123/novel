@@ -51,7 +51,9 @@ class SearchPage extends GetView<ListenController> {
 
           return GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: () => controller.toPlay(i),
+            onTap: () {
+              controller.toPlay(i);
+            },
             child: Container(
               height: 130,
               padding: const EdgeInsets.symmetric(
@@ -74,13 +76,20 @@ class SearchPage extends GetView<ListenController> {
                       children: [
                         Text(
                           "${model.title ?? ""}",
-                          style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 20),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        Text(model.desc ?? "",maxLines: 3, style: TextStyle(color: Colors.black54),),
-                        Text(model.bookMeta ?? "",
-                       maxLines: 1,),
+                        Text(
+                          model.desc ?? "",
+                          maxLines: 3,
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                        Text(
+                          model.bookMeta ?? "",
+                          maxLines: 1,
+                        ),
                       ],
                     ),
                   )

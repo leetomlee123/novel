@@ -13,15 +13,52 @@ class ListenPage extends GetView<ListenController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        // backgroundColor: controller.bgColor.value,
-        appBar: _buildAppBar(),
-        body: _buildPlayUi());
+    // return Scaffold(
+    //     // backgroundColor: controller.bgColor.value,
+    //     appBar: _buildAppBar(),
+    //     body: _buildPlayUi());
+
+    return  Material(
+          shadowColor: Colors.white10,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 30,
+                ),
+                Row(
+                  children: [
+                    Icon(Icons.menu),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Obx(() => Offstage(
+                          offstage: !controller.getLink.value,
+                          child: const Text(
+                            '获取资源中...',
+                            style: TextStyle(fontSize: 13),
+                          ),
+                        )),
+                    Spacer(),
+                    IconButton(
+                        onPressed: () {
+                          Get.toNamed(AppRoutes.search);
+                        },
+                        icon: Icon(Icons.search_outlined))
+                  ],
+                ),
+                _buildPlayUi()
+              ],
+            ),
+          ),
+        );
   }
 
   _buildAppBar() {
     return AppBar(
       leading: Icon(Icons.menu),
+      backgroundColor: Colors.transparent,
       elevation: 0,
       title: Obx(() => Offstage(
             offstage: !controller.getLink.value,
@@ -44,7 +81,7 @@ class ListenPage extends GetView<ListenController> {
     final modalColor = Colors.white;
 
     return Obx(() => Container(
-          padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+          padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 10),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,

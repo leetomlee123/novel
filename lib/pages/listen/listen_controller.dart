@@ -14,7 +14,6 @@ import 'package:novel/utils/database_provider.dart';
 class ListenController extends SuperController
     with GetSingleTickerProviderStateMixin {
   TextEditingController textEditingController = TextEditingController();
-
   RxList<Search>? searchs = RxList<Search>();
   List<Search> history = List.empty(growable: true);
   Rx<Search> model = Search().obs;
@@ -103,16 +102,16 @@ class ListenController extends SuperController
     });
   }
 
-  getBackgroundColor() async {
-    // print("start get backgroud color");
-    // PaletteGenerator paletteGenerator =
-    //     await PaletteGenerator.fromImageProvider(
-    //   ExtendedNetworkImageProvider(
-    //     "https://img.ting55.com/${DateUtil.formatDateMs(model.value.addtime ?? 0, format: "yyyy/MM")}/${model.value.picture}!300",
-    //   ),
-    // );
-    // bgColor.value = paletteGenerator.dominantColor!.color;
-  }
+  // getBackgroundColor() async {
+  //   print("start get backgroud color ${model.value.cover ?? ""}");
+  //   PaletteGenerator paletteGenerator =
+  //       await PaletteGenerator.fromImageProvider(
+  //     ExtendedNetworkImageProvider(model.value.cover ?? ""),
+  //   );
+  //   bgColor.value = paletteGenerator.darkMutedColor!.color;
+  //   print('vvvvvv>>>>>${bgColor.value}');
+  //   // bgColor.value = paletteGenerator.dominantColor!.color;
+  // }
 
   initHistory() async {
     // await DataBaseProvider.dbProvider.clear();
@@ -176,6 +175,7 @@ class ListenController extends SuperController
   //跳转
   toPlay(int i) async {
     Get.toNamed(AppRoutes.listen);
+    // getBackgroundColor();
     await audioPlayer.stop();
     saveState();
     //

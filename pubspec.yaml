@@ -21,17 +21,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  loadmore: ^2.0.1
-  flutter_rating_bar: ^4.0.0
-  flutter_statusbar_manager:
-    git:
-      url: https://github.com/leetomlee123/flutter_statusbar_manager.git
 
 
-  common_utils:
-    git:
-      url: https://github.com/jinfagang/common_utils
-  pull_to_refresh: ^2.0.0
+
   # ios 图标库
   cupertino_icons: ^1.0.2
   bot_toast: ^4.0.1
@@ -52,17 +44,15 @@ dependencies:
  
   extended_image: ^6.0.0
   fast_gbk: ^1.0.0
-  charset_converter: ^2.1.0
-
+  common_utils: ^2.1.0
 
  
   firebase_core: ^1.11.0
   firebase_analytics: ^9.0.5
  
-  path_provider: ^2.0.7
-  url_launcher: ^6.0.2
+  path_provider: ^2.0.9
   get_it: ^6.0.0
- 
+  # palette_generator: ^0.3.3
   # vibrate: ^0.0.4
   html: ^0.15.0
 

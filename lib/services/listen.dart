@@ -57,7 +57,7 @@ class ListenApi {
 
     var res = await Request().postForm1("$host/search.asp",
         params:
-            "searchword=${Uri.encodeQueryComponent('凡人', encoding: gbk)}");
+            "searchword=${Uri.encodeQueryComponent(keyword, encoding: gbk)}");
     Document document = parse(res);
 
     List<Element> es = document.querySelectorAll(".book-li");

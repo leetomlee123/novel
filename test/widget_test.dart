@@ -6,7 +6,7 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 
-import 'package:charset_converter/charset_converter.dart';
+
 import 'package:fast_gbk/fast_gbk.dart';
 
 void main() {
@@ -21,5 +21,5 @@ void main() {
   // hex = '';
   // gbk_byteCodes.forEach((i) {hex +='%'+ i.toRadixString(16);});
   // print(hex);
- CharsetConverter.encode("GB2312", "1");
+
 }
