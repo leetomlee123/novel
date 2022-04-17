@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
@@ -14,7 +15,6 @@ class ListenController extends SuperController
     with GetSingleTickerProviderStateMixin {
   TextEditingController textEditingController = TextEditingController();
 
-  List<Item> chapters = List.empty(growable: true);
   RxList<Search>? searchs = RxList<Search>();
   List<Search> history = List.empty(growable: true);
   Rx<Search> model = Search().obs;
@@ -36,6 +36,7 @@ class ListenController extends SuperController
 
   final tabs = ["当前播放", "播放历史"];
   bool preload = false;
+
   @override
   void onInit() {
     super.onInit();
@@ -51,6 +52,10 @@ class ListenController extends SuperController
 
     ever(fast, (_) {
       audioPlayer.setSpeed(fast.value);
+    });
+
+    ever(model, (_) {
+      initHistory();
     });
 
     init();
@@ -109,18 +114,17 @@ class ListenController extends SuperController
     // bgColor.value = paletteGenerator.dominantColor!.color;
   }
 
-  initHitory() async {
+  initHistory() async {
     // await DataBaseProvider.dbProvider.clear();
     history = await DataBaseProvider.dbProvider.voices();
   }
 
   init() async {
-    await initHitory();
+    await initHistory();
     if (history.isNotEmpty) {
       model.value = history.first;
       idx.value = model.value.idx!;
       getUrl(idx.value);
-
       detail(model.value.id.toString());
 
       // getBackgroundColor();
@@ -143,8 +147,7 @@ class ListenController extends SuperController
     if ((model.value.id ?? "").isNotEmpty) {
       model.value.idx = idx.value;
       model.update((val) {
-        val!.count = chapters.length;
-        val.idx = idx.value;
+        val!.idx = idx.value;
       });
       await DataBaseProvider.dbProvider.addVoice(model.value);
     }
@@ -156,9 +159,10 @@ class ListenController extends SuperController
   }
 
   detail(String id) async {
-    chapters = await ListenApi().getChapters(id);
+    int count = await compute(ListenApi().getChapters, id);
+
     model.update((val) {
-      val!.count = searchs!.length;
+      val!.count = count;
     });
   }
 
@@ -176,7 +180,6 @@ class ListenController extends SuperController
     saveState();
     //
     var pickSearch = searchs![i];
-    await detail(pickSearch.id.toString());
     Search? v = await DataBaseProvider.dbProvider
         .voiceById(int.parse(pickSearch.id.toString()));
 
@@ -188,7 +191,8 @@ class ListenController extends SuperController
     playerState.value = ProcessingState.idle;
 
     clear();
-    await getUrl(i);
+    await getUrl(idx.value);
+    detail(pickSearch.id.toString());
 
     // await audioPlayer.play();
   }
@@ -196,15 +200,16 @@ class ListenController extends SuperController
   getUrl(int i) async {
     getLink.value = true;
     try {
-      url = await ListenApi().chapterUrl(chapters[i].link);
+      url = await compute(ListenApi().chapterUrl,
+          'http://m.tingshubao.com/video/?${model.value.id}-0-$i.html');
     } catch (e) {
       print(e);
     }
-    getLink.value = false;
+    getLink.toggle();
 
     // url =
     //     'https://pp.ting55.com/202201261454/cf07754102fc5c1a60aee3f712f6358d/2015/12/3705/4.mp3';
-    print("audio url $url");
+    print("audio url $url $getLink");
     if (url.isEmpty) {
       BotToast.showText(text: "获取资源链接失败,请重试...");
       return;
@@ -281,7 +286,7 @@ class ListenController extends SuperController
 
   next() async {
     Get.log('next');
-    if (idx.value == chapters.length - 1) {
+    if (idx.value == model.value.count! - 1) {
       return;
     }
     await Future.delayed(
@@ -347,21 +352,22 @@ class ListenController extends SuperController
 
   @override
   void onInactive() {
-    // TODO: implement onInactive
-    // audioPlayer.pause();
-
+    print('onInactive');
     saveState();
   }
 
   @override
   void onPaused() {
-    // TODO: implement onPaused
+    print('onPaused');
+
+    saveState();
   }
 
   @override
   void onResumed() {
-    // TODO: implement onResumed
-    // audioPlayer.resume();
+    print('onResumed');
+
+    saveState();
   }
 
   @override

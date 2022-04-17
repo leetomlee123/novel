@@ -64,6 +64,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.1"
+  charset_converter:
+    dependency: "direct main"
+    description:
+      name: charset_converter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
   clock:
     dependency: transitive
     description:
@@ -171,6 +178,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
+  fast_gbk:
+    dependency: "direct main"
+    description:
+      name: fast_gbk
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   ffi:
     dependency: transitive
     description:
@@ -272,13 +286,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.2"
-  gbk_codec:
-    dependency: "direct main"
-    description:
-      name: gbk_codec
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.0"
   get:
     dependency: "direct main"
     description:

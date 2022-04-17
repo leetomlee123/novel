@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:dio_smart_retry/dio_smart_retry.dart';
-import 'package:gbk_codec/gbk_codec.dart';
+import 'package:fast_gbk/fast_gbk.dart';
 import 'package:novel/config.dart';
 
 /*
@@ -235,18 +234,24 @@ class Request {
 
   String gbkDecoder(List<int> responseBytes, RequestOptions options,
       ResponseBody responseBody) {
-    return gbk_bytes.decode(responseBytes);
+    return gbk.decode(responseBytes);
+  }
+
+  List<int> gbkEncoder(
+    String req,
+    RequestOptions options,
+  ) {
+    return gbk.encode(req);
   }
 
   Future postForm1(String path,
-      {dynamic params, Options? options, bool? useToken = true}) async {
-    Options requestOptions = options ?? Options();
-    dio.options.contentType = Headers.formUrlEncodedContentType;
-
+      {String? params, Options? options, bool? useToken = true}) async {
+    dio.options.contentType = 'application/x-www-form-urlencoded';
     var response = await dio.post(path,
         data: params,
         options: Options(responseDecoder: gbkDecoder),
         cancelToken: cancelToken);
+    print(response.data);
     return response.data;
   }
 

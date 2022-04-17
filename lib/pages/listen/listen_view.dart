@@ -10,6 +10,7 @@ import 'listen_controller.dart';
 
 class ListenPage extends GetView<ListenController> {
   ListenPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,13 +23,13 @@ class ListenPage extends GetView<ListenController> {
     return AppBar(
       leading: Icon(Icons.menu),
       elevation: 0,
-      title: Offstage(
-        offstage: !controller.getLink.value,
-        child: const Text(
-          '获取资源中...',
-          style: TextStyle(fontSize: 13),
-        ),
-      ),
+      title: Obx(() => Offstage(
+            offstage: !controller.getLink.value,
+            child: const Text(
+              '获取资源中...',
+              style: TextStyle(fontSize: 13),
+            ),
+          )),
       actions: [
         IconButton(
             onPressed: () {
@@ -76,7 +77,7 @@ class ListenPage extends GetView<ListenController> {
                           ],
                         ),
                         onTap: () {
-                          if (controller.chapters.isNotEmpty) {
+                          if (controller.model.value.count! > 0) {
                             Get.bottomSheet(ListenChapters(),
                                 elevation: 2,
                                 shape: RoundedRectangleBorder(

@@ -78,9 +78,9 @@ class SearchPage extends GetView<ListenController> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        Text(model.desc ?? "",maxLines: 3,),
+                        Text(model.desc ?? "",maxLines: 3, style: TextStyle(color: Colors.black54),),
                         Text(model.bookMeta ?? "",
-                        style: TextStyle(color: Colors.black54),maxLines: 1,),
+                       maxLines: 1,),
                       ],
                     ),
                   )

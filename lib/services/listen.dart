@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:dio/dio.dart';
+import 'package:fast_gbk/fast_gbk.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:novel/pages/listen/listen_model.dart';
@@ -53,9 +54,10 @@ class ListenApi {
 
   Future<List<Search>?> search(String keyword) async {
     if (keyword.isEmpty) return null;
-    var res = await Request()
-        .postForm1("$host/search.asp", params: {"searchword": keyword});
 
+    var res = await Request().postForm1("$host/search.asp",
+        params:
+            "searchword=${Uri.encodeQueryComponent(keyword, encoding: gbk)}");
     Document document = parse(res);
 
     List<Element> es = document.querySelectorAll(".book-li");
@@ -85,20 +87,16 @@ class ListenApi {
     return result;
   }
 
-  Future<List<Item>> getChapters(String bookId) async {
+  Future<int> getChapters(String bookId) async {
     var res = await Request().get("$host/book/$bookId.html",
         options: Options(headers: {"User-Agent": random.nextInt(36)}));
     Document document = parse(res);
 
-    List<Element> es = document.querySelectorAll("#playlist>ul>li>a");
-    return es
-        .map((e) =>
-            Item(link: e.attributes['href'].toString(), title: e.innerHtml))
-        .toList();
+    return document.querySelector("#playlist>ul")!.children.length;
   }
 
   Future<String> chapterUrl(String? chapterLink) async {
-    var link = "$host$chapterLink";
+    var link = "$chapterLink";
     print(link);
     var res = await Request().get(link,
         options: Options(headers: {"User-Agent": ua[random.nextInt(36)]}));
@@ -118,9 +116,14 @@ class ListenApi {
         print(e);
       }
     }
+    print("key url:$str");
     var keys = str.split("&");
     if (keys[2] == 'tudou') {
       return str;
+    } else if (keys[2] == 'm4a') {
+      {
+        return keys[0];
+      }
     } else {
       var re = await Request()
           .get("http://43.129.176.64/player/key.php?url=" + keys[0]);

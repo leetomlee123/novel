@@ -5,8 +5,21 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+
+import 'package:charset_converter/charset_converter.dart';
+import 'package:fast_gbk/fast_gbk.dart';
+
 void main() {
-  var x =
-      "var datas=(FonHen_JieMa('*104*116*116*112*58*47*47*97*117*100*105*111*46*120*109*99*100*110*46*99*111*109*47*103*114*111*117*112*49*53*47*77*48*52*47*67*57*47*69*52*47*119*75*103*68*97*70*90*116*111*104*71*82*73*107*70*67*65*74*114*109*82*45*100*105*100*53*103*50*50*51*46*109*52*97*38*55*54*54*38*109*52*97').split('&'))";
-  print(x.split("("));
+//gbk encode
+//   List<int> gbkCodes = gbk.encode('凡人');
+  String hex = '';
+//   gbkCodes.forEach((i) {hex += i.toRadixString(16);});
+//   print(hex);
+
+  //gbk_bytes encode
+  // List<int> gbk_byteCodes = gbk.encode('1');
+  // hex = '';
+  // gbk_byteCodes.forEach((i) {hex +='%'+ i.toRadixString(16);});
+  // print(hex);
+ CharsetConverter.encode("GB2312", "1");
 }

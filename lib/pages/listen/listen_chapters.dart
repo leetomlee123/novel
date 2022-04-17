@@ -5,10 +5,10 @@ import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:novel/components/common_img.dart';
 import 'package:novel/pages/listen/listen_controller.dart';
-import 'package:novel/pages/listen/listen_model.dart';
 
 class ListenChapters extends GetView<ListenController> {
   const ListenChapters({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final modalColor = !Get.isDarkMode ? Colors.black : Colors.white;
@@ -67,16 +67,15 @@ class ListenChapters extends GetView<ListenController> {
   ListView _buildChapter() {
     return ListView.builder(
         controller: controller.scrollcontroller,
-        itemCount: controller.chapters.length,
+        itemCount: controller.model.value.count,
         shrinkWrap: true,
         itemExtent: 40,
         itemBuilder: (ctx, i) {
-          Item item = controller.chapters[i];
           return ListTile(
             onTap: () async {
               await playChapter(i);
             },
-            title: Text("${controller.model.value.title}第${item.title ?? ""}回"),
+            title: Text("${controller.model.value.title}第${i + 1}回"),
             trailing: Checkbox(
               value: controller.idx.value == i,
               onChanged: (bool? value) async {
@@ -115,8 +114,8 @@ class ListenChapters extends GetView<ListenController> {
 
   _buildHistory() {
     final modalColor = !Get.isDarkMode ? Colors.black : Colors.white;
-
-    controller.initHitory();
+    //
+    // controller.initHistory();
     return ListView.separated(
       itemBuilder: (ctx, i) {
         final item = controller.history[i];
@@ -151,12 +150,12 @@ class ListenChapters extends GetView<ListenController> {
               //     '已听${((item.idx! + 1) / (item.count!) * 100).toStringAsFixed(1)}%'),
 
               onTap: () async {
+                Get.back();
+
                 controller.audioPlayer.stop();
-                controller.saveState();
-                await controller.detail(item.id.toString());
+                await controller.saveState();
 
                 controller.model.value = item;
-                Get.back();
                 controller.idx.value = controller.model.value.idx ?? 0;
                 // controller.getBackgroundColor();
                 controller.playerState.value = ProcessingState.idle;
@@ -164,6 +163,7 @@ class ListenChapters extends GetView<ListenController> {
                 await controller.getUrl(i);
 
                 await controller.audioPlayer.play();
+                controller.detail(item.id.toString());
               },
             ));
       },
