@@ -46,9 +46,9 @@ dependencies:
   fast_gbk: ^1.0.0
   common_utils: ^2.1.0
 
- 
-  firebase_core: ^1.11.0
-  firebase_analytics: ^9.0.5
+
+  firebase_core: ^1.14.1
+  firebase_analytics: ^9.1.5
  
   path_provider: ^2.0.9
   get_it: ^6.0.0
