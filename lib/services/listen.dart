@@ -71,7 +71,11 @@ class ListenApi {
     var str = '';
     for (int i = 0; i < len; i++) {
       try {
-        str += String.fromCharCode(int.parse(charList[i]) & 0xffff);
+        var code = int.parse(charList[i]);
+        if (charList[i].startsWith('-')) {
+          code = code & 0xffff;
+        }
+        str += String.fromCharCode(code);
       } catch (e) {
         print(e);
       }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:novel/common/colors/colors.dart';
 import 'package:novel/components/common_img.dart';
 import 'package:novel/pages/listen/adjust_speed.dart';
 import 'package:novel/pages/listen/listen_chapters.dart';
@@ -18,46 +19,14 @@ class ListenPage extends GetView<ListenController> {
         appBar: _buildAppBar(),
         body: _buildPlayUi());
 
-    return Material(
-      shadowColor: Colors.white10,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 30,
-            ),
-            Row(
-              children: [
-                Icon(Icons.menu),
-                const SizedBox(
-                  width: 10,
-                ),
-                Obx(() => Offstage(
-                      offstage: !controller.getLink.value,
-                      child: const Text(
-                        '获取资源中...',
-                        style: TextStyle(fontSize: 13),
-                      ),
-                    )),
-                Spacer(),
-                IconButton(
-                    onPressed: () {
-                      Get.toNamed(AppRoutes.search);
-                    },
-                    icon: Icon(Icons.search_outlined))
-              ],
-            ),
-            _buildPlayUi()
-          ],
-        ),
-      ),
-    );
+ 
+ 
   }
 
   _buildAppBar() {
     return AppBar(
       leading: Icon(Icons.menu),
+      backgroundColor: Color.fromARGB(255, 7, 118, 209),
       elevation: 0,
       title: Obx(() => Offstage(
             offstage: !controller.getLink.value,
@@ -86,9 +55,13 @@ class ListenPage extends GetView<ListenController> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(
-                  height: 20,
+                  height: 15,
                 ),
-                CommonImg(controller.model.value.cover ?? ""),
+                CommonImg(
+                  controller.model.value.cover ?? "",
+                  width: 100,
+                  fit: BoxFit.cover,
+                ),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Text("第${controller.idx.value + 1}集"),
@@ -107,7 +80,7 @@ class ListenPage extends GetView<ListenController> {
                           children: [
                             Icon(
                               Icons.menu_open_outlined,
-                              size: 35,
+                              size: 32,
                             ),
                             Text("播放列表"),
                           ],
@@ -160,7 +133,7 @@ class ListenPage extends GetView<ListenController> {
                           children: [
                             Icon(
                               Icons.fast_forward,
-                              size: 35,
+                              size: 32,
                             ),
                             Text("倍速"),
                           ],

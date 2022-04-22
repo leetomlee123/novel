@@ -118,13 +118,80 @@ class ListenChapters extends GetView<ListenController> {
       itemBuilder: (ctx, i) {
         final item = controller.history[i];
 
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () async {
+            Get.back();
+
+            controller.audioPlayer.stop();
+
+            await controller.saveState();
+
+            // controller.getBackgroundColor();
+
+            controller.model.value = item;
+            controller.idx.value = controller.model.value.idx ?? 0;
+            // controller.getBackgroundColor();
+            controller.playerState.value = ProcessingState.idle;
+
+            await controller.getUrl(controller.idx.value);
+
+            await controller.audioPlayer.play();
+            controller.detail(item.id.toString());
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Row(
+              children: [
+                CommonImg(
+                  item.cover ?? "",
+                  width: 60,
+                  aspect: .8,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.title ?? "",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      "第${item.idx! + 1}回",
+                      style: TextStyle(color: Colors.black54,fontSize: 12),
+                    ),
+                  ],
+                ),
+                Spacer(),
+                RichText(
+                  text: TextSpan(children: [
+                    TextSpan(
+                      text: '已听',
+                      style: TextStyle(color: modalColor, fontSize: 16),
+                    ),
+                    TextSpan(
+                      text:
+                          '${((item.idx! + 1) / (item.count!) * 100).toStringAsFixed(1)}%',
+                      style: TextStyle(color: modalColor, fontSize: 13),
+                    ),
+                  ]),
+                ),
+              ],
+            ),
+          ),
+        );
+
         return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
             child: ListTile(
               leading: CommonImg(
                 item.cover ?? "",
                 width: 100,
-                aspect: 1,
               ),
               contentPadding: const EdgeInsets.all(5),
               title: Text(
@@ -172,9 +239,9 @@ class ListenChapters extends GetView<ListenController> {
       cacheExtent: 40,
       separatorBuilder: (BuildContext context, int index) {
         return Divider(
-          color: Colors.black45,
-          indent: 10,
-          endIndent: 10,
+          color: Color.fromARGB(115, 114, 40, 156),
+          indent: 15,
+          endIndent: 15,
         );
       },
     );

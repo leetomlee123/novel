@@ -17,8 +17,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'novel',
-           theme: ThemeData(
-        iconTheme: IconThemeData(color: Colors.blue),
+      theme: ThemeData(
+        backgroundColor: Color.fromARGB(255, 5, 66, 116),
+        iconTheme: IconThemeData(color: Color.fromARGB(255, 5, 66, 116)),
         textTheme: TextTheme(
           headline1: TextStyle(
               fontSize: 36.0, fontWeight: FontWeight.bold, color: Colors.white),
@@ -39,7 +40,6 @@ class MyApp extends StatelessWidget {
       ),
       home: ListenPage(),
       initialBinding: ListenBinding(),
-     
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
       unknownRoute: AppPages.unknownRoute,

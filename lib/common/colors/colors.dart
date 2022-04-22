@@ -13,4 +13,6 @@ class AppColors {
 
   /// 主文本灰色
   static const Color primaryGreyText1 = Color(0xFFE0DDF5);
+
+  static const Color primaryColor = Color.fromARGB(255, 2, 30, 53);
 }
