@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:novel/common/colors/colors.dart';
 import 'package:novel/components/common_img.dart';
 import 'package:novel/pages/listen/adjust_speed.dart';
 import 'package:novel/pages/listen/listen_chapters.dart';
@@ -18,9 +17,6 @@ class ListenPage extends GetView<ListenController> {
         // backgroundColor: controller.bgColor.value,
         appBar: _buildAppBar(),
         body: _buildPlayUi());
-
- 
- 
   }
 
   _buildAppBar() {
@@ -30,9 +26,15 @@ class ListenPage extends GetView<ListenController> {
       elevation: 0,
       title: Obx(() => Offstage(
             offstage: !controller.getLink.value,
-            child: const Text(
-              '获取资源中...',
-              style: TextStyle(fontSize: 13),
+            child: SizedBox(
+              height: 12,
+              width: 12,
+              child: CircularProgressIndicator(
+                backgroundColor: Colors.transparent,
+                strokeWidth: 2.0,
+                color: Colors.transparent,
+                valueColor: AlwaysStoppedAnimation(Colors.white),
+              ),
             ),
           )),
       actions: [
@@ -67,7 +69,7 @@ class ListenPage extends GetView<ListenController> {
                   child: Text("第${controller.idx.value + 1}集"),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(5.0),
                   child: Text(controller.model.value.bookMeta ?? ""),
                 ),
                 Padding(
