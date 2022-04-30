@@ -142,10 +142,11 @@ class ListenChapters extends GetView<ListenController> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 CommonImg(
                   item.cover ?? "",
-                  width: 60,
+                  width: 50,
                   aspect: .8,
                 ),
                 const SizedBox(
@@ -153,6 +154,7 @@ class ListenChapters extends GetView<ListenController> {
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       item.title ?? "",
