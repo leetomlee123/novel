@@ -61,8 +61,13 @@ class ListenApi {
     print(link);
     var res = await Request().get(link);
     Document document = parse(res);
-    Element e = document.querySelectorAll("head>script").last;
-    var text = e.text;
+    Element? e;
+    document.querySelectorAll("head>script").forEach((element) {
+      if (element.text.contains('datas')) {
+        e = element;
+      }
+    });
+    var text = e!.text;
     var target = text.split(";")[0];
     var s = target.split("(")[2].split(")")[0];
     s = s.substring(2, s.length - 1);

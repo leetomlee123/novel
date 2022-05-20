@@ -25,32 +25,30 @@ dependencies:
 
 
   # ios 图标库
-  cupertino_icons: ^1.0.2
-  bot_toast: ^4.0.1
+  cupertino_icons: ^1.0.4
+  bot_toast: ^4.0.2
 
   # getx
-  get: ^4.6.1
+  get: ^4.6.3
 
   # 日期格式
   intl: ^0.17.0
 
   # http
-  dio: ^4.0.1
+  dio: ^4.0.6
 
 
-  shared_preferences: ^2.0.6
+  shared_preferences: ^2.0.15
   # google_mobile_ads: ^1.0.1
   # permission_handler: ^8.3.0
- 
-  extended_image: ^6.0.0
+  palette_generator: ^0.3.3
+  extended_image: ^6.2.0
   fast_gbk: ^1.0.0
   common_utils: ^2.1.0
 
 
-  firebase_core: ^1.14.1
-  firebase_analytics: ^9.1.5
  
-  path_provider: ^2.0.9
+  path_provider: ^2.0.10
   get_it: ^6.0.0
   # palette_generator: ^0.3.3
   # vibrate: ^0.0.4
@@ -62,12 +60,12 @@ dependencies:
 
   sp_util: ^2.0.3
   dio_cookie_manager: ^2.0.0
-  dio_smart_retry: ^1.1.0
+  dio_smart_retry: ^1.2.0
   
 
   
 
-  just_audio: ^0.9.20
+  just_audio: ^0.9.21
   just_audio_background: ^0.0.1-beta.5
 
 

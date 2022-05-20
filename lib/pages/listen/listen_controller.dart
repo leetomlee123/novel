@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,12 +11,13 @@ import 'package:novel/pages/listen/listen_model.dart';
 import 'package:novel/router/app_pages.dart';
 import 'package:novel/services/listen.dart';
 import 'package:novel/utils/database_provider.dart';
+import 'package:palette_generator/palette_generator.dart';
 
 class ListenController extends SuperController
     with GetSingleTickerProviderStateMixin {
   TextEditingController textEditingController = TextEditingController();
   RxList<Search>? searchs = RxList<Search>();
-  List<Search> history = List.empty(growable: true);
+  RxList<Search> history = RxList<Search>();
   Rx<Search> model = Search().obs;
   String url = "";
   late AudioPlayer audioPlayer;
@@ -30,7 +32,10 @@ class ListenController extends SuperController
   RxInt idx = 0.obs;
   RxDouble fast = (1.0).obs;
   late ScrollController? scrollcontroller;
-
+  PaletteGenerator? paletteGenerator;
+  Color color1 = Colors.black87;
+  Color color2 = Colors.black54;
+  Color color3 = Colors.black38;
   late TabController tabController;
 
   final tabs = ["当前播放", "播放历史"];
@@ -39,7 +44,6 @@ class ListenController extends SuperController
   @override
   void onInit() {
     super.onInit();
-
     audioPlayer = AudioPlayer();
     scrollcontroller = ScrollController();
     tabController =
@@ -102,20 +106,9 @@ class ListenController extends SuperController
     });
   }
 
-  // getBackgroundColor() async {
-  //   print("start get backgroud color ${model.value.cover ?? ""}");
-  //   PaletteGenerator paletteGenerator =
-  //       await PaletteGenerator.fromImageProvider(
-  //     ExtendedNetworkImageProvider(model.value.cover ?? ""),
-  //   );
-  //   bgColor.value = paletteGenerator.darkMutedColor!.color;
-  //   print('vvvvvv>>>>>${bgColor.value}');
-  //   // bgColor.value = paletteGenerator.dominantColor!.color;
-  // }
-
   initHistory() async {
     // await DataBaseProvider.dbProvider.clear();
-    history = await DataBaseProvider.dbProvider.voices();
+    history.value = await DataBaseProvider.dbProvider.voices();
   }
 
   init() async {
@@ -126,17 +119,28 @@ class ListenController extends SuperController
       getUrl(idx.value);
       detail(model.value.id.toString());
 
-      // getBackgroundColor();
+      getBackgroundColor();
     }
   }
 
+  removeHistory(int idx) async {
+    var h = history[idx];
+
+    history.removeAt(idx);
+
+    await DataBaseProvider.dbProvider.delById(int.parse(h.id ?? ''));
+  }
+
   @override
-  void onReady() {}
+  void onReady() {
+    Get.log('fk');
+  }
 
   @override
   void onClose() {
+    super.onClose();
     saveState();
-
+    Get.log('close');
     audioPlayer.dispose();
     textEditingController.dispose();
     tabController.dispose();
@@ -184,6 +188,7 @@ class ListenController extends SuperController
         .voiceById(int.parse(pickSearch.id.toString()));
 
     if (v != null) pickSearch = v;
+
     model.value = pickSearch;
 
     idx.value = model.value.idx ?? 0;
@@ -372,6 +377,17 @@ class ListenController extends SuperController
 
   @override
   void onDetached() {
-    // TODO: implement onDetached
+    saveState();
+  }
+
+  Future<void> getBackgroundColor() async {
+    Get.log("get cover bg color");
+    paletteGenerator = await PaletteGenerator.fromImageProvider(
+        ExtendedNetworkImageProvider(model.value.cover ?? ""));
+    var i = 1;
+    color1 = paletteGenerator!.colors.elementAt(i);
+    color2 = paletteGenerator!.colors.elementAt(i+1);
+    color3 = paletteGenerator!.colors.elementAt(i+2);
+    update();
   }
 }

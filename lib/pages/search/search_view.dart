@@ -15,6 +15,7 @@ class SearchPage extends GetView<ListenController> {
           appBar: AppBar(
             elevation: 0,
             title: _buildInput(),
+            backgroundColor: Colors.black87,
           ),
           body: SingleChildScrollView(
             child: _buildSearchList(),
@@ -84,7 +85,6 @@ class SearchPage extends GetView<ListenController> {
                         Text(
                           model.desc ?? "",
                           maxLines: 3,
-                          style: TextStyle(color: Colors.black54),
                         ),
                         Text(
                           model.bookMeta ?? "",
@@ -100,9 +100,10 @@ class SearchPage extends GetView<ListenController> {
           );
         },
         itemCount: controller.searchs!.length,
+        cacheExtent: 130,
         separatorBuilder: (BuildContext context, int index) {
           return Divider(
-            color: Colors.amber,
+            color: Color.fromARGB(255, 187, 143, 10),
           );
         },
       ),

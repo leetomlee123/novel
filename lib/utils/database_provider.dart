@@ -67,6 +67,11 @@ class DataBaseProvider {
     return result.map((e) => Search.fromJson(e)).first;
   }
 
+  delById(int? id) async {
+    var client = await databaseVoice;
+    await client!.delete(_dbVoice, where: "id=?", whereArgs: [id]);
+  }
+
   clear() async {
     var client = await databaseVoice;
     client!.delete(_dbVoice);

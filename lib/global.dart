@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -25,7 +23,6 @@ class Global {
   /// 是否 release
   static bool get isRelease => bool.fromEnvironment("dart.vm.product");
 
-  static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   /// init
   static Future init() async {
@@ -52,7 +49,6 @@ class Global {
     //检查更新
     // UpdateAppUtil.checkUpdate();
     //google service init
-    await Firebase.initializeApp();
 
     //阅读器配置文件
     // LocalStorage().remove(ReadSetting.settingKey);
@@ -86,7 +82,7 @@ class Global {
     // android 状态栏为透明的沉浸
     if (Platform.isAndroid) {
       SystemChrome.setSystemUIOverlayStyle(
-          setting!.isDark! ? ReadSetting.light : ReadSetting.dark);
+      ReadSetting.light);
     }
   }
 }

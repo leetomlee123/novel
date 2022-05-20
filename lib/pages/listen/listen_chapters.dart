@@ -100,9 +100,9 @@ class ListenChapters extends GetView<ListenController> {
   }
 
   Widget _body() {
-    return TabBarView(
+    return Obx(() => TabBarView(
         controller: controller.tabController,
-        children: [_buildChapter(), _buildHistory()]);
+        children: [_buildChapter(), _buildHistory()]));
   }
 
   _buildClose() {
@@ -111,7 +111,7 @@ class ListenChapters extends GetView<ListenController> {
   }
 
   _buildHistory() {
-    final modalColor = !Get.isDarkMode ? Colors.black : Colors.white;
+    final modalColor =Colors.white;
     //
     // controller.initHistory();
     return ListView.separated(
@@ -126,6 +126,7 @@ class ListenChapters extends GetView<ListenController> {
             controller.audioPlayer.stop();
 
             await controller.saveState();
+            controller.getBackgroundColor();
 
             // controller.getBackgroundColor();
 
@@ -142,7 +143,6 @@ class ListenChapters extends GetView<ListenController> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 CommonImg(
                   item.cover ?? "",
@@ -154,7 +154,6 @@ class ListenChapters extends GetView<ListenController> {
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       item.title ?? "",
@@ -165,24 +164,37 @@ class ListenChapters extends GetView<ListenController> {
                     ),
                     Text(
                       "第${item.idx! + 1}回",
-                      style: TextStyle(color: Colors.black54,fontSize: 12),
+                      style: TextStyle( fontSize: 12),
                     ),
                   ],
                 ),
                 Spacer(),
-                RichText(
-                  text: TextSpan(children: [
-                    TextSpan(
-                      text: '已听',
-                      style: TextStyle(color: modalColor, fontSize: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                        onPressed: () => controller.removeHistory(i),
+                        icon: Icon(
+                          Icons.close_outlined,
+                          size: 20,
+                          color: Colors.redAccent,
+                        )),
+                    RichText(
+                      text: TextSpan(children: [
+                        TextSpan(
+                          text: '已听',
+                          style: TextStyle(color: modalColor, fontSize: 11),
+                        ),
+                        TextSpan(
+                          text:
+                              '${((item.idx! + 1) / (item.count ?? 1) * 100).toStringAsFixed(1)}%',
+                          style: TextStyle(color: modalColor, fontSize: 10),
+                        ),
+                      ]),
                     ),
-                    TextSpan(
-                      text:
-                          '${((item.idx! + 1) / (item.count!) * 100).toStringAsFixed(1)}%',
-                      style: TextStyle(color: modalColor, fontSize: 13),
-                    ),
-                  ]),
-                ),
+                  ],
+                )
               ],
             ),
           ),
