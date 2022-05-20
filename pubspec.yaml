@@ -39,8 +39,7 @@ dependencies:
 
 
   shared_preferences: ^2.0.15
-  # google_mobile_ads: ^1.0.1
-  # permission_handler: ^8.3.0
+
   palette_generator: ^0.3.3
   extended_image: ^6.2.0
   fast_gbk: ^1.0.0
@@ -68,7 +67,9 @@ dependencies:
   just_audio: ^0.9.21
   just_audio_background: ^0.0.1-beta.5
 
-
+#  google
+  firebase_core: ^1.17.0
+  firebase_analytics: ^9.1.8
 dev_dependencies:
   flutter_test:
     sdk: flutter

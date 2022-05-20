@@ -382,12 +382,12 @@ class ListenController extends SuperController
 
   Future<void> getBackgroundColor() async {
     Get.log("get cover bg color");
-    paletteGenerator = await PaletteGenerator.fromImageProvider(
-        ExtendedNetworkImageProvider(model.value.cover ?? ""));
-    var i = 1;
-    color1 = paletteGenerator!.colors.elementAt(i);
-    color2 = paletteGenerator!.colors.elementAt(i+1);
-    color3 = paletteGenerator!.colors.elementAt(i+2);
-    update();
+    // paletteGenerator = await PaletteGenerator.fromImageProvider(
+    //     ExtendedNetworkImageProvider(model.value.cover ?? ""));
+    // var i = 1;
+    // color1 = paletteGenerator!.colors.elementAt(i);
+    // color2 = paletteGenerator!.colors.elementAt(i+1);
+    // color3 = paletteGenerator!.colors.elementAt(i+2);
+    // update();
   }
 }

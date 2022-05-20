@@ -20,15 +20,14 @@ class ListenPage extends GetView<ListenController> {
       resizeToAvoidBottomInset: true,
       body: Obx(() => Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  controller.color1,
-                  controller.color2,
-                  controller.color3,
-                ],
-              ),
+              // gradient: LinearGradient(
+              //   begin: Alignment.topLeft,
+              //   end: Alignment.bottomRight,
+              //   // colors: [
+              //   //   controller.color1,
+              //   //
+              //   // ],
+              // ),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Column(children: [_buildAppBar(), _buildPlayUi()]),
