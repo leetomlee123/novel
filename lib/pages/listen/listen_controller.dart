@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:novel/pages/listen/listen_model.dart';
-import 'package:novel/router/app_pages.dart';
 import 'package:novel/services/listen.dart';
 import 'package:novel/utils/database_provider.dart';
 import 'package:palette_generator/palette_generator.dart';
@@ -135,8 +134,6 @@ class ListenController extends SuperController
     await DataBaseProvider.dbProvider.delById(int.parse(h.id ?? ''));
   }
 
-
-
   saveState() async {
     if ((model.value.id ?? "").isNotEmpty) {
       model.value.idx = idx.value;
@@ -147,8 +144,6 @@ class ListenController extends SuperController
     }
   }
 
-
-
   detail(String id) async {
     int count = await compute(ListenApi().getChapters, id);
 
@@ -157,10 +152,8 @@ class ListenController extends SuperController
     });
   }
 
-
-
   //跳转
-  toPlay(int i,Search pickSearch) async {
+  toPlay(int i, Search pickSearch) async {
     Get.back();
     // getBackgroundColor();
     await audioPlayer.stop();
@@ -335,6 +328,7 @@ class ListenController extends SuperController
     });
     await audioPlayer.seek(model.value.position);
   }
+
   Future<void> getBackgroundColor() async {
     Get.log("get cover bg color");
     // paletteGenerator = await PaletteGenerator.fromImageProvider(
@@ -345,13 +339,13 @@ class ListenController extends SuperController
     // color3 = paletteGenerator!.colors.elementAt(i+2);
     // update();
   }
-  @override
-  void onReady() {
-  }
 
   @override
-  void onClose() {
-    super.onClose();
+  void onReady() {}
+
+  @override
+  void dispose() {
+    super.dispose();
     saveState();
     Get.log('close');
     audioPlayer.dispose();
@@ -382,6 +376,4 @@ class ListenController extends SuperController
   void onDetached() {
     saveState();
   }
-
-
 }

@@ -27,4 +27,6 @@ class SearchController extends GetxController {
   void onClose() {
     textEditingController.dispose();
   }
+
+
 }
