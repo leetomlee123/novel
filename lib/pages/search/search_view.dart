@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:novel/pages/listen/listen_controller.dart';
 import 'package:novel/pages/listen/listen_model.dart';
+import 'package:novel/pages/search/search_controller.dart';
 
 import '../../components/common_img.dart';
 
-class SearchPage extends GetView<ListenController> {
+class SearchPage extends GetView<SearchController> {
   SearchPage({Key? key}) : super(key: key);
   FocusNode focusNode = FocusNode();
 
@@ -52,8 +53,9 @@ class SearchPage extends GetView<ListenController> {
 
           return GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: () {
-              controller.toPlay(i);
+            onTap: () async {
+
+              Get.find<ListenController>().toPlay(i, model);
             },
             child: Container(
               height: 130,

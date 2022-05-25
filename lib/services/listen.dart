@@ -13,6 +13,12 @@ class ListenApi {
 
   static var random = new Random();
 
+  Future<int?> checkSite(String sk) async {
+    var res = await Request().getBase(host);
+    print(res);
+    return res;
+  }
+
   Future<List<Search>?> search(String keyword) async {
     if (keyword.isEmpty) return null;
 

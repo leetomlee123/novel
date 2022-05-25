@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:novel/common/langs/translation_service.dart';
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
       getPages: AppPages.routes,
       unknownRoute: AppPages.unknownRoute,
       navigatorObservers: [
+        FirebaseAnalyticsObserver(analytics: Global.analytics),
         RouterObserver(),
       ],
       builder: BotToastInit(),

@@ -29,7 +29,7 @@ dependencies:
   bot_toast: ^4.0.2
 
   # getx
-  get: ^4.6.3
+  get: ^4.6.5
 
   # 日期格式
   intl: ^0.17.0

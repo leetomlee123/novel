@@ -103,6 +103,14 @@ class Request {
   }
 
   /// restful get 操作
+  Future getBase(
+    String path,
+  ) async {
+    var response = await dio.get(path, cancelToken: cancelToken);
+    return response.statusCode;
+  }
+
+  /// restful get 操作
   Future get(String path,
       {dynamic params, Options? options, String? proxy = ""}) async {
     Options requestOptions = options ?? Options();

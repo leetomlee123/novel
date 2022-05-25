@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,8 +14,6 @@ import 'package:palette_generator/palette_generator.dart';
 
 class ListenController extends SuperController
     with GetSingleTickerProviderStateMixin {
-  TextEditingController textEditingController = TextEditingController();
-  RxList<Search>? searchs = RxList<Search>();
   RxList<Search> history = RxList<Search>();
   Rx<Search> model = Search().obs;
   String url = "";
@@ -28,6 +25,7 @@ class ListenController extends SuperController
   RxBool useProxy = false.obs;
   RxBool getLink = false.obs;
   RxBool syncPosition = false.obs;
+  RxBool online = false.obs;
   final bgColor = Colors.transparent.obs;
   RxInt idx = 0.obs;
   RxDouble fast = (1.0).obs;
@@ -113,6 +111,7 @@ class ListenController extends SuperController
 
   init() async {
     await initHistory();
+    checkSite();
     if (history.isNotEmpty) {
       model.value = history.first;
       idx.value = model.value.idx!;
@@ -123,6 +122,11 @@ class ListenController extends SuperController
     }
   }
 
+  checkSite() async {
+    int? ok = await compute(ListenApi().checkSite, "");
+    online.value = ok == 200;
+  }
+
   removeHistory(int idx) async {
     var h = history[idx];
 
@@ -131,20 +135,7 @@ class ListenController extends SuperController
     await DataBaseProvider.dbProvider.delById(int.parse(h.id ?? ''));
   }
 
-  @override
-  void onReady() {
-    Get.log('fk');
-  }
 
-  @override
-  void onClose() {
-    super.onClose();
-    saveState();
-    Get.log('close');
-    audioPlayer.dispose();
-    textEditingController.dispose();
-    tabController.dispose();
-  }
 
   saveState() async {
     if ((model.value.id ?? "").isNotEmpty) {
@@ -156,10 +147,7 @@ class ListenController extends SuperController
     }
   }
 
-  clear() {
-    searchs!.clear();
-    textEditingController.clear();
-  }
+
 
   detail(String id) async {
     int count = await compute(ListenApi().getChapters, id);
@@ -169,21 +157,15 @@ class ListenController extends SuperController
     });
   }
 
-//搜索
-  search(String v) async {
-    if (v.isEmpty) return;
-    searchs!.clear();
-    searchs!.value = (await ListenApi().search(v))!;
-  }
+
 
   //跳转
-  toPlay(int i) async {
-    Get.toNamed(AppRoutes.listen);
+  toPlay(int i,Search pickSearch) async {
+    Get.back();
     // getBackgroundColor();
     await audioPlayer.stop();
     saveState();
     //
-    var pickSearch = searchs![i];
     Search? v = await DataBaseProvider.dbProvider
         .voiceById(int.parse(pickSearch.id.toString()));
 
@@ -195,7 +177,6 @@ class ListenController extends SuperController
     // controller.getBackgroundColor();
     playerState.value = ProcessingState.idle;
 
-    clear();
     await getUrl(idx.value);
     detail(pickSearch.id.toString());
 
@@ -354,6 +335,28 @@ class ListenController extends SuperController
     });
     await audioPlayer.seek(model.value.position);
   }
+  Future<void> getBackgroundColor() async {
+    Get.log("get cover bg color");
+    // paletteGenerator = await PaletteGenerator.fromImageProvider(
+    //     ExtendedNetworkImageProvider(model.value.cover ?? ""));
+    // var i = 1;
+    // color1 = paletteGenerator!.colors.elementAt(i);
+    // color2 = paletteGenerator!.colors.elementAt(i+1);
+    // color3 = paletteGenerator!.colors.elementAt(i+2);
+    // update();
+  }
+  @override
+  void onReady() {
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+    saveState();
+    Get.log('close');
+    audioPlayer.dispose();
+    tabController.dispose();
+  }
 
   @override
   void onInactive() {
@@ -380,14 +383,5 @@ class ListenController extends SuperController
     saveState();
   }
 
-  Future<void> getBackgroundColor() async {
-    Get.log("get cover bg color");
-    // paletteGenerator = await PaletteGenerator.fromImageProvider(
-    //     ExtendedNetworkImageProvider(model.value.cover ?? ""));
-    // var i = 1;
-    // color1 = paletteGenerator!.colors.elementAt(i);
-    // color2 = paletteGenerator!.colors.elementAt(i+1);
-    // color3 = paletteGenerator!.colors.elementAt(i+2);
-    // update();
-  }
+
 }

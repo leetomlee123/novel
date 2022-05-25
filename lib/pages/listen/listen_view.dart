@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:novel/components/common_img.dart';
 import 'package:novel/pages/listen/adjust_speed.dart';
 import 'package:novel/pages/listen/listen_chapters.dart';
+import 'package:novel/pages/listen/side_view.dart';
 import 'package:novel/pages/listen/voice_slider.dart';
 import 'package:novel/router/app_pages.dart';
 
@@ -10,25 +11,31 @@ import 'listen_controller.dart';
 
 class ListenPage extends GetView<ListenController> {
   ListenPage({Key? key}) : super(key: key);
+  var scaffoldKey = GlobalKey<ScaffoldState>();
+  //监听程序进入前后台的状态改变的方法
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
+      drawer: Drawer(
+        child: SideView(),
+      ),
       // backgroundColor: controller.bgColor.value,
       // appBar: _buildAppBar(),
       // body: _buildPlayUi()
       resizeToAvoidBottomInset: true,
       body: Obx(() => Container(
             decoration: BoxDecoration(
-              // gradient: LinearGradient(
-              //   begin: Alignment.topLeft,
-              //   end: Alignment.bottomRight,
-              //   // colors: [
-              //   //   controller.color1,
-              //   //
-              //   // ],
-              // ),
-            ),
+                // gradient: LinearGradient(
+                //   begin: Alignment.topLeft,
+                //   end: Alignment.bottomRight,
+                //   // colors: [
+                //   //   controller.color1,
+                //   //
+                //   // ],
+                // ),
+                ),
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Column(children: [_buildAppBar(), _buildPlayUi()]),
           )),
@@ -38,15 +45,20 @@ class ListenPage extends GetView<ListenController> {
   _buildAppBar() {
     return PreferredSize(
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                const SizedBox(
-            width: 4,
-          ),
+          // const SizedBox(
+          //   width: 1,
+          // ),
           const SizedBox(
             height: 120,
           ),
-          Icon(Icons.menu),
+          IconButton(
+            onPressed: () {
+              scaffoldKey.currentState!.openDrawer();
+            },
+            icon: Icon(Icons.menu),
+          ),
           const SizedBox(
-            width: 20,
+            width: 5,
           ),
           Obx(() => Offstage(
                 offstage: !controller.getLink.value,
@@ -62,12 +74,30 @@ class ListenPage extends GetView<ListenController> {
                 ),
               )),
           Spacer(),
-          GestureDetector(child: Icon(Icons.search_outlined),   onTap: () {
-                Get.toNamed(AppRoutes.search);
-              },)
-   ,         const SizedBox(
-            width: 4,
+          Row(
+            children: [
+              const Text(
+                '听书楼',
+                style: TextStyle(fontSize: 18),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(7.0, 9, 0, 0),
+                child: Obx(() => Container(
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                          color: controller.online.value
+                              ? Colors.green
+                              : Colors.red,
+                          borderRadius: BorderRadius.all(Radius.circular(5))),
+                    )),
+              ),
+            ],
           ),
+          Spacer(),
+          IconButton(onPressed: (){ Get.toNamed(AppRoutes.search);}, icon: Icon(Icons.search_outlined),)
+
+
         ]),
         preferredSize: Size.fromHeight(kToolbarHeight));
   }
@@ -152,6 +182,7 @@ class ListenPage extends GetView<ListenController> {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               child: VoiceSlider(),
             ),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
