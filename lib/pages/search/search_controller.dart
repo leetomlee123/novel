@@ -15,9 +15,14 @@ class SearchController extends GetxController {
 //搜索
   search(String v) async {
     if (v.isEmpty) return;
-    searchs!.clear();
+   searchs!.clear();
     searchs!.value = (await ListenApi().search(v))!;
     Get.focusScope!.unfocus();
+  }
+
+  clear() {
+    searchs!.clear();
+    textEditingController.clear();
   }
 
   @override
@@ -27,6 +32,4 @@ class SearchController extends GetxController {
   void onClose() {
     textEditingController.dispose();
   }
-
-
 }

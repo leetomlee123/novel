@@ -140,7 +140,7 @@ class ListenController extends SuperController
       model.update((val) {
         val!.idx = idx.value;
       });
-      await DataBaseProvider.dbProvider.addVoice(model.value);
+      DataBaseProvider.dbProvider.addVoice(model.value);
     }
   }
 
@@ -345,11 +345,11 @@ class ListenController extends SuperController
 
   @override
   void dispose() {
-    super.dispose();
     saveState();
     Get.log('close');
     audioPlayer.dispose();
     tabController.dispose();
+    super.dispose();
   }
 
   @override

@@ -29,17 +29,6 @@ class ListenChapters extends GetView<ListenController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  // _buildClose(),
-                  // Spacer(),
-                  // Text(
-                  //   '播放列表',
-                  //   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  // ),
-                  // Spacer(),
-                ],
-              ),
               TabBar(
                   controller: controller.tabController,
                   labelPadding:
@@ -69,11 +58,17 @@ class ListenChapters extends GetView<ListenController> {
         shrinkWrap: true,
         itemExtent: 40,
         itemBuilder: (ctx, i) {
+          // return GestureDetector(
+          //     onTap: () async {
+          //       await playChapter(i);
+          //     },
+          //     child: Text("${controller.model.value.title}第${i + 1}回",style: TextStyle(color: i==controller.idx.value?Colors.amber:null),));
+
           return ListTile(
             onTap: () async {
               await playChapter(i);
             },
-            title: Text("${controller.model.value.title}第${i + 1}回"),
+            title: Text("${controller.model.value.title}-第${i + 1}回"),
             trailing: Checkbox(
               value: controller.idx.value == i,
               onChanged: (bool? value) async {
@@ -105,15 +100,8 @@ class ListenChapters extends GetView<ListenController> {
         children: [_buildChapter(), _buildHistory()]));
   }
 
-  _buildClose() {
-    return IconButton(
-        onPressed: () => Get.back(), icon: Icon(Icons.close_outlined));
-  }
-
   _buildHistory() {
-    final modalColor =Colors.white;
-    //
-    // controller.initHistory();
+    final modalColor = Colors.white;
     return ListView.separated(
       itemBuilder: (ctx, i) {
         final item = controller.history[i];
@@ -126,13 +114,8 @@ class ListenChapters extends GetView<ListenController> {
             controller.audioPlayer.stop();
 
             await controller.saveState();
-            controller.getBackgroundColor();
-
-            // controller.getBackgroundColor();
-
             controller.model.value = item;
             controller.idx.value = controller.model.value.idx ?? 0;
-            // controller.getBackgroundColor();
             controller.playerState.value = ProcessingState.idle;
 
             await controller.getUrl(controller.idx.value);
@@ -164,7 +147,7 @@ class ListenChapters extends GetView<ListenController> {
                     ),
                     Text(
                       "第${item.idx! + 1}回",
-                      style: TextStyle( fontSize: 12),
+                      style: TextStyle(fontSize: 12),
                     ),
                   ],
                 ),

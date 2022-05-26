@@ -331,6 +331,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.1-beta.5"
+  just_audio_cache:
+    dependency: "direct main"
+    description:
+      name: just_audio_cache
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1"
   just_audio_platform_interface:
     dependency: transitive
     description:

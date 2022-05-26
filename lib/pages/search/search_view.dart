@@ -37,6 +37,8 @@ class SearchPage extends GetView<SearchController> {
           hintText: 'Search',
           hintStyle: TextStyle(color: Colors.white),
           alignLabelWithHint: true,
+          suffixIcon: IconButton(icon: Icon(Icons.close_outlined,),onPressed: ()=>controller.clear(),),
+          
           border: InputBorder.none),
     );
   }
@@ -87,6 +89,7 @@ class SearchPage extends GetView<SearchController> {
                         Text(
                           model.desc ?? "",
                           maxLines: 3,
+                          style: TextStyle(color: Colors.white70),
                         ),
                         Text(
                           model.bookMeta ?? "",
