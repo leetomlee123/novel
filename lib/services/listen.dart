@@ -6,6 +6,7 @@ import 'package:fast_gbk/fast_gbk.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:novel/pages/listen/listen_model.dart';
+import 'package:novel/pages/search/search_model.dart';
 import 'package:novel/utils/request.dart';
 
 class ListenApi {
@@ -107,5 +108,23 @@ class ListenApi {
       print(url);
       return Uri.encodeFull(url);
     }
+  }
+
+  Future<List<TopRank>> rank(String ss) async {
+    var res = await Request().get('$host/top.html');
+    Document document = parse(res);
+    List<TopRank> result = [];
+    document.getElementsByClassName("list-li").forEach((element) {
+      result.add(TopRank(
+          id: element.querySelector(">a")!.attributes['href'].toString(),
+          name: element.querySelector(" figcaption > a")!.text,
+          cover: element
+              .querySelector("a>img")!
+              .attributes['data-original']
+              .toString(),
+          cast: element.querySelector(">p>a")?.text));
+      print('aa');
+    });
+    return result;
   }
 }

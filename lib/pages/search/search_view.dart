@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:novel/pages/listen/listen_controller.dart';
 import 'package:novel/pages/listen/listen_model.dart';
 import 'package:novel/pages/search/search_controller.dart';
+import 'package:novel/pages/search/search_model.dart';
 
 import '../../components/common_img.dart';
 
@@ -19,14 +20,18 @@ class SearchPage extends GetView<SearchController> {
             backgroundColor: Colors.black87,
           ),
           body: SingleChildScrollView(
-            child: _buildSearchList(),
+            child: Visibility(
+              child: _buildSearchList(),
+              visible: controller.showResult.value,
+              replacement: _buildRank(),
+            ),
           ),
         ));
   }
 
   _buildInput() {
     return TextField(
-      autofocus: true,
+      autofocus: false,
       focusNode: focusNode,
       cursorColor: Colors.white,
       cursorHeight: 25,
@@ -37,8 +42,12 @@ class SearchPage extends GetView<SearchController> {
           hintText: 'Search',
           hintStyle: TextStyle(color: Colors.white),
           alignLabelWithHint: true,
-          suffixIcon: IconButton(icon: Icon(Icons.close_outlined,),onPressed: ()=>controller.clear(),),
-          
+          suffixIcon: IconButton(
+            icon: Icon(
+              Icons.close_outlined,
+            ),
+            onPressed: () => controller.clear(),
+          ),
           border: InputBorder.none),
     );
   }
@@ -56,7 +65,6 @@ class SearchPage extends GetView<SearchController> {
           return GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () async {
-
               Get.find<ListenController>().toPlay(i, model);
             },
             child: Container(
@@ -113,5 +121,73 @@ class SearchPage extends GetView<SearchController> {
         },
       ),
     );
+  }
+
+  _buildRank() {
+    print('sddsd');
+    return Obx(() => Offstage(
+          offstage: controller.result.isEmpty,
+          child: Text('ss'),
+          // child: Padding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 20),
+          //   child: ListView.separated(
+          //     shrinkWrap: true,
+          //     physics: NeverScrollableScrollPhysics(),
+          //     itemBuilder: (ctx, i) {
+          //       TopRank model = controller.result[i];
+          //
+          //       return GestureDetector(
+          //         behavior: HitTestBehavior.opaque,
+          //         onTap: () async {},
+          //         child: Container(
+          //           height: 130,
+          //           padding: const EdgeInsets.symmetric(
+          //             vertical: 10,
+          //           ),
+          //           child: Row(
+          //             children: [
+          //               CommonImg(
+          //                 model.cover ?? "",
+          //                 fit: BoxFit.fitWidth,
+          //                 width: 80,
+          //               ),
+          //               SizedBox(
+          //                 width: 20,
+          //               ),
+          //               Expanded(
+          //                 child: Column(
+          //                   crossAxisAlignment: CrossAxisAlignment.start,
+          //                   mainAxisAlignment: MainAxisAlignment.spaceAround,
+          //                   children: [
+          //                     Text(
+          //                       "${model.name ?? ""}",
+          //                       style: TextStyle(
+          //                           fontWeight: FontWeight.bold, fontSize: 20),
+          //                       maxLines: 1,
+          //                       overflow: TextOverflow.ellipsis,
+          //                     ),
+          //                     Text(
+          //                       model.cast ?? "",
+          //                       maxLines: 1,
+          //                     ),
+          //                   ],
+          //                 ),
+          //               )
+          //             ],
+          //           ),
+          //           // child: ListTile(
+          //         ),
+          //       );
+          //     },
+          //     itemCount: controller.searchs!.length,
+          //     cacheExtent: 130,
+          //     separatorBuilder: (BuildContext context, int index) {
+          //       return Divider(
+          //         color: Color.fromARGB(255, 187, 143, 10),
+          //       );
+          //     },
+          //   ),
+          // ),
+        ));
   }
 }
