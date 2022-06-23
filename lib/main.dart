@@ -36,4 +36,5 @@ class MyApp extends StatelessWidget {
       fallbackLocale: TranslationService.fallbackLocale,
     );
   }
+  
 }

@@ -21,7 +21,7 @@ class SearchController extends GetxController {
     if (v.isEmpty) return;
     searchs!.clear();
     searchs!.value = (await ListenApi().search(v))!;
-    Get.focusScope!.unfocus();
+    // Get.focusScope!.unfocus();
   }
 
   getTop() async {
