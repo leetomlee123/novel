@@ -5,7 +5,7 @@ import 'package:novel/pages/listen/listen_model.dart';
 import 'package:novel/pages/search/search_model.dart';
 import 'package:novel/services/listen.dart';
 
-class SearchController extends GetxController {
+class SearchController extends SuperController {
   RxList<Search>? searchs = RxList<Search>();
   TextEditingController textEditingController = TextEditingController();
   RxList<TopRank> result = <TopRank>[].obs;
@@ -21,7 +21,6 @@ class SearchController extends GetxController {
     if (v.isEmpty) return;
     searchs!.clear();
     searchs!.value = (await ListenApi().search(v))!;
-    // Get.focusScope!.unfocus();
   }
 
   getTop() async {
@@ -36,8 +35,32 @@ class SearchController extends GetxController {
   @override
   void onReady() {}
 
+
+
   @override
   void onClose() {
     textEditingController.dispose();
+  }
+  
+  @override
+  void onDetached() {
+    Get.focusScope!.unfocus();
+
+    // TODO: implement onDetached
+  }
+  
+  @override
+  void onInactive() {
+    // TODO: implement onInactive
+  }
+  
+  @override
+  void onPaused() {
+    // TODO: implement onPaused
+  }
+  
+  @override
+  void onResumed() {
+    // TODO: implement onResumed
   }
 }
