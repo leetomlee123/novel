@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:novel/components/common_img.dart';
 import 'package:novel/pages/listen/adjust_speed.dart';
 import 'package:novel/pages/listen/listen_chapters.dart';
-import 'package:novel/pages/listen/side_view.dart';
 import 'package:novel/pages/listen/voice_slider.dart';
 import 'package:novel/router/app_pages.dart';
 
@@ -18,9 +17,9 @@ class ListenPage extends GetView<ListenController> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      drawer: Drawer(
-        child: SideView(),
-      ),
+      // drawer: Drawer(
+      //   child: SideView(),
+      // ),
       // backgroundColor: controller.bgColor.value,
       // appBar: _buildAppBar(),
       // body: _buildPlayUi()
@@ -53,9 +52,10 @@ class ListenPage extends GetView<ListenController> {
           ),
           IconButton(
             onPressed: () {
-              scaffoldKey.currentState!.openDrawer();
+              // scaffoldKey.currentState!.openDrawer();
+              Get.toNamed(AppRoutes.QR);
             },
-            icon: Icon(Icons.menu),
+            icon: Icon(Icons.qr_code_scanner_outlined),
           ),
           const SizedBox(
             width: 5,
@@ -95,9 +95,12 @@ class ListenPage extends GetView<ListenController> {
             ],
           ),
           Spacer(),
-          IconButton(onPressed: (){ Get.toNamed(AppRoutes.search);}, icon: Icon(Icons.search_outlined),)
-
-
+          IconButton(
+            onPressed: () {
+              Get.toNamed(AppRoutes.search);
+            },
+            icon: Icon(Icons.search_outlined),
+          )
         ]),
         preferredSize: Size.fromHeight(kToolbarHeight));
   }
@@ -182,7 +185,6 @@ class ListenPage extends GetView<ListenController> {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               child: VoiceSlider(),
             ),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

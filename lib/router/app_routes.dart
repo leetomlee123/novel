@@ -4,6 +4,7 @@ abstract class AppRoutes {
   //system
   static const Index = '/index';
   static const Home = '/home';
+  static const QR = '/qr';
   static const Login = '/login';
   static const Register = '/register';
   static const FindPassword = '/findPassword';

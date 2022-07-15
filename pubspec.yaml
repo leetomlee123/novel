@@ -60,12 +60,13 @@ dependencies:
   sp_util: ^2.0.3
   dio_cookie_manager: ^2.0.0
   dio_smart_retry: ^1.2.0
+  qr_code_scanner: ^1.0.0
   
 
   
 
-  just_audio: ^0.9.25
-  just_audio_background: ^0.0.1-beta.6
+  just_audio: ^0.9.27
+  just_audio_background: ^0.0.1-beta.7
   just_audio_cache: ^0.1.1
 
 #  google
