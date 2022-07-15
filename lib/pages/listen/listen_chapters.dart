@@ -58,24 +58,34 @@ class ListenChapters extends GetView<ListenController> {
         shrinkWrap: true,
         itemExtent: 40,
         itemBuilder: (ctx, i) {
-          // return GestureDetector(
-          //     onTap: () async {
-          //       await playChapter(i);
-          //     },
-          //     child: Text("${controller.model.value.title}第${i + 1}回",style: TextStyle(color: i==controller.idx.value?Colors.amber:null),));
-
-          return ListTile(
-            onTap: () async {
-              await playChapter(i);
-            },
-            title: Text("${controller.model.value.title}-第${i + 1}回"),
-            trailing: Checkbox(
-              value: controller.idx.value == i,
-              onChanged: (bool? value) async {
+          return GestureDetector(
+              onTap: () async {
                 await playChapter(i);
               },
-            ),
-          );
+              child: Text(
+                "${controller.model.value.title}第${i + 1}回",
+                
+                style: TextStyle(
+                    color: i == controller.idx.value
+                        ? Colors.lightBlue
+                        : null,
+                        fontSize: 18
+                        
+                        ),
+              ));
+
+          // return ListTile(
+          //   onTap: () async {
+          //     await playChapter(i);
+          //   },
+          //   title: Text("${controller.model.value.title}-第${i + 1}回"),
+          //   trailing: Checkbox(
+          //     value: controller.idx.value == i,
+          //     onChanged: (bool? value) async {
+          //       await playChapter(i);
+          //     },
+          //   ),
+          // );
         });
   }
 
@@ -97,7 +107,10 @@ class ListenChapters extends GetView<ListenController> {
   Widget _body() {
     return Obx(() => TabBarView(
         controller: controller.tabController,
-        children: [_buildChapter(), _buildHistory()]));
+        children: [Padding(
+          padding: const EdgeInsets.only(left: 20,top: 10),
+          child: _buildChapter(),
+        ), _buildHistory()]));
   }
 
   _buildHistory() {
