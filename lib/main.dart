@@ -17,12 +17,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'novel',
-      theme: ThemeData(
-        fontFamily: 'Georgia',
-      ),
+      // theme: ThemeData(
+      //   fontFamily: 'Georgia',
+      // ),
       home: ListenPage(),
-      darkTheme: ThemeData.dark(),
-      themeMode: ThemeMode.dark,
+      // darkTheme: ThemeData.dark(),
+      // themeMode: ThemeMode.dark,
       initialBinding: ListenBinding(),
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
@@ -36,5 +36,5 @@ class MyApp extends StatelessWidget {
       fallbackLocale: TranslationService.fallbackLocale,
     );
   }
-  
+
 }

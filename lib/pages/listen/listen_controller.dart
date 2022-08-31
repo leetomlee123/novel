@@ -55,7 +55,7 @@ class ListenController extends SuperController
     });
 
     ever(model, (_) {
-      initHistory();
+      DataBaseProvider.dbProvider.addVoice(model.value);
     });
 
     init();
@@ -128,10 +128,8 @@ class ListenController extends SuperController
 
   removeHistory(int idx) async {
     var h = history[idx];
-
-    history.removeAt(idx);
-
     await DataBaseProvider.dbProvider.delById(int.parse(h.id ?? ''));
+    history.removeAt(idx);
   }
 
   saveState() async {
@@ -152,51 +150,83 @@ class ListenController extends SuperController
     });
   }
 
+  toTop(int i) {
+    var temp = history[i];
+    history.removeAt(i);
+    history.insert(0, temp);
+  }
+
   //跳转
   toPlay(int i, Search pickSearch) async {
     Get.back();
     // getBackgroundColor();
     await audioPlayer.stop();
     saveState();
-    //
-    Search? v = await DataBaseProvider.dbProvider
-        .voiceById(int.parse(pickSearch.id.toString()));
 
-    if (v != null) pickSearch = v;
+    // Search? v = await DataBaseProvider.dbProvider
+    //     .voiceById(int.parse(pickSearch.id.toString()));
+    bool exist = false;
+    history.forEach((f) {
+      if (f.id == pickSearch.id) {
+        exist = true;
+      }
+    });
 
-    model.value = pickSearch;
+    if (exist) {
+      if (model.value.id == pickSearch.id) {
+        return;
+      } else {
+        for (var i = 0; i < history.length; i++) {
+          var item = history[i];
+          if (item.id == pickSearch.id) {
+            toTop(i);
 
-    idx.value = model.value.idx ?? 0;
-    // controller.getBackgroundColor();
-    playerState.value = ProcessingState.idle;
+            model.value = item;
+            idx.value = model.value.idx ?? 0;
+            playerState.value = ProcessingState.idle;
 
-    await getUrl(idx.value);
-    detail(pickSearch.id.toString());
+            await getUrl(idx.value);
 
-    // await audioPlayer.play();
+            detail(item.id.toString());
+            break;
+          }
+        }
+      }
+    } else {
+      model.value = pickSearch;
+      history.insert(0, pickSearch);
+
+      idx.value = model.value.idx ?? 0;
+      // controller.getBackgroundColor();
+      playerState.value = ProcessingState.idle;
+
+      await getUrl(idx.value);
+      detail(pickSearch.id.toString());
+    }
   }
 
   getUrl(int i) async {
     getLink.value = true;
     try {
+      url = "";
       url = await compute(ListenApi().chapterUrl,
           'http://m.tingshubao.com/video/?${model.value.id}-0-$i.html');
     } catch (e) {
       print(e);
+      getLink.value = false;
     }
-    getLink.toggle();
 
     // url =
     //     'https://pp.ting55.com/202201261454/cf07754102fc5c1a60aee3f712f6358d/2015/12/3705/4.mp3';
     print("audio url $url $getLink");
     if (url.isEmpty) {
       BotToast.showText(text: "获取资源链接失败,请重试...");
+      getLink.value = false;
+
       return;
     }
     model.value.url = url;
-    // if (audioPlayer.playing) {
-    //   audioPlayer.stop();
-    // }
+
     try {
       await audioPlayer.setAudioSource(
         AudioSource.uri(
@@ -213,11 +243,11 @@ class ListenController extends SuperController
       model.update((val) async {
         val!.duration = duration;
       });
-
+      getLink.value = false;
       await audioPlayer.seek(model.value.position);
     } on PlayerException catch (e) {
       print("Error code: ${e.code}");
-
+      getLink.value = false;
       print("Error message: ${e.message}");
       playerState.value = ProcessingState.idle;
       playing.value = false;
@@ -331,13 +361,6 @@ class ListenController extends SuperController
 
   Future<void> getBackgroundColor() async {
     Get.log("get cover bg color");
-    // paletteGenerator = await PaletteGenerator.fromImageProvider(
-    //     ExtendedNetworkImageProvider(model.value.cover ?? ""));
-    // var i = 1;
-    // color1 = paletteGenerator!.colors.elementAt(i);
-    // color2 = paletteGenerator!.colors.elementAt(i+1);
-    // color3 = paletteGenerator!.colors.elementAt(i+2);
-    // update();
   }
 
   @override

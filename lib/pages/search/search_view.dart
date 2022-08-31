@@ -3,13 +3,12 @@ import 'package:get/get.dart';
 import 'package:novel/pages/listen/listen_controller.dart';
 import 'package:novel/pages/listen/listen_model.dart';
 import 'package:novel/pages/search/search_controller.dart';
-import 'package:novel/pages/search/search_model.dart';
 
 import '../../components/common_img.dart';
 
+// ignore: must_be_immutable
 class SearchPage extends GetView<SearchController> {
   SearchPage({Key? key}) : super(key: key);
-  FocusNode focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +19,7 @@ class SearchPage extends GetView<SearchController> {
             backgroundColor: Colors.black87,
           ),
           body: SingleChildScrollView(
+            controller: controller.controller,
             child: Visibility(
               child: _buildSearchList(),
               visible: controller.showResult.value,
@@ -32,7 +32,7 @@ class SearchPage extends GetView<SearchController> {
   _buildInput() {
     return TextField(
       autofocus: false,
-      focusNode: focusNode,
+      focusNode: controller. focusNode,
       cursorColor: Colors.white,
       cursorHeight: 25,
       controller: controller.textEditingController,
@@ -97,7 +97,7 @@ class SearchPage extends GetView<SearchController> {
                         Text(
                           model.desc ?? "",
                           maxLines: 3,
-                          style: TextStyle(color: Colors.white70),
+                          // style: TextStyle(color: Colors.white70),
                         ),
                         Text(
                           model.bookMeta ?? "",

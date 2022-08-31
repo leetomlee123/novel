@@ -1,10 +1,11 @@
 import 'package:get/get.dart';
 import 'package:novel/pages/listen/listen_binding.dart';
 import 'package:novel/pages/listen/listen_view.dart';
+import 'package:novel/pages/listen_dtail/listen_dtail_binding.dart';
+import 'package:novel/pages/listen_dtail/listen_dtail_view.dart';
 import 'package:novel/pages/notfound/notfound_view.dart';
 import 'package:novel/pages/proxy/proxy_view.dart';
-import 'package:novel/pages/qr/qr_binding.dart';
-import 'package:novel/pages/qr/qr_view.dart';
+
 
 import '../pages/search/search_binding.dart';
 import '../pages/search/search_view.dart';
@@ -25,11 +26,11 @@ class AppPages {
       page: () => SearchPage(),
       binding: SearchBinding(),
     ),
-        GetPage(
-      name: AppRoutes.QR,
-      page: () => QrPage(),
-      binding: QrBinding(),
-    ),
+    GetPage(
+      name: AppRoutes.detail,
+      page: () =>ListenDtailPage(),
+      binding: ListenDtailBinding(),
+    )
   ];
 
   static final unknownRoute = GetPage(

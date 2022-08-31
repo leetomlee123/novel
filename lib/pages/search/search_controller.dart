@@ -10,9 +10,15 @@ class SearchController extends SuperController {
   TextEditingController textEditingController = TextEditingController();
   RxList<TopRank> result = <TopRank>[].obs;
   RxBool showResult = true.obs;
+  final ScrollController? controller = ScrollController();
+  final FocusNode focusNode = FocusNode();
+
   @override
   void onInit() {
     super.onInit();
+    controller?.addListener(() {
+      focusNode.unfocus();
+    });
     // getTop();
   }
 
@@ -35,30 +41,29 @@ class SearchController extends SuperController {
   @override
   void onReady() {}
 
-
-
   @override
   void onClose() {
     textEditingController.dispose();
+    controller?.dispose();
   }
-  
+
   @override
   void onDetached() {
     Get.focusScope!.unfocus();
 
     // TODO: implement onDetached
   }
-  
+
   @override
   void onInactive() {
     // TODO: implement onInactive
   }
-  
+
   @override
   void onPaused() {
     // TODO: implement onPaused
   }
-  
+
   @override
   void onResumed() {
     // TODO: implement onResumed

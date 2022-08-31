@@ -23,6 +23,7 @@ abstract class AppRoutes {
   //listen
   static const listen = '/listen';
   static const search = '/search';
+  static const detail = '/detail';
 
   // notfound
   static const NotFound = '/notfound';

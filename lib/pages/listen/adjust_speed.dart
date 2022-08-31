@@ -9,6 +9,7 @@ class ListenAdjustSpeed extends GetView<ListenController> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
+        color: Colors.white,
         padding: const EdgeInsets.all(20),
         // decoration: BoxDecoration(
         //   color: Colors.white10,
