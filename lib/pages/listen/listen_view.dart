@@ -35,19 +35,6 @@ class ListenPage extends GetView<ListenController> {
         ],
         title: Row(
           children: [
-            Obx(() => Offstage(
-                  offstage: !controller.getLink.value,
-                  child: SizedBox(
-                    height: 12,
-                    width: 12,
-                    child: CircularProgressIndicator(
-                      backgroundColor: Colors.transparent,
-                      strokeWidth: 2.0,
-                      color: Colors.transparent,
-                      valueColor: AlwaysStoppedAnimation(Colors.white),
-                    ),
-                  ),
-                )),
             const SizedBox(
               width: 4,
             ),
@@ -67,13 +54,28 @@ class ListenPage extends GetView<ListenController> {
                         borderRadius: BorderRadius.all(Radius.circular(5))),
                   )),
             ),
+            const SizedBox(
+              width: 6,
+            ),
+            Obx(() => SizedBox(
+                  height: 14,
+                  width: 14,
+                  child: controller.getLink.value
+                      ? CircularProgressIndicator(
+                          backgroundColor: Colors.transparent,
+                          strokeWidth: 2.0,
+                          color: Colors.transparent,
+                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                        )
+                      : null,
+                )),
           ],
         ),
       ),
       body: Container(
         padding: EdgeInsets.only(bottom: 70, top: 10),
         child: _buildHistory(),
-        color: Color(0xFFF),
+        color: Color.fromARGB(255, 189, 183, 183),
       ),
       bottomSheet: GestureDetector(
         onTap: () => Get.toNamed(AppRoutes.detail),
@@ -124,7 +126,7 @@ class ListenPage extends GetView<ListenController> {
                       return ScaleTransition(child: child, scale: anim);
                     },
                     duration: Duration(milliseconds: 300),
-                    child:  IconButton(
+                    child: IconButton(
                         key: ValueKey(controller.playing.value),
                         iconSize: 50,
                         onPressed: () => controller.playToggle(),

@@ -54,9 +54,9 @@ class ListenController extends SuperController
       audioPlayer.setSpeed(fast.value);
     });
 
-    ever(model, (_) {
-      DataBaseProvider.dbProvider.addVoice(model.value);
-    });
+    // ever(model, (_) {
+    //   DataBaseProvider.dbProvider.addVoice(model.value);
+    // });
 
     init();
 
@@ -162,7 +162,7 @@ class ListenController extends SuperController
     // getBackgroundColor();
     await audioPlayer.stop();
     saveState();
-
+    DataBaseProvider.dbProvider.addVoice(pickSearch);
     // Search? v = await DataBaseProvider.dbProvider
     //     .voiceById(int.parse(pickSearch.id.toString()));
     bool exist = false;
