@@ -180,7 +180,6 @@ class ListenController extends SuperController
           var item = history[i];
           if (item.id == pickSearch.id) {
             toTop(i);
-
             model.value = item;
             idx.value = model.value.idx ?? 0;
             playerState.value = ProcessingState.idle;
@@ -228,17 +227,16 @@ class ListenController extends SuperController
     model.value.url = url;
 
     try {
-      await audioPlayer.setAudioSource(
-        AudioSource.uri(
-          Uri.parse(url),
-          tag: MediaItem(
-            id: '1',
-            album: model.value.title,
-            title: "${model.value.title}-第${idx.value + 1}回",
-            artUri: Uri.parse(model.value.cover ?? ""),
-          ),
+      final audioSource = LockCachingAudioSource(
+        Uri.parse(url),
+        tag: MediaItem(
+          id: '1',
+          album: model.value.title,
+          title: "${model.value.title}-第${idx.value + 1}回",
+          artUri: Uri.parse(model.value.cover ?? ""),
         ),
       );
+      await audioPlayer.setAudioSource(audioSource);
       var duration = (await audioPlayer.load())!;
       model.update((val) async {
         val!.duration = duration;
@@ -295,6 +293,8 @@ class ListenController extends SuperController
 
   next() async {
     Get.log('next');
+    await AudioPlayer.clearAssetCache();
+
     if (idx.value == model.value.count! - 1) {
       return;
     }
