@@ -3,6 +3,7 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:novel/common/screen.dart';
 import 'package:novel/pages/listen/listen_chapters.dart';
 import 'package:novel/router/app_pages.dart';
@@ -55,17 +56,15 @@ class ListenPage extends GetView<ListenController> {
                   )),
             ),
             const SizedBox(
-              width: 6,
+              width: 14,
             ),
             Obx(() => SizedBox(
                   height: 14,
                   width: 14,
                   child: controller.getLink.value
-                      ? CircularProgressIndicator(
-                          backgroundColor: Colors.transparent,
-                          strokeWidth: 2.0,
-                          color: Colors.transparent,
-                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                      ? LoadingAnimationWidget.fallingDot(
+                          color: Colors.white,
+                          size: 20,
                         )
                       : null,
                 )),
@@ -75,7 +74,7 @@ class ListenPage extends GetView<ListenController> {
       body: Container(
         padding: EdgeInsets.only(bottom: 70, top: 10),
         child: _buildHistory(),
-        color: Color.fromARGB(255, 189, 183, 183),
+        color: Colors.white70,
       ),
       bottomSheet: GestureDetector(
         onTap: () => Get.toNamed(AppRoutes.detail),
@@ -166,30 +165,48 @@ class ListenPage extends GetView<ListenController> {
     );
   }
 
+  toDetail(int i, var item) async {
+    if (i != 0 || controller.model.value.idx == -1) {
+      controller.toTop(i);
+      await controller.audioPlayer.stop();
+      await controller.saveState();
+      controller.model.value = item;
+      controller.idx.value = controller.model.value.idx ?? 0;
+      controller.playerState.value = ProcessingState.idle;
+
+      await controller.getUrl(controller.idx.value);
+
+      await controller.audioPlayer.play();
+      controller.detail(item.id.toString());
+    }
+    Get.toNamed(AppRoutes.detail);
+  }
+
   _buildHistory() {
     return Obx(() => ListView.builder(
           itemExtent: 100,
           itemBuilder: (ctx, i) {
             final item = controller.history[i];
-
             return GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: () async {
-                if (i != 0) {
-                  controller.toTop(i);
-
-                  await controller.audioPlayer.stop();
-                  await controller.saveState();
-                  controller.model.value = item;
-                  controller.idx.value = controller.model.value.idx ?? 0;
-                  controller.playerState.value = ProcessingState.idle;
-
-                  await controller.getUrl(controller.idx.value);
-
-                  await controller.audioPlayer.play();
-                  controller.detail(item.id.toString());
-                }
-                Get.toNamed(AppRoutes.detail);
+              onTap: () => toDetail(i, item),
+              onLongPress: () => {
+                Get.dialog(AlertDialog(
+                  title:
+                      new Text('确定删除此项?', style: new TextStyle(fontSize: 17.0)),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('取消'),
+                      onPressed: () {
+                        Get.back();
+                      },
+                    ),
+                    TextButton(
+                      child: Text('确定'),
+                      onPressed: () => controller.delete(i),
+                    )
+                  ],
+                ))
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
@@ -207,8 +224,8 @@ class ListenPage extends GetView<ListenController> {
                       ),
                       CircleAvatar(
                         backgroundImage: ExtendedNetworkImageProvider(
-                          item.cover ?? "",
-                        ),
+                            item.cover ?? "",
+                            cache: true),
                         radius: 30,
                       ),
                       const SizedBox(
@@ -256,10 +273,11 @@ class ListenPage extends GetView<ListenController> {
                                 controller.detail(item.id.toString());
                               },
                               icon: Icon(
-                                i == 0
+                                controller.history[i].id ==
+                                        controller.model.value.id
                                     ? Icons.music_note_outlined
                                     : Icons.play_arrow_rounded,
-                                size: 30,
+                                size: 35,
                                 color: Colors.white,
                               )),
                           RichText(

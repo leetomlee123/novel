@@ -44,6 +44,7 @@ dependencies:
   extended_image: ^6.2.1
   fast_gbk: ^1.0.0
   common_utils: ^2.1.0
+  loading_animation_widget: ^1.2.0+2
 
 
  
@@ -67,6 +68,8 @@ dependencies:
   just_audio: ^0.9.27
   just_audio_background: ^0.0.1-beta.7
   just_audio_cache: ^0.1.1
+
+  
 
 #  google
   firebase_core: ^1.17.0

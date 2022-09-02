@@ -19,14 +19,13 @@ class ListenDtailPage extends GetView<ListenController> {
   }
 
   Widget _buildPlayUi() {
-    return Center(
+    return Obx(()=> Center(
     
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 40,horizontal: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              
               CommonImg(
                 controller.model.value.cover ?? "",
                 width: 100,
@@ -136,6 +135,6 @@ class ListenDtailPage extends GetView<ListenController> {
           ),
         ),
       
-    );
+    ));
   }
 }

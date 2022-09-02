@@ -38,7 +38,7 @@ class DataBaseProvider {
     });
   }
 
-  addVoice(Search listenSearchModel) async {
+  addVoiceOrUpdate(Search listenSearchModel) async {
     var client = await databaseVoice;
 
     int result = await client!.update(_dbVoice, listenSearchModel.toMap(),

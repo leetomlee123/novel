@@ -34,6 +34,7 @@ class ListenController extends SuperController
   Color color2 = Colors.black54;
   Color color3 = Colors.black38;
   late TabController tabController;
+  late AudioSource _audioSource;
 
   final tabs = ["当前播放", "播放历史"];
   bool preload = false;
@@ -53,10 +54,6 @@ class ListenController extends SuperController
     ever(fast, (_) {
       audioPlayer.setSpeed(fast.value);
     });
-
-    // ever(model, (_) {
-    //   DataBaseProvider.dbProvider.addVoice(model.value);
-    // });
 
     init();
 
@@ -104,8 +101,17 @@ class ListenController extends SuperController
   }
 
   initHistory() async {
-    // await DataBaseProvider.dbProvider.clear();
     history.value = await DataBaseProvider.dbProvider.voices();
+    print(1);
+  }
+
+  updatePlay() {
+    if (model.value.idx != -1) {
+      history[0] = model.value;
+      if (!getLink.value) {
+        history.refresh();
+      }
+    }
   }
 
   init() async {
@@ -116,8 +122,6 @@ class ListenController extends SuperController
       idx.value = model.value.idx!;
       getUrl(idx.value);
       detail(model.value.id.toString());
-
-      getBackgroundColor();
     }
   }
 
@@ -138,7 +142,7 @@ class ListenController extends SuperController
       model.update((val) {
         val!.idx = idx.value;
       });
-      await DataBaseProvider.dbProvider.addVoice(model.value);
+      await DataBaseProvider.dbProvider.addVoiceOrUpdate(model.value);
     }
   }
 
@@ -148,6 +152,7 @@ class ListenController extends SuperController
     model.update((val) {
       val!.count = count;
     });
+    DataBaseProvider.dbProvider.addVoiceOrUpdate(model.value);
   }
 
   toTop(int i) {
@@ -162,7 +167,7 @@ class ListenController extends SuperController
     // getBackgroundColor();
     await audioPlayer.stop();
     saveState();
-    DataBaseProvider.dbProvider.addVoice(pickSearch);
+    DataBaseProvider.dbProvider.addVoiceOrUpdate(pickSearch);
     // Search? v = await DataBaseProvider.dbProvider
     //     .voiceById(int.parse(pickSearch.id.toString()));
     bool exist = false;
@@ -214,20 +219,17 @@ class ListenController extends SuperController
       print(e);
       getLink.value = false;
     }
-
     // url =
     //     'https://pp.ting55.com/202201261454/cf07754102fc5c1a60aee3f712f6358d/2015/12/3705/4.mp3';
     print("audio url $url $getLink");
     if (url.isEmpty) {
       BotToast.showText(text: "获取资源链接失败,请重试...");
       getLink.value = false;
-
       return;
     }
-    model.value.url = url;
 
     try {
-      final audioSource = LockCachingAudioSource(
+      _audioSource = AudioSource.uri(
         Uri.parse(url),
         tag: MediaItem(
           id: '1',
@@ -236,7 +238,7 @@ class ListenController extends SuperController
           artUri: Uri.parse(model.value.cover ?? ""),
         ),
       );
-      await audioPlayer.setAudioSource(audioSource);
+      await audioPlayer.setAudioSource(_audioSource);
       var duration = (await audioPlayer.load())!;
       model.update((val) async {
         val!.duration = duration;
@@ -256,6 +258,9 @@ class ListenController extends SuperController
     } catch (e) {
       print(e);
     }
+    model.value.url = url;
+
+    detail(model.value.id ?? "");
     return 1;
   }
 
@@ -288,12 +293,12 @@ class ListenController extends SuperController
     if (result == 1) {
       idx.value = idx.value - 1;
       await audioPlayer.play();
+      updatePlay();
     }
   }
 
   next() async {
     Get.log('next');
-    await AudioPlayer.clearAssetCache();
 
     if (idx.value == model.value.count! - 1) {
       return;
@@ -309,6 +314,7 @@ class ListenController extends SuperController
     if (result == 1) {
       idx.value = idx.value + 1;
       await audioPlayer.play();
+      updatePlay();
     }
   }
 
@@ -361,6 +367,16 @@ class ListenController extends SuperController
 
   Future<void> getBackgroundColor() async {
     Get.log("get cover bg color");
+  }
+
+  delete(int i) async {
+    var id = history[i].id ?? "";
+    await DataBaseProvider.dbProvider.delById(int.parse(id));
+    if (id == model.value.id) {
+      model.value = Search(idx: -1);
+    }
+    history.removeAt(i);
+    Get.back();
   }
 
   @override
