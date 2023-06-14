@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'novel',
+      title: 'novel_form',
       // theme: ThemeData(
       //   fontFamily: 'Georgia',
       // ),
