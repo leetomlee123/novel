@@ -1,5 +1,5 @@
 // 开发环境
-const SERVER_HOST_DEV = 'http://134.175.83.19:8011/v1';
+const SERVER_HOST_DEV = 'http://121.37.139.13:8011/v1';
 
 // 生产环境
 // 生产环境地址禁止随意修改！！！
