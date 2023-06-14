@@ -11,7 +11,7 @@ class CommonImg extends StatelessWidget {
 
   CommonImg(this.url,
       {this.width = 97,
-      this.aspect = .7,
+      this.aspect = .71,
       this.fit = BoxFit.cover,
       this.roll = false});
 
